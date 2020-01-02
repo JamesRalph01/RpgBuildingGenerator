@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package rpgbuildinggenerator;
+package com.jogamp.opengl;
 
 /**
  *
@@ -12,7 +13,7 @@ package rpgbuildinggenerator;
 public class RpgBuildingGenerator {
 
     /**
-     * @param args the command line arguments xxx
+     * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
