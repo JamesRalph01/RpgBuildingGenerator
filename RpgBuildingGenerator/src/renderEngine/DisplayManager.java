@@ -17,7 +17,7 @@ import org.lwjgl.opengl.PixelFormat;
  * @author James
  */
 
-public class RpgBuildingGenerator {
+public class DisplayManager {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
@@ -33,6 +33,7 @@ public class RpgBuildingGenerator {
         try {
             Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
             Display.create(new PixelFormat(), attribs);
+            Display.setTitle("RPG Toolkit");
         } catch (LWJGLException ex) {
             ex.printStackTrace();
         }
