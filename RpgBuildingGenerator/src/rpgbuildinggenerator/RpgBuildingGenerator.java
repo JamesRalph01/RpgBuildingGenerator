@@ -12,7 +12,7 @@ package rpgbuildinggenerator;
 public class RpgBuildingGenerator {
 
     /**
-     * @param args the command line arguments
+     * @param args the command line arguments xxx
      */
     public static void main(String[] args) {
         // TODO code application logic here
