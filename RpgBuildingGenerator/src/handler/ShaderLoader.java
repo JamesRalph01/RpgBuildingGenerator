@@ -15,32 +15,24 @@ import java.io.FileReader;
  */
 public class ShaderLoader {
     
-    public static String loadShaderFile(String filePath) {
-        
-        File f = new File(filePath);
-        BufferedReader reader;
-        String temp;
-        String seperator = System.getProperty("line.seperator");
-        StringBuilder shaderCode = new StringBuilder();
-        
-        if (!f.exists()) {
-            System.err.println("Could not find shader file: " + filePath);
-            System.exit(1);
-        }
-        
-        try {
-            reader = new BufferedReader(new FileReader(f));
-            
-            while ((temp = reader.readLine()) != null) {
-                shaderCode.append(temp);
-                shaderCode.append(seperator);
+    public static String loadShaderFile(String filename)
+    {
+            StringBuilder vertexCode = new StringBuilder();
+            String line = null;
+            try
+            {
+                BufferedReader reader = new BufferedReader(new FileReader(filename));
+                while( (line = reader.readLine()) !=null )
+                {
+                    vertexCode.append(line);
+                    vertexCode.append('\n');
+                }
             }
-        } catch (Exception e){
-            System.err.println("Error reading: " + filePath + ", " + e.getMessage());
-            System.exit(1);
-        }
-        
-        
-        return shaderCode.toString();
+            catch(Exception e)
+            {
+                    throw new IllegalArgumentException("unable to load shader from file ["+filename+"]", e);
+            }
+
+            return vertexCode.toString();
     }
 }

@@ -11,7 +11,7 @@ import java.nio.FloatBuffer;
 
 
 
-public class BufferHandlerer {
+public class BufferHandler {
     
     public static void setupBuffers(int[] objectVaoHandle, float[] positionData,
             float[] colourData, final int vertexPositionIndex, 
