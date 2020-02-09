@@ -28,11 +28,12 @@ public class MainGameLoop {
         FPSAnimator animator = new FPSAnimator(canvas, FPS);
         Renderer renderer = new Renderer();
         
-        Window window = new Window("Test", animator,  HEIGHT, WIDTH);
+        Window window = new Window("RPG-Toolkit", animator,  HEIGHT, WIDTH);
         
         canvas.addGLEventListener(renderer);
         
         window.setGLCanvas(canvas, BorderLayout.CENTER);
+        window.createOptionsJPanel(BorderLayout.LINE_END);
         animator.start();
         window.setVisibility(true);
         

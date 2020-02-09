@@ -11,10 +11,14 @@ import com.jogamp.opengl.GLEventListener;
 import handler.ShaderHandler;
 import shapes.Triangle;
 import handler.BufferHandler;
+import shapes.Square;
+import shapes.Circle;
 
 public class Renderer implements GLEventListener {
 
     private int[] triangleVaoHandle = new int[1];
+    private int[] squareVaoHandle = new int[1];
+    private int[] circleVaoHandle = new int[1];
     
     public Renderer() {
         
@@ -39,8 +43,11 @@ public class Renderer implements GLEventListener {
         final int VERTEX_COLOUR_INDEX = 1;
         
         Triangle triangle = new Triangle();
+        Circle circle = new Circle(-0.5f,0.5f,0.02f,40);
         BufferHandler.setupBuffers(triangleVaoHandle, triangle.getPositionData(), 
                 triangle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+        BufferHandler.setupBuffers(circleVaoHandle, circle.getPositionData(), 
+                circle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
         ShaderHandler.linkProgram(programHandle, gl);
         gl.glUseProgram(programHandle);
     }
@@ -54,8 +61,13 @@ public class Renderer implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         final GL4 gl = drawable.getGL().getGL4();
         gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
+        
         gl.glBindVertexArray(triangleVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_TRIANGLES, 0, 3);
+        
+        gl.glBindVertexArray(circleVaoHandle[0]);
+        gl.glDrawArrays(GL4.GL_TRIANGLE_FAN, 0, 40);
+        
         gl.glFlush();
     }
 
