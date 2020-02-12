@@ -5,15 +5,21 @@
  */
 package main;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
+import org.joml.Math;
+import org.joml.Vector2f;
 import handler.ShaderHandler;
 import handler.BufferHandler;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.nio.FloatBuffer;
+import org.joml.Matrix4f;
 import shapes.*;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
@@ -23,8 +29,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private int[] circleVaoHandle = new int[1];
     private int[] gridVaoHandle = new int[1];
     private int[] gridCursorVaoHandle = new int[1];
+    private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
+    private Vector2f vCursorPosition = new Vector2f(0,0); 
+    private int width, height;
+    private int deltaY = 0;
     
     public Renderer() {
         
@@ -40,8 +50,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         // Create Shader Objects
         int vertexShader = ShaderHandler.createShader("shaders/vertex_shader.glsl", GL4.GL_VERTEX_SHADER, gl);
         int fragmentShader = ShaderHandler.createShader("shaders/fragment_shader.glsl", GL4.GL_FRAGMENT_SHADER, gl);
-        int shaderList[] = {vertexShader,fragmentShader};      
-        int programHandle = ShaderHandler.createProgram(shaderList, gl);
+        int shaderList[] = {vertexShader,fragmentShader};   
+        
+        programHandle = ShaderHandler.createProgram(shaderList, gl);
         
         final int VERTEX_POSITION_INDEX = 0;
         final int VERTEX_COLOUR_INDEX = 1;
@@ -60,6 +71,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Circle circle = new Circle(-0.5f,0.5f,0.02f,40);
         BufferHandler.setupBuffers(circleVaoHandle, circle.getPositionData(), 
                 circle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl); */
+        
         ShaderHandler.linkProgram(programHandle, gl);
         gl.glUseProgram(programHandle);
     }
@@ -74,19 +86,31 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         final GL4 gl = drawable.getGL().getGL4();
         
         gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
+     
+        int loc = gl.glGetUniformLocation(programHandle, "Transform");
         
-        gl.glPointSize(2.0F);
+        //draw grid and set translation to zero
+        if (loc != -1)
+        {
+            FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+            new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
+            gl.glUniformMatrix4fv(loc, 1, false, fb2);
+        }
+        gl.glPointSize(2.0f);
         gl.glBindVertexArray(gridVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_POINTS, 0, grid.getPositionData().length);
-        
-        gl.glLineWidth(2.0F);
+
+        //translate cursor 
+        if (loc != -1)
+        {
+            FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+            new Matrix4f().translate(vCursorPosition.x,-vCursorPosition.y,0.0f).get(fb2);
+            gl.glUniformMatrix4fv(loc, 1, false, fb2);
+        }
+        gl.glLineWidth(3.0f);
         gl.glBindVertexArray(gridCursorVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.getPositionData().length);
-        
-        /*
-        gl.glBindVertexArray(triangleVaoHandle[0]);
-        gl.glDrawArrays(GL4.GL_TRIANGLES, 0, 3); */
-        
+                
         gl.glFlush();
     }
 
@@ -94,6 +118,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void reshape(GLAutoDrawable drawable, int x, int y, int w, int h) {
         
         final GL4 gl = drawable.getGL().getGL4();
+        gl.glViewport(x, y, w, h);
+        width = w;
+        height = h;
     }
 
     @Override
@@ -122,7 +149,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        System.out.println("mouseMoved x:" + e.getX() + " y:" + e.getY());
+        vCursorPosition.x = (float) (e.getX() * 2.0f / (float) width - 1.0);
+        vCursorPosition.y = (float) (e.getY() * 2.0f / (float) height - 1.0);
+        System.out.println("mouseMoved: " + vCursorPosition);
     }
     
 }
