@@ -31,6 +31,8 @@ public class MainGameLoop {
         Window window = new Window("RPG-Toolkit", animator,  HEIGHT, WIDTH);
         
         canvas.addGLEventListener(renderer);
+        canvas.addMouseListener(renderer);
+        canvas.addMouseMotionListener(renderer);
         
         window.setGLCanvas(canvas, BorderLayout.CENTER);
         window.createOptionsJPanel(BorderLayout.LINE_END);
