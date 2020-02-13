@@ -9,8 +9,6 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import java.nio.FloatBuffer;
 
-
-
 public class BufferHandler {
     
     public static void setupBuffers(int[] objectVaoHandle, float[] positionData,

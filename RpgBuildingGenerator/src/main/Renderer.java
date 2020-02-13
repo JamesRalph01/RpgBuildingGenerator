@@ -33,6 +33,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
     private Vector2f vCursorPosition = new Vector2f(0,0); 
+    private Vector2f vTranslateCursor = new Vector2f(0,0);
     private int width, height;
     private int deltaY = 0;
     
@@ -62,15 +63,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         BufferHandler.setupBuffers(gridCursorVaoHandle, gridCursor.getPositionData(), 
                 gridCursor.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-        
-        /*Triangle triangle = new Triangle();
-        BufferHandler.setupBuffers(triangleVaoHandle, triangle.getPositionData(), 
-                triangle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);*/
-       
-        /*
-        Circle circle = new Circle(-0.5f,0.5f,0.02f,40);
-        BufferHandler.setupBuffers(circleVaoHandle, circle.getPositionData(), 
-                circle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl); */
         
         ShaderHandler.linkProgram(programHandle, gl);
         gl.glUseProgram(programHandle);
@@ -104,7 +96,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-            new Matrix4f().translate(vCursorPosition.x,-vCursorPosition.y,0.0f).get(fb2);
+            new Matrix4f().translate(vTranslateCursor.x,vTranslateCursor.y,0.0f).get(fb2);
             gl.glUniformMatrix4fv(loc, 1, false, fb2);
         }
         gl.glLineWidth(3.0f);
@@ -151,7 +143,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void mouseMoved(MouseEvent e) {
         vCursorPosition.x = (float) (e.getX() * 2.0f / (float) width - 1.0);
         vCursorPosition.y = (float) (e.getY() * 2.0f / (float) height - 1.0);
-        System.out.println("mouseMoved: " + vCursorPosition);
+        vCursorPosition.y = -vCursorPosition.y;
+        
+        vTranslateCursor = grid.getNearestGridPoint(vCursorPosition);
     }
     
 }
