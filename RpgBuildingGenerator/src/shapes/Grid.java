@@ -54,6 +54,10 @@ public class Grid extends Shape {
         return nearestGridPoint;
     }
     
+    public int numbervertices() {
+        return positionData.length / 3;
+    }
+    
     private void initPositionData() {
         // Grid of points every 20 pixels
         positionData = new float[MAX_GRID_ELEMENTS];

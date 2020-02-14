@@ -31,5 +31,8 @@ public class GridCursor extends Shape {
         return this.colourData;    
     }
    
+    public int numbervertices() {
+        return 4;
+    }
 }
 
