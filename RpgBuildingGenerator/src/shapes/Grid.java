@@ -6,7 +6,6 @@
 package shapes;
 
 import org.joml.Vector2f;
-import org.joml.Math;
 
 /**
  *
@@ -53,6 +52,10 @@ public class Grid extends Shape {
             }
         }
         return nearestGridPoint;
+    }
+    
+    public int numbervertices() {
+        return positionData.length / 3;
     }
     
     private void initPositionData() {

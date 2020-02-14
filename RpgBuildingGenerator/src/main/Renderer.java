@@ -9,9 +9,6 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
-import com.jogamp.opengl.glu.GLU;
-import org.joml.Math;
 import org.joml.Vector2f;
 import handler.ShaderHandler;
 import handler.BufferHandler;
@@ -24,18 +21,18 @@ import shapes.*;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
 
-    private int[] triangleVaoHandle = new int[1];
-    private int[] squareVaoHandle = new int[1];
-    private int[] circleVaoHandle = new int[1];
     private int[] gridVaoHandle = new int[1];
     private int[] gridCursorVaoHandle = new int[1];
     private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
+    private HouseOutline houseOutline = new HouseOutline();
     private Vector2f vCursorPosition = new Vector2f(0,0); 
-    private Vector2f vTranslateCursor = new Vector2f(0,0);
+    private Vector2f vNearestGridPoint = new Vector2f(0,0);
     private int width, height;
-    private int deltaY = 0;
+    
+    private final int VERTEX_POSITION_INDEX = 0;
+    private final int VERTEX_COLOUR_INDEX = 1;
     
     public Renderer() {
         
@@ -54,9 +51,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         int shaderList[] = {vertexShader,fragmentShader};   
         
         programHandle = ShaderHandler.createProgram(shaderList, gl);
-        
-        final int VERTEX_POSITION_INDEX = 0;
-        final int VERTEX_COLOUR_INDEX = 1;
         
         BufferHandler.setupBuffers(gridVaoHandle, grid.getPositionData(), 
                 grid.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
@@ -79,9 +73,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
      
+        //obtain pointer to global variables from graphics pipeline (shaders)
         int loc = gl.glGetUniformLocation(programHandle, "Transform");
         
-        //draw grid and set translation to zero
+        //translation to zero and draw background grid
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
@@ -90,20 +85,39 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         }
         gl.glPointSize(2.0f);
         gl.glBindVertexArray(gridVaoHandle[0]);
-        gl.glDrawArrays(GL4.GL_POINTS, 0, grid.getPositionData().length);
+        gl.glDrawArrays(GL4.GL_POINTS, 0, grid.numbervertices());
 
-        //translate cursor 
+        //translate and draw cursor, snapping to nearest grid point 
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-            new Matrix4f().translate(vTranslateCursor.x,vTranslateCursor.y,0.0f).get(fb2);
+            new Matrix4f().translate(vNearestGridPoint.x,vNearestGridPoint.y,0.0f).get(fb2);
             gl.glUniformMatrix4fv(loc, 1, false, fb2);
         }
         gl.glLineWidth(3.0f);
         gl.glBindVertexArray(gridCursorVaoHandle[0]);
-        gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.getPositionData().length);
+        gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.numbervertices());
                 
+        //draw building outline
+ 
+        int[] houseOutlineVaoHandle = new int[1];
+        if (houseOutline.size() >= 2) {
+
+            BufferHandler.setupBuffers(houseOutlineVaoHandle, houseOutline.getPositionData(), 
+                    houseOutline.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+            if (loc != -1)
+            {
+                FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+                new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
+                gl.glUniformMatrix4fv(loc, 1, false, fb2);
+            }
+            gl.glLineWidth(4.0f);
+            gl.glBindVertexArray(houseOutlineVaoHandle[0]);
+            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, houseOutline.numbervertices());  
+        }
+
         gl.glFlush();
+        
     }
 
     @Override
@@ -117,6 +131,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        houseOutline.addPoint(vNearestGridPoint);
     }
 
     @Override
@@ -145,7 +160,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         vCursorPosition.y = (float) (e.getY() * 2.0f / (float) height - 1.0);
         vCursorPosition.y = -vCursorPosition.y;
         
-        vTranslateCursor = grid.getNearestGridPoint(vCursorPosition);
+        vNearestGridPoint = grid.getNearestGridPoint(vCursorPosition);
     }
-    
 }
