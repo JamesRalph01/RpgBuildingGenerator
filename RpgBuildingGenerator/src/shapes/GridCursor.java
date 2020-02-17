@@ -8,10 +8,10 @@ package shapes;
 public class GridCursor extends Shape {
     
     private float[] positionData = {
-        -0.025f, 0.0f, 0.0f,
-        0.025f, 0.0f, 0.0f,
-        0.0f, -0.025f, 0.0f,
-        0.0f, 0.025f, 0.0f
+        -0.025f, 0.0f, 1.0f,
+        0.025f, 0.0f, 1.0f,
+        0.0f, -0.025f, 1.0f,
+        0.0f, 0.025f, 1.0f
     };
     
     private float[] colourData = {
