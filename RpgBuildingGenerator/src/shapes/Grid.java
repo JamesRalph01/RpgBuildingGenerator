@@ -67,8 +67,8 @@ public class Grid extends Shape {
             for (int y=-10; y<10; y++){
                 positionData[i++] = normalised_point * (x * GRID_SPACING); //x
                 positionData[i++] = normalised_point * (y * GRID_SPACING); //y
-                positionData[i++] = 1;
-                System.out.println("Vertice: x:" + positionData[i-3] + " y:" + positionData[i-2] + " z:" + positionData[i-1]);
+                positionData[i++] = 0.0f;
+                //System.out.println("Vertice: x:" + positionData[i-3] + " y:" + positionData[i-2] + " z:" + positionData[i-1]);
             }
         }
     }
