@@ -21,8 +21,8 @@ public class FloorPlanner extends Shape{
     public void testTreemap(int w, int h) {
         Rect bounds = new Rect(0, 0, w, h);
         
-        normalisedX = 1.0f / (float) w;
-        normalisedY = 1.0f / (float) h;
+        normalisedX = 1.8f / (float) w;
+        normalisedY = 1.8f / (float) h;
         transX = normalisedX * Math.abs((float) w / 2);
         transY = normalisedY * Math.abs((float) h / 2);
         
