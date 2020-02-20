@@ -14,9 +14,10 @@ import shapes.Shape;
  */
 public class FloorPlanner extends Shape{
     
-    TreemapLayout algorithm;
-    DemoMapModel mapModel;
-    float normalisedX, normalisedY, transX, transY;
+    private TreemapLayout algorithm;
+    private DemoMapModel mapModel;
+    private float normalisedX, normalisedY, transX, transY;
+    private boolean activeFloorPlan = false;
     
     public void testTreemap(int w, int h) {
         Rect bounds = new Rect(0, 0, w, h);
@@ -27,8 +28,18 @@ public class FloorPlanner extends Shape{
         transY = normalisedY * Math.abs((float) h / 2);
         
         algorithm = new TreemapLayout();
-        mapModel = new DemoMapModel(new int[] {6, 6, 4, 3, 2, 2, 1}, w, h);
+        mapModel = new DemoMapModel(new int[] {6, 6, 4, 3, 2, 2, 7,8, 1}, w, h);
         algorithm.layout(mapModel, bounds);
+        
+        activeFloorPlan = true;
+    }
+    
+    public void Clear() {
+        activeFloorPlan = false;
+    }
+    
+    public boolean activeFloorPlan() {
+        return activeFloorPlan;
     }
     
     @Override

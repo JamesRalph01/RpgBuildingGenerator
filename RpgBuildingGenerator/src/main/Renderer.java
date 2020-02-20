@@ -9,7 +9,6 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import floorplanner.FloorPlanner;
 import org.joml.Vector2f;
 import handler.ShaderHandler;
 import handler.BufferHandler;
@@ -27,19 +26,18 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
-    private HouseOutline houseOutline = new HouseOutline();
-    private FloorPlanner floorPlanner = new FloorPlanner();
     private Vector2f vCursorPosition = new Vector2f(0,0); 
     private Vector2f vNearestGridPoint = new Vector2f(0,0);
     private int width, height;
+    private Controller controller;
     
     private final int VERTEX_POSITION_INDEX = 0;
     private final int VERTEX_COLOUR_INDEX = 1;
     
-    public Renderer() {
-        
+    public Renderer(Controller controller) {
+        this.controller = controller;
     }
-    
+            
     @Override
     public void init(GLAutoDrawable drawable) {
         final GL4 gl = drawable.getGL().getGL4();
@@ -71,9 +69,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        final GL4 gl = drawable.getGL().getGL4();
         
-        floorPlanner.testTreemap(width, height);
+        final GL4 gl = drawable.getGL().getGL4();
         
         gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
      
@@ -103,10 +100,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 
         //draw building outline
         int[] houseOutlineVaoHandle = new int[1];
-        if (houseOutline.size() >= 2) {
+        if (controller.getHouseOutLine().size() >= 2) {
 
-            BufferHandler.setupBuffers(houseOutlineVaoHandle, houseOutline.getPositionData(), 
-                    houseOutline.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+            BufferHandler.setupBuffers(houseOutlineVaoHandle, controller.getHouseOutLine().getPositionData(), 
+                    controller.getHouseOutLine().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
             if (loc != -1)
             {
                 FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
@@ -115,22 +112,25 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             }
             gl.glLineWidth(4.0f);
             gl.glBindVertexArray(houseOutlineVaoHandle[0]);
-            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, houseOutline.numbervertices());  
+            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getHouseOutLine().numbervertices());  
         }
         
-        int[] floorplanVaoHandle = new int[1];
-        BufferHandler.setupBuffers(floorplanVaoHandle, floorPlanner.getPositionData(), 
-                floorPlanner.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-        if (loc != -1)
-        {
-            FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-            new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
-            gl.glUniformMatrix4fv(loc, 1, false, fb2);
+        //draw floorplan
+        if (controller.getFloorPlanner().activeFloorPlan()) {
+            int[] floorplanVaoHandle = new int[1];
+            BufferHandler.setupBuffers(floorplanVaoHandle, controller.getFloorPlanner().getPositionData(), 
+                    controller.getFloorPlanner().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+            if (loc != -1)
+            {
+                FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+                new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
+                gl.glUniformMatrix4fv(loc, 1, false, fb2);
+            }
+            gl.glLineWidth(1.0f);
+            gl.glBindVertexArray(floorplanVaoHandle[0]);
+            gl.glDrawArrays(GL4.GL_LINES, 0, controller.getFloorPlanner().numbervertices());  
         }
-        gl.glLineWidth(1.0f);
-        gl.glBindVertexArray(floorplanVaoHandle[0]);
-        gl.glDrawArrays(GL4.GL_LINES, 0, floorPlanner.numbervertices());
-
+        
         gl.glFlush();
         
     }
@@ -146,7 +146,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        houseOutline.addPoint(vNearestGridPoint);
+        controller.getHouseOutLine().addPoint(vNearestGridPoint);
     }
 
     @Override
