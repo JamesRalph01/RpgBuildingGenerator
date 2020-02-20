@@ -5,8 +5,6 @@
  */
 package main;
 
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
@@ -39,7 +37,7 @@ public class Window extends JFrame implements ActionListener {
     private ButtonGroup presets;
     private ButtonGroup types;
     private Controller controller;
-    RadioListener myListener = new RadioListener();
+    RadioListener radioListener = new RadioListener();
         
     public Window(String title, FPSAnimator animator, int width, int height) {
         
@@ -119,7 +117,7 @@ public class Window extends JFrame implements ActionListener {
     private void addRadioButton(String text, Container container, ButtonGroup group) {
         JRadioButton radio = new JRadioButton(text);
         radio.setAlignmentX(Component.LEFT_ALIGNMENT);
-        radio.addActionListener(myListener);
+        radio.addActionListener(radioListener);
         container.add(radio);
         group.add(radio);
     }
@@ -150,7 +148,7 @@ public class Window extends JFrame implements ActionListener {
         }   
     }  
     
-        class RadioListener implements ActionListener {
+    class RadioListener implements ActionListener {
 
         public RadioListener() {
         }
