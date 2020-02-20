@@ -5,12 +5,16 @@
  */
 package main;
 
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
@@ -26,14 +30,17 @@ import javax.swing.JRadioButton;
  *
  * @author James
  */
-public class Window extends JFrame {
+public class Window extends JFrame implements ActionListener {
     
+    private Renderer renderer;
     private JPanel mainPanel;
     private JPanel optionsPanel;
     private ButtonGroup presets;
     private ButtonGroup types;
-    
-    public Window(String title, FPSAnimator animator, int width, int height) {
+    private Controller controller;
+        
+ public Window(String title, FPSAnimator animator, int width, int height) {
+        
         super(title);
         setupWindow(animator, width, height);
         mainPanel = new JPanel(new BorderLayout());
@@ -65,13 +72,17 @@ public class Window extends JFrame {
     }
     
     public void setGLCanvas(GLCanvas canvas, String pos) {
-        mainPanel.add(canvas, pos);
+        mainPanel.add(canvas, pos, 0);
+    }
+    
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
     
     public void createOptionsJPanel(String pos) {
         optionsPanel = new JPanel();
-        optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
         
+        optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
         
         addLabel("Presets", optionsPanel);
         this.presets = new ButtonGroup();
@@ -86,27 +97,46 @@ public class Window extends JFrame {
         addRadioButton("House", optionsPanel, types);
         
         addButton("GENERATE", optionsPanel);
+        addButton("CLEAR", optionsPanel);
         
         mainPanel.add(optionsPanel, pos);
     }
     
     private void addButton(String text, Container container) {
         JButton button = new JButton(text);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);
+        button.addActionListener(this);
         container.add(button);
+        
     }
     
     private void addRadioButton(String text, Container container, ButtonGroup group) {
         JRadioButton radio = new JRadioButton(text);
-        radio.setAlignmentX(Component.CENTER_ALIGNMENT);
+        radio.setAlignmentX(Component.LEFT_ALIGNMENT);
         container.add(radio);
         group.add(radio);
     }
     
     private void addLabel(String text, Container container) {
         JLabel label = new JLabel(text);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
         container.add(label);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String action = e.getActionCommand();
+        switch (action) {
+            case "GENERATE":
+                int w = this.mainPanel.getComponent(0).getWidth();
+                int h = this.mainPanel.getComponent(0).getHeight();                
+                controller.getFloorPlanner().testTreemap(h, w);
+                break;
+            case "CLEAR":
+                controller.getHouseOutLine().clear();
+                controller.getFloorPlanner().Clear();
+                break;                
+        } 
     }
          
     
