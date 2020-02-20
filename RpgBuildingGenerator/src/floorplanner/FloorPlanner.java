@@ -5,21 +5,36 @@
  */
 package floorplanner;
 
-import org.joml.Vector2f;
 import shapes.Shape;
 
 /**
  *
  * @author chrisralph
  */
+
+
 public class FloorPlanner extends Shape{
+
+    public enum BuildingType {
+        TAVERN, CHURCH, HOUSE
+    }
     
     private TreemapLayout algorithm;
-    private DemoMapModel mapModel;
+    private MapModel mapModel;
+    private BuildingType buildingType;
     private float normalisedX, normalisedY, transX, transY;
     private boolean activeFloorPlan = false;
     
-    public void testTreemap(int w, int h) {
+    public FloorPlanner() {
+        this.buildingType = BuildingType.TAVERN;
+    }
+    
+    
+    public void setBuildingType(BuildingType buildingType) {
+        this.buildingType = buildingType;
+    }
+    
+    public void generate(int w, int h) {
         Rect bounds = new Rect(0, 0, w, h);
         
         normalisedX = 1.8f / (float) w;
@@ -27,14 +42,24 @@ public class FloorPlanner extends Shape{
         transX = normalisedX * Math.abs((float) w / 2);
         transY = normalisedY * Math.abs((float) h / 2);
         
+        switch (buildingType) {
+            case TAVERN:
+                mapModel = new TavernMapModel(w, h);
+                break;
+            case CHURCH:
+                mapModel = new DemoMapModel(new int[] {6, 6, 4, 3, 2, 2, 7,8, 1}, w, h);
+                break;
+            case HOUSE:
+                mapModel = new HouseMapModel(w, h);
+                break;       
+        }
         algorithm = new TreemapLayout();
-        mapModel = new DemoMapModel(new int[] {6, 6, 4, 3, 2, 2, 7,8, 1}, w, h);
         algorithm.layout(mapModel, bounds);
         
         activeFloorPlan = true;
     }
     
-    public void Clear() {
+    public void clear() {
         activeFloorPlan = false;
     }
     
