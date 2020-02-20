@@ -48,6 +48,7 @@ public class FloorPlanner extends Shape{
                 break;
             case CHURCH:
                 mapModel = new ChurchMapModel(w, h);
+                mapModel = new DemoMapModel(new int[] {6, 6, 4, 3, 2, 2, 7,8, 1}, w, h);
                 break;
             case HOUSE:
                 mapModel = new HouseMapModel(w, h);
