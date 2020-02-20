@@ -14,8 +14,8 @@ import shapes.HouseOutline;
  */
 public class Controller {
     
-    private HouseOutline houseOutline = new HouseOutline();
-    private FloorPlanner floorPlanner = new FloorPlanner();
+    private final HouseOutline houseOutline = new HouseOutline();
+    private final FloorPlanner floorPlanner = new FloorPlanner();
     
     public FloorPlanner getFloorPlanner() {
         return this.floorPlanner;
