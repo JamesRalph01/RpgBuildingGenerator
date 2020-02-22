@@ -5,10 +5,9 @@
  */
 package main;
 
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
+import floorplanner.FloorPlanner;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -38,8 +37,9 @@ public class Window extends JFrame implements ActionListener {
     private ButtonGroup presets;
     private ButtonGroup types;
     private Controller controller;
+    RadioListener radioListener = new RadioListener();
         
- public Window(String title, FPSAnimator animator, int width, int height) {
+    public Window(String title, FPSAnimator animator, int width, int height) {
         
         super(title);
         setupWindow(animator, width, height);
@@ -81,8 +81,10 @@ public class Window extends JFrame implements ActionListener {
     
     public void createOptionsJPanel(String pos) {
         optionsPanel = new JPanel();
-        
+                
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+        
+        RadioListener myListener = new RadioListener();        
         
         addLabel("Presets", optionsPanel);
         this.presets = new ButtonGroup();
@@ -92,9 +94,11 @@ public class Window extends JFrame implements ActionListener {
 
         addLabel("Building Type", optionsPanel);
         this.types = new ButtonGroup();
+
         addRadioButton("Tavern", optionsPanel, types);
         addRadioButton("Church", optionsPanel, types);
         addRadioButton("House", optionsPanel, types);
+
         
         addButton("GENERATE", optionsPanel);
         addButton("CLEAR", optionsPanel);
@@ -113,6 +117,7 @@ public class Window extends JFrame implements ActionListener {
     private void addRadioButton(String text, Container container, ButtonGroup group) {
         JRadioButton radio = new JRadioButton(text);
         radio.setAlignmentX(Component.LEFT_ALIGNMENT);
+        radio.addActionListener(radioListener);
         container.add(radio);
         group.add(radio);
     }
@@ -125,19 +130,46 @@ public class Window extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String action = e.getActionCommand();
+        String action;
+        String type;
+
+        action = e.getActionCommand();
+        
         switch (action) {
             case "GENERATE":
                 int w = this.mainPanel.getComponent(0).getWidth();
-                int h = this.mainPanel.getComponent(0).getHeight();                
-                controller.getFloorPlanner().testTreemap(h, w);
+                int h = this.mainPanel.getComponent(0).getHeight();
+                controller.getFloorPlanner().generate(w, h);
                 break;
             case "CLEAR":
                 controller.getHouseOutLine().clear();
-                controller.getFloorPlanner().Clear();
+                controller.getFloorPlanner().clear();
                 break;                
-        } 
-    }
-         
+        }   
+    }  
     
+    class RadioListener implements ActionListener {
+
+        public RadioListener() {
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String factoryName = null;
+            System.out.println("ActionEvent received: " + e.getActionCommand());
+            switch (e.getActionCommand()) {
+                case "Tavern":
+                    controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TAVERN);
+                    break;
+                case "Church":
+                    controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.CHURCH);
+                    break;
+                case "House":
+                    controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.HOUSE);
+                    break;
+            }
+        }
+    }
 }
+
+
