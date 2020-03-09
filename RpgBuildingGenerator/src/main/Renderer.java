@@ -100,10 +100,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 
         //draw building outline
         int[] houseOutlineVaoHandle = new int[1];
-        if (controller.getHouseOutLine().size() >= 2) {
+        if (controller.getBuildingOutLine().size() >= 1) {
 
-            BufferHandler.setupBuffers(houseOutlineVaoHandle, controller.getHouseOutLine().getPositionData(), 
-                    controller.getHouseOutLine().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+            BufferHandler.setupBuffers(houseOutlineVaoHandle, controller.getBuildingOutLine().getPositionData(), 
+                    controller.getBuildingOutLine().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
             if (loc != -1)
             {
                 FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
@@ -112,7 +112,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             }
             gl.glLineWidth(4.0f);
             gl.glBindVertexArray(houseOutlineVaoHandle[0]);
-            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getHouseOutLine().numbervertices());  
+            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getBuildingOutLine().numbervertices());  
         }
         
         //draw floorplan
@@ -146,7 +146,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        controller.getHouseOutLine().addPoint(vNearestGridPoint);
+        controller.getBuildingOutLine().addPoint(vNearestGridPoint);
     }
 
     @Override
@@ -176,5 +176,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         vCursorPosition.y = -vCursorPosition.y;
         
         vNearestGridPoint = grid.getNearestGridPoint(vCursorPosition);
+        controller.getBuildingOutLine().setCursorLocation(vNearestGridPoint);
     }
 }
