@@ -142,7 +142,7 @@ public class Window extends JFrame implements ActionListener {
                 controller.getFloorPlanner().generate(w, h);
                 break;
             case "CLEAR":
-                controller.getBuildingOutLine().clear();
+                controller.getHouseOutLine().clear();
                 controller.getFloorPlanner().clear();
                 break;                
         }   
