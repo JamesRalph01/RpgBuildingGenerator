@@ -6,7 +6,7 @@
 package main;
 
 import floorplanner.FloorPlanner;
-import shapes.HouseOutline;
+import shapes.BuildingOutline;
 
 /**
  *
@@ -14,14 +14,14 @@ import shapes.HouseOutline;
  */
 public class Controller {
     
-    private final HouseOutline houseOutline = new HouseOutline();
+    private final BuildingOutline buildingOutline = new BuildingOutline();
     private final FloorPlanner floorPlanner = new FloorPlanner();
     
     public FloorPlanner getFloorPlanner() {
         return this.floorPlanner;
     }
     
-    public HouseOutline getHouseOutLine() {
-        return this.houseOutline;
+    public BuildingOutline getBuildingOutLine() {
+        return this.buildingOutline;
     }
 }
