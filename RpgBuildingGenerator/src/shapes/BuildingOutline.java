@@ -33,6 +33,10 @@ public class BuildingOutline extends Shape {
         cursorLocation = point;
     }
     
+    public ArrayList<Vector2f> points() {
+        return points;
+    }
+    
     @Override
     public float[] getPositionData() {
         
