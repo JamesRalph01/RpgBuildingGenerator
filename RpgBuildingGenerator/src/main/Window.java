@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import shapes.BuildingOutline;
 
 /**
  *
@@ -139,7 +140,8 @@ public class Window extends JFrame implements ActionListener {
             case "GENERATE":
                 int w = this.mainPanel.getComponent(0).getWidth();
                 int h = this.mainPanel.getComponent(0).getHeight();
-                controller.getFloorPlanner().generate(w, h);
+                BuildingOutline buildingOutline = controller.getBuildingOutLine();
+                controller.getFloorPlanner().generate(buildingOutline, w, h);
                 break;
             case "CLEAR":
                 controller.getBuildingOutLine().clear();

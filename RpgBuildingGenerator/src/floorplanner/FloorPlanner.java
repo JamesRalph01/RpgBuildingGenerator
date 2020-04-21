@@ -5,7 +5,9 @@
  */
 package floorplanner;
 
+import org.joml.Vector2f;
 import shapes.Shape;
+import shapes.BuildingOutline;
 
 /**
  *
@@ -34,7 +36,16 @@ public class FloorPlanner extends Shape{
         this.buildingType = buildingType;
     }
     
-    public void generate(int w, int h) {
+    public void generate(BuildingOutline buildingOutline, int w, int h) {
+        
+        // TODO: need to look at being consistent with coordinate systems.
+        // at the moment w and h are screen coords whereas buidlingOutline has OpenGL coord system (-1, 1)
+        
+        // Print out building outling coords - to show how to obtain values only - remove later
+        buildingOutline.getPoints().forEach((point) -> {
+            System.out.println("Building outline point =" + point);
+        });
+        
         Rect bounds = new Rect(0, 0, w, h);
         
         normalisedX = 1.8f / (float) w;
