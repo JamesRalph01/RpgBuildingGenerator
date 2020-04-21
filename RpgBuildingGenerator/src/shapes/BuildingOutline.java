@@ -36,10 +36,10 @@ public class BuildingOutline extends Shape {
          cursorLocation = point;
      }
      
-     public ArrayList<Vector2f> getPoints() {
+     public ArrayList<Vector2f> points() {
          return this.points;
      }
-
+     
      @Override
      public float[] getPositionData() {
 
@@ -118,5 +118,7 @@ public class BuildingOutline extends Shape {
      private boolean isPolygon() {
          return false;
      }
+     
+     
 }
 
