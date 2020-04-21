@@ -16,15 +16,16 @@ public class BuildingOutline extends Shape {
     public void addPoint(Vector2f point) {
          // Don't allow further points to be added if outline is a closed polygon
 
-         if (points.isEmpty() || this.isActive()) {
+         if (points.isEmpty() || this.isComplete == false) {
              points.add(point);
-             System.out.printf("Building outline added: %.2f, %.2f \n", point.x, point.y);        
+             System.out.printf("Building outline added: %.2f, %.2f \n", point.x, point.y);
+             checkIsComplete();
          }
      }
 
      public void clear() {
          points.clear();
-         isComplete = false;
+         this.isComplete = false;
      }
 
      public int size() {
@@ -41,10 +42,10 @@ public class BuildingOutline extends Shape {
          float positionData[];
 
          // If we're actively defining, then add last 'indicator' line
-         if (this.isActive()) {
-             positionData = new float[(points.size()+ 1) * 3];
+         if (this.isComplete) {
+             positionData = new float[points.size() * 3];    
          } else {
-             positionData = new float[points.size() * 3];           
+             positionData = new float[(points.size()+ 1) * 3];       
          }
 
          int i=0;
@@ -54,7 +55,7 @@ public class BuildingOutline extends Shape {
              positionData[i++] = 1.0f;  
          }
            // If we're actively defining, then add last 'indicator' line
-         if (this.isActive()) {
+         if (this.isComplete == false) {
              System.out.println("Adding selecton line");  
              positionData[i++] = cursorLocation.x;
              positionData[i++] = cursorLocation.y;
@@ -69,10 +70,10 @@ public class BuildingOutline extends Shape {
          float colourData[];
 
          // If we're actively defining, then add last 'indicator' line
-         if (this.isActive()) {
-             colourData = new float[(points.size() + 1) * 3];
+         if (this.isComplete) {
+             colourData = new float[points.size() * 3];   
          } else {
-             colourData = new float[points.size() * 3];           
+             colourData = new float[(points.size() + 1) * 3];
          }
          int i=0;
          for (Vector2f point : points) {
@@ -80,7 +81,7 @@ public class BuildingOutline extends Shape {
              colourData[i++] = 1.0f; //G
              colourData[i++] = 1.0f; //B
          }
-         if (this.isActive()) {
+         if (this.isComplete == false) {
              colourData[i++] = 1.0f/50.0f; //R
              colourData[i++] = 1.0f/168.0f; //G
              colourData[i++] = 1.0f/82.0f; //B           
@@ -89,37 +90,25 @@ public class BuildingOutline extends Shape {
      }
 
      public int numbervertices() {
-         if (this.isActive()) {
-             return points.size() + 1;
+         if (this.isComplete) {
+             return points.size();
          } else
          {
-             return points.size();
+             return points.size() + 1; // additional point for moving cursor
          }
      }
 
-     private boolean isActive() {
-         boolean active = true;
-         // return True if user is actively defining building outline
-         if (points.isEmpty()) {
-             active = false;
-         } else if (points.size() > 2 && this.isComplete()) {
-             active = false;
-         }
-         System.out.println("Building outline active=" + active);      
-         return active;
-     }
-
-     private boolean isComplete() {
+     private void checkIsComplete() {
          
-         if (this.isComplete == false) {
+         // Can consider if complete if user has defined more than 3 points 
+         // i.e. a triangle with last point equal to first
+         if (this.isComplete == false && points.size() > 3) {
          // Check if last line segment ends at the start point   
             if (points.get(0).equals(points.get(points.size() -1))) {
                 this.isComplete = true;
             }             
-         }
-         
+         }         
          System.out.println("Building outline complete=" + this.isComplete);      
-         return this.isComplete;       
      }
 
      private boolean isPolygon() {
