@@ -5,9 +5,9 @@
  */
 package floorplanner;
 
-import org.joml.Vector2f;
 import shapes.Shape;
 import shapes.BuildingOutline;
+import util.RectangleHelper;
 
 /**
  *
@@ -42,16 +42,16 @@ public class FloorPlanner extends Shape{
         // at the moment w and h are screen coords whereas buidlingOutline has OpenGL coord system (-1, 1)
         
         // Print out building outling coords - to show how to obtain values only - remove later
-        buildingOutline.getPoints().forEach((point) -> {
+        buildingOutline.points().forEach((point) -> {
             System.out.println("Building outline point =" + point);
         });
         
         Rect bounds = new Rect(0, 0, w, h);
         
-        normalisedX = 1.8f / (float) w;
-        normalisedY = 1.8f / (float) h;
-        transX = normalisedX * Math.abs((float) w / 2);
-        transY = normalisedY * Math.abs((float) h / 2);
+        normalisedX = 2.0f / (float) w;
+        normalisedY = 2.0f / (float) h;
+        transX = -1.0f;
+        transY = -1.0f;
         
         switch (buildingType) {
             case TAVERN:
@@ -91,39 +91,39 @@ public class FloorPlanner extends Shape{
             rect = items[i].getBounds();
             
             //1
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
             //2
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
             //3
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
             //4
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;          
         }
         return positionData;
