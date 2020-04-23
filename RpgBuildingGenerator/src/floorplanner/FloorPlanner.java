@@ -5,12 +5,13 @@
  */
 package floorplanner;
 
+import util.Rect;
 import java.util.ArrayList;
+import org.joml.Vector2f;
 import shapes.Shape;
 import shapes.BuildingOutline;
 import util.ConvexHull;
 import util.CoordSystemHelper;
-import util.GeomPoint;
 import org.joml.Vector2i;
 
 /**
@@ -52,6 +53,7 @@ public class FloorPlanner extends Shape{
         
         //Step 1: Find largest rectangle inside user drawn building outline
         Rect bounds = findLargestRect(buildingOutline, w, h);
+        //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:
@@ -154,16 +156,33 @@ public class FloorPlanner extends Shape{
         ArrayList<Vector2i> deviceCoords;
         Rect largestRect = new Rect();
         
-        //Convert building outline to device coords and add to Convex hull 
-        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
-        convexHull.addPointsToHull(deviceCoords);
+        //Prove
+        Vector2i p1 = new Vector2i(50,70);
+        Vector2f p2 = CoordSystemHelper.deviceToOpenGL(deviceWidth, deviceHeight, p1);
+        Vector2i p3 = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, p2);
+        System.out.printf("width %d, height %d \n", deviceWidth, deviceHeight);
+        System.out.printf("normx %f, normy %f \n", 2.0f / deviceWidth, 2.0f / deviceHeight);
+        System.out.printf("p1 x %d, y %d \n", p1.x, p1.y);
+        System.out.printf("p2 x %f, y %f \n", p2.x, p2.y);
+        System.out.printf("p3 x %d, y %d \n", p3.x, p3.y);
         
-        convexHull.computeLargestRectangle();
+        //Convert building outline to device coords and add to Convex hull 
+
+        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
+        convexHull.addPointsToHull(deviceCoords);        
+        buildingOutline.points().forEach((Vector2f point) -> {
+            System.out.printf("Original building outline %f, %f \n", point.x, point.y);
+        });
         convexHull.forEach((Vector2i point) -> {
             System.out.printf("Converted building outline %d, %d \n", point.x, point.y);
         });
         
-       return largestRect;
+        convexHull.computeLargestRectangle();
+        
+        if (convexHull.rectangles().isEmpty() == false) {
+            largestRect = convexHull.rectangles().get(6);
+         } 
+        return largestRect;
     }
     
   
