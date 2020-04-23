@@ -5,9 +5,13 @@
  */
 package floorplanner;
 
+import java.util.ArrayList;
 import shapes.Shape;
 import shapes.BuildingOutline;
-import util.RectangleHelper;
+import util.ConvexHull;
+import util.CoordSystemHelper;
+import util.GeomPoint;
+import org.joml.Vector2i;
 
 /**
  *
@@ -40,19 +44,15 @@ public class FloorPlanner extends Shape{
         
         // TODO: need to look at being consistent with coordinate systems.
         // at the moment w and h are screen coords whereas buidlingOutline has OpenGL coord system (-1, 1)
-        
-        // Print out building outling coords - to show how to obtain values only - remove later
-        buildingOutline.points().forEach((point) -> {
-            System.out.println("Building outline point =" + point);
-        });
-        
-        Rect bounds = new Rect(0, 0, w, h);
-        
+    
         normalisedX = 2.0f / (float) w;
         normalisedY = 2.0f / (float) h;
         transX = -1.0f;
         transY = -1.0f;
         
+        //Step 1: Find largest rectangle inside user drawn building outline
+        Rect bounds = findLargestRect(buildingOutline, w, h);
+                
         switch (buildingType) {
             case TAVERN:
                 mapModel = new TavernMapModel(w, h);
@@ -64,6 +64,7 @@ public class FloorPlanner extends Shape{
                 mapModel = new HouseMapModel(w, h);
                 break;       
         }
+        
         algorithm = new TreemapLayout();
         algorithm.layout(mapModel, bounds);
         
@@ -146,4 +147,25 @@ public class FloorPlanner extends Shape{
     public int numbervertices() {
         return mapModel.getItems().length*8;
     }
+    
+    private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+        
+        ConvexHull convexHull = new ConvexHull();
+        ArrayList<Vector2i> deviceCoords;
+        Rect largestRect = new Rect();
+        
+        //Convert building outline to device coords and add to Convex hull 
+        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
+        convexHull.addPointsToHull(deviceCoords);
+        
+        convexHull.computeLargestRectangle();
+        convexHull.forEach((Vector2i point) -> {
+            System.out.printf("Converted building outline %d, %d \n", point.x, point.y);
+        });
+        
+       return largestRect;
+    }
+    
+  
 }
+

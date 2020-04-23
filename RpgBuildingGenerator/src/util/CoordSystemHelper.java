@@ -35,6 +35,14 @@ public class CoordSystemHelper {
         
         openGLCoords = new ArrayList<>();
         
+        deviceCoords.forEach((devicePoint) -> {
+            Vector2f openGLPoint = new Vector2f();
+            openGLPoint.x = 2.0f / (float) devicePoint.x - 1.0f;
+            openGLPoint.y = 2.0f / (float) devicePoint.y - 1.0f;
+            openGLCoords.add(openGLPoint);
+        });
+       
+        /*
         normalisedX = 2.0f / (float) deviceWidth;
         normalisedY = 2.0f / (float) deviceHeight;
         
@@ -46,7 +54,7 @@ public class CoordSystemHelper {
             openGLPoint.x = normalisedX * (float) devicePoint.x - transX;
             openGLPoint.y = normalisedY * (float) devicePoint.y - transY;
             openGLCoords.add(openGLPoint);
-        });
+        }); */
         
         return openGLCoords;
     }

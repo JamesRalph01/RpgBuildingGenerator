@@ -24,5 +24,5 @@ public class Rect {
         this.y = y;
         this.w = w;
         this.h = h;
-    }
+    } 
 }
