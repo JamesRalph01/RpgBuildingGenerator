@@ -110,7 +110,7 @@ public class BuildingOutline extends Shape {
          
          // Can consider if complete if user has defined more than 3 points 
          // i.e. a triangle with last point equal to first
-         if (this.isComplete == false && points.size() > 3) {
+         if (this.isComplete == false && points.size() >= 3) {
          // Check if last line segment ends at the start point   
             if (points.get(0).equals(point)) {
                 this.isComplete = true;

@@ -19,10 +19,15 @@ public class CoordSystemHelper {
         float transX, transY;
         ArrayList<Vector2i> deviceCoords = new ArrayList<>();
         
+        normalisedX = 2.0f / (float) deviceWidth;
+        normalisedY = 2.0f / (float) deviceHeight;
+        transX = -1.0f;
+        transY = -1.0f;
+       
         openGLCoords.forEach((openGLPoint) -> {
             Vector2i devicePoint = new Vector2i();
-            devicePoint.x = (int) (openGLPoint.x + 1.0f) * deviceWidth;
-            devicePoint.y = (int) (openGLPoint.y + 1.0f) * deviceHeight;
+            devicePoint.x = (int) ((openGLPoint.x - transX) / normalisedX);  
+            devicePoint.y = (int) ((openGLPoint.y - transY) / normalisedY);
             deviceCoords.add(devicePoint);      
         });
         return deviceCoords;
@@ -33,28 +38,19 @@ public class CoordSystemHelper {
         float transX, transY;
         ArrayList<Vector2f> openGLCoords;
         
+        normalisedX = 2.0f / (float) deviceWidth;
+        normalisedY = 2.0f / (float) deviceHeight;
+        transX = -1.0f;
+        transY = -1.0f;
+        
         openGLCoords = new ArrayList<>();
         
         deviceCoords.forEach((devicePoint) -> {
             Vector2f openGLPoint = new Vector2f();
-            openGLPoint.x = 2.0f / (float) devicePoint.x - 1.0f;
-            openGLPoint.y = 2.0f / (float) devicePoint.y - 1.0f;
+            openGLPoint.x = normalisedX * (float) devicePoint.x + transX;
+            openGLPoint.y = normalisedY * (float) devicePoint.x + transY;
             openGLCoords.add(openGLPoint);
         });
-       
-        /*
-        normalisedX = 2.0f / (float) deviceWidth;
-        normalisedY = 2.0f / (float) deviceHeight;
-        
-        transX = normalisedX * Math.abs((float) deviceWidth / 2);
-        transY = normalisedY * Math.abs((float) deviceHeight / 2);
-        
-        deviceCoords.forEach((devicePoint) -> {
-            Vector2f openGLPoint = new Vector2f();
-            openGLPoint.x = normalisedX * (float) devicePoint.x - transX;
-            openGLPoint.y = normalisedY * (float) devicePoint.y - transY;
-            openGLCoords.add(openGLPoint);
-        }); */
         
         return openGLCoords;
     }
