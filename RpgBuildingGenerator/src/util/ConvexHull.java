@@ -25,7 +25,7 @@ public class ConvexHull extends ArrayList<Vector2i> {
     boolean changed;
     
     /* largest rectangles with corners on AC, BD, ABC, ABD, ACD, BCD */
-    ArrayList<Rectangled> RectList;  
+    ArrayList<Rect> RectList;  
     
     /* fixed aspect ratio */
     private boolean fixed;
@@ -399,13 +399,18 @@ public class ConvexHull extends ArrayList<Vector2i> {
         this.rectp = maxp;
         this.recth = maxh;
         this.rectw = maxw;
+       
         
-        this.RectList.add(new Rectangled(pAC.x, pAC.y, wAC, hAC));
-        this.RectList.add(new Rectangled(pBD.x, pBD.y, wBD, hBD));
-        this.RectList.add(new Rectangled(pABC.x, pABC.y, wABC, hABC));
-        this.RectList.add(new Rectangled(pABD.x, pABD.y, wABD, hABD));
-        this.RectList.add(new Rectangled(pACD.x, pACD.y, wACD, hACD));
-        this.RectList.add(new Rectangled(pBCD.x, pBCD.y, wBCD, hBCD));
-        this.RectList.add(new Rectangled(maxp.x, maxp.y, maxw, maxh));
+        this.RectList.add(new Rect(pAC.x, pAC.y, wAC, hAC));
+        this.RectList.add(new Rect(pBD.x, pBD.y, wBD, hBD));
+        this.RectList.add(new Rect(pABC.x, pABC.y, wABC, hABC));
+        this.RectList.add(new Rect(pABD.x, pABD.y, wABD, hABD));
+        this.RectList.add(new Rect(pACD.x, pACD.y, wACD, hACD));
+        this.RectList.add(new Rect(pBCD.x, pBCD.y, wBCD, hBCD));
+        this.RectList.add(new Rect(maxp.x, maxp.y, maxw, maxh));
+    }
+    
+    public ArrayList<Rect> rectangles() {
+        return this.RectList;
     }
 }

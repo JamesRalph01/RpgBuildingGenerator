@@ -1,4 +1,4 @@
-package floorplanner;
+package util;
 
 public class Rect {
     public double x, y, w, h;
@@ -15,6 +15,10 @@ public class Rect {
         setRect(x, y, w, h);
     }
 
+    public Rect(int x, int y, int w, int h) {
+        setRect((double)x, (double)y, (double)w, (double)h);
+    }
+    
     public double aspectRatio() {
         return Math.max(w/h, h/w);
     }

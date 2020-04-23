@@ -21,16 +21,32 @@ public class CoordSystemHelper {
         
         normalisedX = 2.0f / (float) deviceWidth;
         normalisedY = 2.0f / (float) deviceHeight;
-        transX = -1.0f;
-        transY = -1.0f;
+        transX = 1.0f;
+        transY = 1.0f;
        
         openGLCoords.forEach((openGLPoint) -> {
             Vector2i devicePoint = new Vector2i();
-            devicePoint.x = (int) ((openGLPoint.x - transX) / normalisedX);  
-            devicePoint.y = (int) ((openGLPoint.y - transY) / normalisedY);
+            devicePoint.x = (int) ((openGLPoint.x + transX) / normalisedX);  
+            devicePoint.y = (int) ((openGLPoint.y + transY) / normalisedY);
             deviceCoords.add(devicePoint);      
         });
         return deviceCoords;
+    }
+    
+    public static Vector2i openGLToDevice(int deviceWidth, int deviceHeight, Vector2f openGLPoint) {
+        float normalisedX, normalisedY;
+        float transX, transY;
+        
+        normalisedX = 2.0f / (float) deviceWidth;
+        normalisedY = 2.0f / (float) deviceHeight;
+        transX = 1.0f;
+        transY = 1.0f;
+        
+        Vector2i devicePoint = new Vector2i();
+        devicePoint.x = (int) ((openGLPoint.x + transX) / normalisedX);  
+        devicePoint.y = (int) ((openGLPoint.y + transY) / normalisedY);
+
+        return devicePoint;
     }
     
     public static ArrayList<Vector2f> deviceToOpenGL(int deviceWidth, int deviceHeight, ArrayList<Vector2i> deviceCoords) {
@@ -48,10 +64,26 @@ public class CoordSystemHelper {
         deviceCoords.forEach((devicePoint) -> {
             Vector2f openGLPoint = new Vector2f();
             openGLPoint.x = normalisedX * (float) devicePoint.x + transX;
-            openGLPoint.y = normalisedY * (float) devicePoint.x + transY;
+            openGLPoint.y = normalisedY * (float) devicePoint.y + transY;
             openGLCoords.add(openGLPoint);
         });
         
         return openGLCoords;
+    }
+    
+    public static Vector2f deviceToOpenGL(int deviceWidth, int deviceHeight, Vector2i devicePoint) {
+        float normalisedX, normalisedY;
+        float transX, transY;
+        
+        normalisedX = 2.0f / (float) deviceWidth;
+        normalisedY = 2.0f / (float) deviceHeight;
+        transX = -1.0f;
+        transY = -1.0f;
+        
+        Vector2f openGLPoint = new Vector2f();
+        openGLPoint.x = normalisedX * (float) devicePoint.x + transX;
+        openGLPoint.y = normalisedY * (float) devicePoint.y + transY;
+
+        return openGLPoint;
     }
 }

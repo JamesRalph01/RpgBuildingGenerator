@@ -1,5 +1,7 @@
 package floorplanner;
 
+import util.Rect;
+
 /**
  * Implements the Squarified Treemap layout published by
  * Mark Bruls, Kees Huizing, and Jarke J. van Wijk
