@@ -15,11 +15,11 @@ public class BuildingOutline extends Shape {
     
     public void addPoint(Vector2f point) {
          // Don't allow further points to be added if outline is a closed polygon
-
+         checkIsComplete(point);
+         
          if (points.isEmpty() || this.isComplete == false) {
              points.add(point);
              System.out.printf("Building outline added: %.2f, %.2f \n", point.x, point.y);
-             checkIsComplete();
          }
      }
 
@@ -38,6 +38,10 @@ public class BuildingOutline extends Shape {
      
      public ArrayList<Vector2f> points() {
          return this.points;
+     }
+     
+     public boolean isComplete() {
+         return this.isComplete;
      }
      
      @Override
@@ -102,13 +106,13 @@ public class BuildingOutline extends Shape {
          }
      }
 
-     private void checkIsComplete() {
+     private void checkIsComplete(Vector2f point) {
          
          // Can consider if complete if user has defined more than 3 points 
          // i.e. a triangle with last point equal to first
          if (this.isComplete == false && points.size() > 3) {
          // Check if last line segment ends at the start point   
-            if (points.get(0).equals(points.get(points.size() -1))) {
+            if (points.get(0).equals(point)) {
                 this.isComplete = true;
             }             
          }         

@@ -112,7 +112,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             }
             gl.glLineWidth(4.0f);
             gl.glBindVertexArray(houseOutlineVaoHandle[0]);
-            gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getBuildingOutLine().numbervertices());  
+            if (controller.getBuildingOutLine().isComplete()) {
+                gl.glDrawArrays(GL4.GL_LINE_LOOP, 0, controller.getBuildingOutLine().numbervertices());  
+            } else {
+                gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getBuildingOutLine().numbervertices());                  
+            }
+
         }
         
         //draw floorplan
