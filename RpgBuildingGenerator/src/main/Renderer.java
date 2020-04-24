@@ -16,8 +16,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import shapes.*;
+import util.CoordSystemHelper;
+import util.GeoHelper;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
 
@@ -182,5 +186,17 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         vNearestGridPoint = grid.getNearestGridPoint(vCursorPosition);
         controller.getBuildingOutLine().setCursorLocation(vNearestGridPoint);
+        
+        //is point inside polygon?
+        if (controller.getBuildingOutLine().isComplete()) {
+            ArrayList<Vector2i> polygon;
+            
+            polygon = CoordSystemHelper.openGLToDevice(width, height, controller.getBuildingOutLine().points()); 
+            if (GeoHelper.isPointInsidePolygon(polygon, new Vector2i(e.getX(), e.getY()))) {
+                System.out.printf("Cursor inside \n");
+            } else {
+                System.out.printf("Cursor outside \n");
+            }
+        }
     }
 }
