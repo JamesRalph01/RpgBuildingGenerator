@@ -52,8 +52,8 @@ public class FloorPlanner extends Shape{
         transY = -1.0f;
         
         //Step 1: Find largest rectangle inside user drawn building outline
-        Rect bounds = findLargestRect(buildingOutline, w, h);
-        //Rect bounds = new Rect(10,10, w-20, h-20);
+        // Rect bounds = findLargestRect(buildingOutline, w, h);
+        Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:
@@ -150,7 +150,7 @@ public class FloorPlanner extends Shape{
         return mapModel.getItems().length*8;
     }
     
-    private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+    /*private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
         
         ConvexHull convexHull = new ConvexHull();
         ArrayList<Vector2i> deviceCoords;
@@ -184,7 +184,7 @@ public class FloorPlanner extends Shape{
             System.out.printf("Final rect x %f, y %f, w %f, h %f \n", largestRect.x, largestRect.y, largestRect.w, largestRect.h);
          } 
         return largestRect;
-    }
+    } */
     
   
 }

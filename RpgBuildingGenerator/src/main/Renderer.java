@@ -9,7 +9,6 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import org.joml.Vector2f;
 import handler.ShaderHandler;
 import handler.BufferHandler;
 import java.awt.event.MouseEvent;
@@ -30,9 +29,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
-    private Vector2f vCursorPosition = new Vector2f(0,0); 
-    private Vector2f vNearestGridPoint = new Vector2f(0,0);
-    private int width, height;
+    private Vector2i cursorPosition = new Vector2i(0,0); 
+    private Vector2i nearestGridPoint = new Vector2i(0,0);
     private Controller controller;
     
     private final int VERTEX_POSITION_INDEX = 0;
@@ -96,7 +94,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-            new Matrix4f().translate(vNearestGridPoint.x,vNearestGridPoint.y,0.0f).get(fb2);
+            new Matrix4f().translate(nearestGridPoint.x,nearestGridPoint.y,0.0f).get(fb2);
             gl.glUniformMatrix4fv(loc, 1, false, fb2);
         }
         gl.glBindVertexArray(gridCursorVaoHandle[0]);
@@ -149,13 +147,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         final GL4 gl = drawable.getGL().getGL4();
         gl.glViewport(x, y, w, h);
-        width = w;
-        height = h;
+        CoordSystemHelper.initDevice(w, h);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        controller.getBuildingOutLine().addPoint(vNearestGridPoint);
+        controller.getBuildingOutLine().addPoint(nearestGridPoint);
     }
 
     @Override
@@ -182,23 +179,17 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void mouseMoved(MouseEvent e) {
 
         System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
-        System.out.printf("dimensions width %d, height %d \n", width, height);
-        
-        vCursorPosition = CoordSystemHelper.deviceToOpenGL(width, height, new Vector2i(e.getX(), e.getY()));
-        vCursorPosition.y = -vCursorPosition.y; //flip y
-        
-        vNearestGridPoint = grid.getNearestGridPoint(vCursorPosition);
-        controller.getBuildingOutLine().setCursorLocation(vNearestGridPoint);
+        System.out.printf("dimensions width %d, height %d \n", CoordSystemHelper.deviceWidth, CoordSystemHelper.deviceHeight);
+             
+        nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
         
         //is point inside polygon?
         if (controller.getBuildingOutLine().isComplete()) {
             ArrayList<Vector2i> polygon;
             Vector2i pointToCheck;
             
-            polygon = CoordSystemHelper.openGLToDevice(width, height, controller.getBuildingOutLine().points()); 
-            //pointToCheck = CoordSystemHelper.openGLToDevice(width, height, vNearestGridPoint);
+            polygon = controller.getBuildingOutLine().points(); 
             pointToCheck = new Vector2i(e.getX(), e.getY());
-            pointToCheck.y = height-pointToCheck.y;
             
             if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
                 System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );

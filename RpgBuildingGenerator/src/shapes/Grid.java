@@ -7,8 +7,8 @@ package shapes;
 
 
 import java.util.ArrayList;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
+import util.CoordSystemHelper;
 
 /**
  *
@@ -16,7 +16,7 @@ import org.joml.Vector2i;
  */
 public class Grid extends Shape {
     
-    static int MAX_GRID_ELEMENTS = 20 * 20 * 3;
+    static int MAX_GRID_ELEMENTS = 20;
     static int GRID_SPACING = 20;
     
     ArrayList<Vector2i> points = new ArrayList<>();
@@ -40,52 +40,44 @@ public class Grid extends Shape {
         return this.colourData;    
     }
     
-    public Vector2f getNearestGridPoint(Vector2f point) {
-        Vector2f nearestGridPoint = new Vector2f(99,99);
-        for (int i=0; i<positionData.length; i+=3) {
-            Vector2f gridPoint = new Vector2f();
-            gridPoint.x = positionData[i];
-            gridPoint.y = positionData[i+1];
-
-            if (point.distance(gridPoint) < point.distance(nearestGridPoint)) {
-                nearestGridPoint = gridPoint;
+    public Vector2i getNearestGridPoint(Vector2i pointToTest) {
+        Vector2i nearestGridPoint = new Vector2i(32000,32000);
+        for (Vector2i point : points) {
+            if (pointToTest.distance(point) < pointToTest.distance(nearestGridPoint)) {
+                nearestGridPoint = point;
                 /* System.out.printf("Point to check: %.2f, %.2f \n", point.x, point.y);
                 System.out.printf("Grid point: %.2f, %.2f \n", gridPoint.x, gridPoint.y);
                 System.out.printf("Nearest point: %.2f, %.2f \n", nearestGridPoint.x, nearestGridPoint.y);
                 System.out.printf("distance: %.2f \n", point.distance(gridPoint)); */
-            }
-        }
+            }            
+        };
         return nearestGridPoint;
     }
     
     public int numbervertices() {
-        return positionData.length / 3;
+        return points.size();
     }
     
     private void initPositionData() {
-        // Grid of points every 20 pixels
-        
-        
-        
-        
-        positionData = new float[MAX_GRID_ELEMENTS];
-        int i=0;
-        
-        for (int x=-10; x<10; x++) {
-            for (int y=-10; y<10; y++){
-                positionData[i++] = normalised_point * (x * GRID_SPACING); //x
-                positionData[i++] = normalised_point * (y * GRID_SPACING); //y
-                positionData[i++] = 0.0f;
-                //System.out.println("Vertice: x:" + positionData[i-3] + " y:" + positionData[i-2] + " z:" + positionData[i-1]);
+        for (int x=20; x<MAX_GRID_ELEMENTS; x+=GRID_SPACING) {
+            for (int y=20; y<MAX_GRID_ELEMENTS; y+=GRID_SPACING){
+                points.add(new Vector2i(x,y));
             }
         }
+        // Cache position data in OpenGL coord system as it won't change
+        positionData = CoordSystemHelper.deviceToOpenGLf(points);
     }
    
     private void initColourData() {
-        colourData = new float[MAX_GRID_ELEMENTS];
-        for (int i=0; i<MAX_GRID_ELEMENTS; i++) {
-            colourData[i] = 1;
-        }
+         int i = 0;
+         
+         // Green 50, 168, 82
+         colourData = new float[points.size() * 3];   
+         for (Vector2i point : points) {
+             colourData[i++] = 50f/255f; //R
+             colourData[i++] = 168f/255f; //G
+             colourData[i++] = 82f/255f; //B
+         }
     }
     
 }
