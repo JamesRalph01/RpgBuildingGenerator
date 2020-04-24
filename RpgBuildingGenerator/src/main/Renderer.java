@@ -180,9 +180,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        vCursorPosition.x = (float) (e.getX() * 2.0f / (float) width - 1.0);
-        vCursorPosition.y = (float) (e.getY() * 2.0f / (float) height - 1.0);
-        vCursorPosition.y = -vCursorPosition.y;
+
+        System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
+        System.out.printf("dimensions width %d, height %d \n", width, height);
+        
+        vCursorPosition = CoordSystemHelper.deviceToOpenGL(width, height, new Vector2i(e.getX(), e.getY()));
+        vCursorPosition.y = -vCursorPosition.y; //flip y
         
         vNearestGridPoint = grid.getNearestGridPoint(vCursorPosition);
         controller.getBuildingOutLine().setCursorLocation(vNearestGridPoint);
@@ -190,12 +193,17 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         //is point inside polygon?
         if (controller.getBuildingOutLine().isComplete()) {
             ArrayList<Vector2i> polygon;
+            Vector2i pointToCheck;
             
             polygon = CoordSystemHelper.openGLToDevice(width, height, controller.getBuildingOutLine().points()); 
-            if (GeoHelper.isPointInsidePolygon(polygon, new Vector2i(e.getX(), e.getY()))) {
-                System.out.printf("Cursor inside \n");
+            //pointToCheck = CoordSystemHelper.openGLToDevice(width, height, vNearestGridPoint);
+            pointToCheck = new Vector2i(e.getX(), e.getY());
+            pointToCheck.y = height-pointToCheck.y;
+            
+            if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
+                System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
             } else {
-                System.out.printf("Cursor outside \n");
+                System.out.printf("Cursor outside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
             }
         }
     }

@@ -52,8 +52,8 @@ public class FloorPlanner extends Shape{
         transY = -1.0f;
         
         //Step 1: Find largest rectangle inside user drawn building outline
-        //Rect bounds = findLargestRect(buildingOutline, w, h);
-        Rect bounds = new Rect(10,10, w-20, h-20);
+        Rect bounds = findLargestRect(buildingOutline, w, h);
+        //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:

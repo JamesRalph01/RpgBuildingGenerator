@@ -5,7 +5,10 @@
  */
 package shapes;
 
+
+import java.util.ArrayList;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 
 /**
  *
@@ -16,9 +19,10 @@ public class Grid extends Shape {
     static int MAX_GRID_ELEMENTS = 20 * 20 * 3;
     static int GRID_SPACING = 20;
     
+    ArrayList<Vector2i> points = new ArrayList<>();
+    
     private float[] positionData;
     private float[] colourData;
-    private final float normalised_point = 1.0F / (10.0F * GRID_SPACING);
     
     public Grid()
     {
@@ -60,6 +64,10 @@ public class Grid extends Shape {
     
     private void initPositionData() {
         // Grid of points every 20 pixels
+        
+        
+        
+        
         positionData = new float[MAX_GRID_ELEMENTS];
         int i=0;
         
