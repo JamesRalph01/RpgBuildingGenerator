@@ -5,7 +5,6 @@
  */
 package shapes;
 import java.util.ArrayList;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import util.CoordSystemHelper;
 
@@ -20,7 +19,7 @@ public class BuildingOutline extends Shape {
          
          if (points.isEmpty() || this.isComplete == false) {
              points.add(point);
-             System.out.printf("Building outline added: %.2f, %.2f \n", point.x, point.y);
+             System.out.printf("Building outline added: %d, %d \n", point.x, point.y);
          }
      }
 

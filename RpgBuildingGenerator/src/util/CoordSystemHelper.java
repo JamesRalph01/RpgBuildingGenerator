@@ -42,7 +42,7 @@ public class CoordSystemHelper {
         
         Vector2i devicePoint = new Vector2i();
         devicePoint.x = (int) ((openGLPoint.x + transX) / normalisedX);  
-        devicePoint.y = (int) ((openGLPoint.y + transY) / normalisedY);
+        devicePoint.y = (int) -((openGLPoint.y + transY) / normalisedY);
 
         return devicePoint;
     }
@@ -51,15 +51,15 @@ public class CoordSystemHelper {
         float transX, transY;
         ArrayList<Vector2f> openGLCoords;
         
-        transX = -1.0f;
-        transY = -1.0f;
+        transX = deviceWidth / 2;
+        transY = deviceHeight / 2;
         
         openGLCoords = new ArrayList<>();
         
         deviceCoords.forEach((devicePoint) -> {
             Vector2f openGLPoint = new Vector2f();
-            openGLPoint.x = normalisedX * (float) devicePoint.x + transX;
-            openGLPoint.y = normalisedY * (float) devicePoint.y + transY;
+            openGLPoint.x = (devicePoint.x - transX) * normalisedX;
+            openGLPoint.y = -(devicePoint.y - transY) * normalisedY;
             openGLCoords.add(openGLPoint);
         });
         
@@ -69,12 +69,12 @@ public class CoordSystemHelper {
     public static Vector2f deviceToOpenGL(Vector2i devicePoint) {
         float transX, transY;
         
-        transX = -1.0f;
-        transY = -1.0f;
+        transX = deviceWidth / 2;
+        transY = deviceHeight / 2;
         
         Vector2f openGLPoint = new Vector2f();
-        openGLPoint.x = normalisedX * (float) devicePoint.x + transX;
-        openGLPoint.y = normalisedY * (float) devicePoint.y + transY;
+        openGLPoint.x = (devicePoint.x - transX) * normalisedX;
+        openGLPoint.y = (devicePoint.y - transY) * normalisedY;
 
         return openGLPoint;
     }
@@ -84,14 +84,14 @@ public class CoordSystemHelper {
         float[] openGLCoords;
         int i = 0;
         
-        transX = -1.0f;
-        transY = -1.0f;
+        transX = deviceWidth / 2;
+        transY = deviceHeight / 2;
 
         openGLCoords= new float[deviceCoords.size() * 3]; 
         for (Vector2i point : deviceCoords) {
-             openGLCoords[i++] = point.x;
-             openGLCoords[i++] = point.y;
-             openGLCoords[i++] = 1.0f;  
+             openGLCoords[i++] = (point.x - transX) * normalisedX;
+             openGLCoords[i++] = -(point.y - transY) * normalisedY;
+             openGLCoords[i++] = 0.0f;  
          }        
         return openGLCoords;
     }

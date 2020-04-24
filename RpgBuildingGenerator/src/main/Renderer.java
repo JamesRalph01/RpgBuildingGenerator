@@ -24,8 +24,6 @@ import util.GeoHelper;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
 
-    private int[] gridVaoHandle = new int[1];
-    private int[] gridCursorVaoHandle = new int[1];
     private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
@@ -52,16 +50,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         int fragmentShader = ShaderHandler.createShader("shaders/fragment_shader.glsl", GL4.GL_FRAGMENT_SHADER, gl);
         int shaderList[] = {vertexShader,fragmentShader};   
         
-        programHandle = ShaderHandler.createProgram(shaderList, gl);
-        
-        BufferHandler.setupBuffers(gridVaoHandle, grid.getPositionData(), 
-                grid.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-        
-        BufferHandler.setupBuffers(gridCursorVaoHandle, gridCursor.getPositionData(), 
-                gridCursor.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-        
+        programHandle = ShaderHandler.createProgram(shaderList, gl);        
         ShaderHandler.linkProgram(programHandle, gl);
         gl.glUseProgram(programHandle);
+        
+        
     }
 
     @Override
@@ -80,6 +73,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         int loc = gl.glGetUniformLocation(programHandle, "Transform");
         
         //translation to zero and draw background grid
+        int[] gridVaoHandle = new int[1];
+        BufferHandler.setupBuffers(gridVaoHandle, grid.getPositionData(), 
+                grid.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
@@ -90,13 +86,16 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         gl.glBindVertexArray(gridVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_POINTS, 0, grid.numbervertices());
 
-        //translate and draw cursor, snapping to nearest grid point 
+        int[] gridCursorVaoHandle = new int[1];
+        BufferHandler.setupBuffers(gridCursorVaoHandle, gridCursor.getPositionData(), 
+                gridCursor.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
         if (loc != -1)
         {
             FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-            new Matrix4f().translate(nearestGridPoint.x,nearestGridPoint.y,0.0f).get(fb2);
+            new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
             gl.glUniformMatrix4fv(loc, 1, false, fb2);
         }
+        gl.glLineWidth(1.0f);
         gl.glBindVertexArray(gridCursorVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.numbervertices());
                 
@@ -180,8 +179,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
         System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
         System.out.printf("dimensions width %d, height %d \n", CoordSystemHelper.deviceWidth, CoordSystemHelper.deviceHeight);
-             
+        
+        cursorPosition = new Vector2i(e.getX(), e.getY());
         nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
+        gridCursor.cursorPosition(nearestGridPoint);
         
         //is point inside polygon?
         if (controller.getBuildingOutLine().isComplete()) {
@@ -189,7 +190,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Vector2i pointToCheck;
             
             polygon = controller.getBuildingOutLine().points(); 
-            pointToCheck = new Vector2i(e.getX(), e.getY());
+            //pointToCheck = new Vector2i(e.getX(), e.getY());
+            pointToCheck = nearestGridPoint;
             
             if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
                 System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );

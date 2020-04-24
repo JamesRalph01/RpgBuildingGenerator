@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import shapes.BuildingOutline;
+import util.CoordSystemHelper;
 
 /**
  *
@@ -44,8 +45,9 @@ public class Window extends JFrame implements ActionListener {
         
         super(title);
         setupWindow(animator, width, height);
+        CoordSystemHelper.initDevice(width, height);
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,0));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         this.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
     

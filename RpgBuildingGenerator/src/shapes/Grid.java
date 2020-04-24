@@ -20,8 +20,6 @@ public class Grid extends Shape {
     static int GRID_SPACING = 20;
     
     ArrayList<Vector2i> points = new ArrayList<>();
-    
-    private float[] positionData;
     private float[] colourData;
     
     public Grid()
@@ -32,7 +30,7 @@ public class Grid extends Shape {
     
     @Override
     public float[] getPositionData() {
-        return this.positionData;
+        return CoordSystemHelper.deviceToOpenGLf(points);
     }
 
     @Override
@@ -45,12 +43,12 @@ public class Grid extends Shape {
         for (Vector2i point : points) {
             if (pointToTest.distance(point) < pointToTest.distance(nearestGridPoint)) {
                 nearestGridPoint = point;
-                /* System.out.printf("Point to check: %.2f, %.2f \n", point.x, point.y);
-                System.out.printf("Grid point: %.2f, %.2f \n", gridPoint.x, gridPoint.y);
-                System.out.printf("Nearest point: %.2f, %.2f \n", nearestGridPoint.x, nearestGridPoint.y);
-                System.out.printf("distance: %.2f \n", point.distance(gridPoint)); */
+
             }            
         };
+        /*System.out.printf("Point to check: %d, %d \n", pointToTest.x, pointToTest.y);
+        System.out.printf("Nearest point: %d, %d \n", nearestGridPoint.x, nearestGridPoint.y);
+        System.out.printf("distance: %f \n", pointToTest.distance(nearestGridPoint)); */
         return nearestGridPoint;
     }
     
@@ -59,13 +57,12 @@ public class Grid extends Shape {
     }
     
     private void initPositionData() {
-        for (int x=20; x<MAX_GRID_ELEMENTS; x+=GRID_SPACING) {
-            for (int y=20; y<MAX_GRID_ELEMENTS; y+=GRID_SPACING){
-                points.add(new Vector2i(x,y));
+        for (int x=0; x<MAX_GRID_ELEMENTS; x++) {
+            for (int y=0; y<MAX_GRID_ELEMENTS; y++){
+                
+                points.add(new Vector2i(GRID_SPACING+x*GRID_SPACING,GRID_SPACING+y*GRID_SPACING));
             }
         }
-        // Cache position data in OpenGL coord system as it won't change
-        positionData = CoordSystemHelper.deviceToOpenGLf(points);
     }
    
     private void initColourData() {
@@ -74,9 +71,9 @@ public class Grid extends Shape {
          // Green 50, 168, 82
          colourData = new float[points.size() * 3];   
          for (Vector2i point : points) {
-             colourData[i++] = 50f/255f; //R
-             colourData[i++] = 168f/255f; //G
-             colourData[i++] = 82f/255f; //B
+             colourData[i++] = 1.0f; //R
+             colourData[i++] = 1.0f; //G
+             colourData[i++] = 1.0f; //B
          }
     }
     
