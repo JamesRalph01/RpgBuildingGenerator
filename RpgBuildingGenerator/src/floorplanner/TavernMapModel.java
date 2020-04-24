@@ -16,7 +16,7 @@ public class TavernMapModel implements MapModel {
     private MapItem[] items;
 
     public TavernMapModel(int width, int height) {
-        int[] itemRatio = {1, 2, 8};
+        int[] itemRatio = {3, 8, 6};
                 
         this.items = new MapItem[itemRatio.length];
         double totalArea = width * height;

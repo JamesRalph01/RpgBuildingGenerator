@@ -1,5 +1,7 @@
 package floorplanner;
 
+import util.Rect;
+
 /**
 * The interface for the treemap layout algorithm.
 */

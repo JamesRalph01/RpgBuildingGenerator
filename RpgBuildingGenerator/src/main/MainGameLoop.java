@@ -27,10 +27,9 @@ public class MainGameLoop {
         GLCanvas canvas = new GLCanvas(capabilities);
         FPSAnimator animator = new FPSAnimator(canvas, FPS);
         Controller controller = new Controller();
-        
-        Renderer renderer = new Renderer(controller);
-        
+                
         Window window = new Window("RPG-Toolkit", animator, HEIGHT, WIDTH);
+        Renderer renderer = new Renderer(controller);
         
         canvas.addGLEventListener(renderer);
         canvas.addMouseListener(renderer);

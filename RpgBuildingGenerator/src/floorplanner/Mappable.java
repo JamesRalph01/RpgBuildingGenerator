@@ -1,5 +1,7 @@
 package floorplanner;
 
+import util.Rect;
+
 /**
  *
  * Interface representing an object that can be placed

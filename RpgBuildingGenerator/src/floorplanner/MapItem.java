@@ -1,5 +1,7 @@
 package floorplanner;
 
+import util.Rect;
+
 /**
  * A simple implementation of the Mappable interface.
  */

@@ -5,9 +5,14 @@
  */
 package floorplanner;
 
+import util.Rect;
+import java.util.ArrayList;
 import org.joml.Vector2f;
 import shapes.Shape;
 import shapes.BuildingOutline;
+import util.ConvexHull;
+import util.CoordSystemHelper;
+import org.joml.Vector2i;
 
 /**
  *
@@ -40,19 +45,16 @@ public class FloorPlanner extends Shape{
         
         // TODO: need to look at being consistent with coordinate systems.
         // at the moment w and h are screen coords whereas buidlingOutline has OpenGL coord system (-1, 1)
+    
+        normalisedX = 2.0f / (float) w;
+        normalisedY = 2.0f / (float) h;
+        transX = -1.0f;
+        transY = -1.0f;
         
-        // Print out building outling coords - to show how to obtain values only - remove later
-        buildingOutline.getPoints().forEach((point) -> {
-            System.out.println("Building outline point =" + point);
-        });
-        
-        Rect bounds = new Rect(0, 0, w, h);
-        
-        normalisedX = 1.8f / (float) w;
-        normalisedY = 1.8f / (float) h;
-        transX = normalisedX * Math.abs((float) w / 2);
-        transY = normalisedY * Math.abs((float) h / 2);
-        
+        //Step 1: Find largest rectangle inside user drawn building outline
+        // Rect bounds = findLargestRect(buildingOutline, w, h);
+        Rect bounds = new Rect(10,10, w-20, h-20);
+                
         switch (buildingType) {
             case TAVERN:
                 mapModel = new TavernMapModel(w, h);
@@ -64,6 +66,7 @@ public class FloorPlanner extends Shape{
                 mapModel = new HouseMapModel(w, h);
                 break;       
         }
+        
         algorithm = new TreemapLayout();
         algorithm.layout(mapModel, bounds);
         
@@ -91,39 +94,39 @@ public class FloorPlanner extends Shape{
             rect = items[i].getBounds();
             
             //1
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
             //2
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
             //3
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
             //4
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
             positionData[p++] = 1.0f;
 
-            positionData[p++] = normalisedX * (float) rect.x - transX;
-            positionData[p++] = normalisedY * (float) rect.y - transY;
+            positionData[p++] = normalisedX * (float) rect.x + transX;
+            positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;          
         }
         return positionData;
@@ -146,4 +149,43 @@ public class FloorPlanner extends Shape{
     public int numbervertices() {
         return mapModel.getItems().length*8;
     }
+    
+    /*private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+        
+        ConvexHull convexHull = new ConvexHull();
+        ArrayList<Vector2i> deviceCoords;
+        Rect largestRect = new Rect();
+        
+        //Prove
+        Vector2i p1 = new Vector2i(50,70);
+        Vector2f p2 = CoordSystemHelper.deviceToOpenGL(deviceWidth, deviceHeight, p1);
+        Vector2i p3 = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, p2);
+        System.out.printf("width %d, height %d \n", deviceWidth, deviceHeight);
+        System.out.printf("normx %f, normy %f \n", 2.0f / deviceWidth, 2.0f / deviceHeight);
+        System.out.printf("p1 x %d, y %d \n", p1.x, p1.y);
+        System.out.printf("p2 x %f, y %f \n", p2.x, p2.y);
+        System.out.printf("p3 x %d, y %d \n", p3.x, p3.y);
+        
+        //Convert building outline to device coords and add to Convex hull 
+
+        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
+        deviceCoords.forEach((Vector2i point) -> {
+            System.out.printf("Original building outline %d, %d \n", point.x, point.y);
+        });
+        convexHull.addPointsToHull(deviceCoords);        
+        convexHull.forEach((Vector2i point) -> {
+            System.out.printf("Converted building outline %d, %d \n", point.x, point.y);
+        });
+        
+        convexHull.computeLargestRectangle();
+        
+        if (convexHull.rectangles().isEmpty() == false) {
+            largestRect = convexHull.rectangles().get(6);
+            System.out.printf("Final rect x %f, y %f, w %f, h %f \n", largestRect.x, largestRect.y, largestRect.w, largestRect.h);
+         } 
+        return largestRect;
+    } */
+    
+  
 }
+
