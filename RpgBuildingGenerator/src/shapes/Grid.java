@@ -59,7 +59,6 @@ public class Grid extends Shape {
     private void initPositionData() {
         for (int x=0; x<MAX_GRID_ELEMENTS; x++) {
             for (int y=0; y<MAX_GRID_ELEMENTS; y++){
-                
                 points.add(new Vector2i(GRID_SPACING+x*GRID_SPACING,GRID_SPACING+y*GRID_SPACING));
             }
         }
