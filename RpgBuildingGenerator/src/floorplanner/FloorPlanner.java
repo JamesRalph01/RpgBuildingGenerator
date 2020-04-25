@@ -7,12 +7,15 @@ package floorplanner;
 
 import util.Rect;
 import java.util.ArrayList;
+import org.joml.Rectangled;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import shapes.Shape;
 import shapes.BuildingOutline;
 import util.ConvexHull;
 import util.CoordSystemHelper;
 import org.joml.Vector2i;
+import util.GeoHelper;
 
 /**
  *
@@ -186,6 +189,30 @@ public class FloorPlanner extends Shape{
         return largestRect;
     } */
     
-  
+    private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+        Rect largestRect = new Rect();
+        ArrayList<Vector2i> polygon;
+        Rectangled bounds;
+        Vector2i pointToCheck;
+        
+        polygon = buildingOutline.points();
+        bounds = buildingOutline.boundingRect();
+                
+        // Move across x and y axis of bounding rect, checking if point is inside Polygon
+        for (int scanX = (int)bounds.minX; scanX < (int) bounds.maxX; scanX++) {
+            for (int scanY = (int)bounds.minY; scanY < (int) bounds.maxY; scanY++) {
+                pointToCheck = new Vector2i(scanX, scanY);
+                if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
+                    // Found point inside polygon
+                    // 1) Check across x axis from TL to find furthest point inside polygon
+                    // 2) Check across y axis from TL
+                    // 3) Check across x axis from BL (from 1)
+                    // 4) Check across y axis from 
+                }          
+            }        
+        }
+        
+        return largestRect;
+    }
 }
 
