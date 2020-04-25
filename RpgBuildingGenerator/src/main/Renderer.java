@@ -27,6 +27,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private int programHandle;
     private Grid grid = new Grid();
     private GridCursor gridCursor = new GridCursor();
+    private editCursorLine editCursorLine = new editCursorLine();
     private Vector2i cursorPosition = new Vector2i(0,0); 
     private Vector2i nearestGridPoint = new Vector2i(0,0);
     private Controller controller;
@@ -86,6 +87,24 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         gl.glBindVertexArray(gridVaoHandle[0]);
         gl.glDrawArrays(GL4.GL_POINTS, 0, grid.numbervertices());
 
+        // line from last point picked to moving cursor
+        if (controller.getBuildingOutLine().isComplete() == false && 
+            controller.getBuildingOutLine().points().size() > 0) {
+            int[] editLineVaoHandle = new int[1];
+            BufferHandler.setupBuffers(editLineVaoHandle, editCursorLine.getPositionData(), 
+                    editCursorLine.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+            if (loc != -1)
+            {
+                FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+                new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
+                gl.glUniformMatrix4fv(loc, 1, false, fb2);
+            }
+            gl.glLineWidth(1.0f);
+            gl.glBindVertexArray(editLineVaoHandle[0]);
+            gl.glDrawArrays(GL4.GL_LINES, 0, editCursorLine.numbervertices());        
+        }
+        
+        // moving grid crosshair cursor
         int[] gridCursorVaoHandle = new int[1];
         BufferHandler.setupBuffers(gridCursorVaoHandle, gridCursor.getPositionData(), 
                 gridCursor.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
@@ -97,7 +116,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         }
         gl.glLineWidth(1.0f);
         gl.glBindVertexArray(gridCursorVaoHandle[0]);
-        gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.numbervertices());
+        gl.glDrawArrays(GL4.GL_LINES, 0, gridCursor.numbervertices());            
+
                 
         //draw building outline
         int[] houseOutlineVaoHandle = new int[1];
@@ -152,6 +172,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void mouseClicked(MouseEvent e) {
         controller.getBuildingOutLine().addPoint(nearestGridPoint);
+        editCursorLine.fromPoint(nearestGridPoint);
     }
 
     @Override
@@ -183,6 +204,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         cursorPosition = new Vector2i(e.getX(), e.getY());
         nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
         gridCursor.cursorPosition(nearestGridPoint);
+        editCursorLine.ToPoint(nearestGridPoint);
         
         //is point inside polygon?
         if (controller.getBuildingOutLine().isComplete()) {
