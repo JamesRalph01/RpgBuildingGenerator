@@ -13,23 +13,25 @@ import org.joml.Vector2i;
  *
  * @author chrisralph
  */
-public class GeoHelper {
+public class PolygonHelper {
 
-    public static boolean isPointInsidePolygon(ArrayList<Vector2i> polygon, Vector2i pointToTest) {
-        
-        PolygonsIntersection ppi;
-        
+    private PolygonsIntersection ppi;
+    
+    public PolygonHelper(ArrayList<Vector2i> points) {
         //convert to float array
-        float[] vertices = new float[polygon.size() * 2]; // for x and y values
+        float[] vertices = new float[points.size() * 2]; // for x and y values
         int[] nPolygons = {0};
-        int nVertices = polygon.size();
+        int nVertices = points.size();
         
         int i = 0;
-        for (Vector2i point : polygon) {
+        for (Vector2i point : points) {
             vertices[i++] = point.x;
             vertices[i++] = point.y;
         }
         ppi = new PolygonsIntersection(vertices, nPolygons, nVertices);
+    }
+    
+    public  boolean isPointInsidePolygon(Vector2i pointToTest) {
         return ppi.testPoint((float)pointToTest.x, (float)pointToTest.y);
     }
 }

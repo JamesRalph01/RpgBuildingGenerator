@@ -9,13 +9,12 @@ import util.Rect;
 import java.util.ArrayList;
 import org.joml.Rectangled;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import shapes.Shape;
 import shapes.BuildingOutline;
 import util.ConvexHull;
 import util.CoordSystemHelper;
 import org.joml.Vector2i;
-import util.GeoHelper;
+import util.PolygonHelper;
 
 /**
  *
@@ -153,66 +152,57 @@ public class FloorPlanner extends Shape{
         return mapModel.getItems().length*8;
     }
     
-    /*private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
-        
-        ConvexHull convexHull = new ConvexHull();
-        ArrayList<Vector2i> deviceCoords;
-        Rect largestRect = new Rect();
-        
-        //Prove
-        Vector2i p1 = new Vector2i(50,70);
-        Vector2f p2 = CoordSystemHelper.deviceToOpenGL(deviceWidth, deviceHeight, p1);
-        Vector2i p3 = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, p2);
-        System.out.printf("width %d, height %d \n", deviceWidth, deviceHeight);
-        System.out.printf("normx %f, normy %f \n", 2.0f / deviceWidth, 2.0f / deviceHeight);
-        System.out.printf("p1 x %d, y %d \n", p1.x, p1.y);
-        System.out.printf("p2 x %f, y %f \n", p2.x, p2.y);
-        System.out.printf("p3 x %d, y %d \n", p3.x, p3.y);
-        
-        //Convert building outline to device coords and add to Convex hull 
-
-        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
-        deviceCoords.forEach((Vector2i point) -> {
-            System.out.printf("Original building outline %d, %d \n", point.x, point.y);
-        });
-        convexHull.addPointsToHull(deviceCoords);        
-        convexHull.forEach((Vector2i point) -> {
-            System.out.printf("Converted building outline %d, %d \n", point.x, point.y);
-        });
-        
-        convexHull.computeLargestRectangle();
-        
-        if (convexHull.rectangles().isEmpty() == false) {
-            largestRect = convexHull.rectangles().get(6);
-            System.out.printf("Final rect x %f, y %f, w %f, h %f \n", largestRect.x, largestRect.y, largestRect.w, largestRect.h);
-         } 
-        return largestRect;
-    } */
     
-    private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
-        Rect largestRect = new Rect();
+    private Rectangled findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+        ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
+        ArrayList<Rectangled> rectangles = new ArrayList<>();
         ArrayList<Vector2i> polygon;
         Rectangled bounds;
         Vector2i pointToCheck;
+        PolygonHelper polygonHelper;
         
         polygon = buildingOutline.points();
         bounds = buildingOutline.boundingRect();
-                
-        // Move across x and y axis of bounding rect, checking if point is inside Polygon
-        for (int scanX = (int)bounds.minX; scanX < (int) bounds.maxX; scanX++) {
-            for (int scanY = (int)bounds.minY; scanY < (int) bounds.maxY; scanY++) {
-                pointToCheck = new Vector2i(scanX, scanY);
-                if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
-                    // Found point inside polygon
-                    // 1) Check across x axis from TL to find furthest point inside polygon
-                    // 2) Check across y axis from TL
-                    // 3) Check across x axis from BL (from 1)
-                    // 4) Check across y axis from 
-                }          
-            }        
+        polygonHelper = new PolygonHelper(polygon);
+        pointsToCheck = calcPointstoCheck(bounds, polygon, polygonHelper);
+        
+        for (Vector2i point : pointsToCheck) {
+            rectangles.add(calcLargestRect(point, polygon, polygonHelper));
         }
         
+        
         return largestRect;
+    }
+
+    private ArrayList<Vector2i> calcPointstoCheck(Rectangled bounds, ArrayList<Vector2i> polygon, PolygonHelper polygonHelper) {
+    
+            ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
+        
+            // Create 100 sample points within the bounding rectangle
+            for (int i=0; i<100; i++) {
+                Vector2i point = new Vector2i();
+                point.x = (int) ((Math.random() * (bounds.maxX-bounds.minX)) + bounds.minX);
+                point.y = (int) ((Math.random() * (bounds.maxY-bounds.minY)) + bounds.minX);
+                if (polygonHelper.isPointInsidePolygon(point)) {
+                    pointsToCheck.add(point);                   
+                }
+            }
+            return pointsToCheck;
+    }
+    
+    private Rectangled calcLargestRect(Vector2i pointToCheck, ArrayList<Vector2i> polygon, PolygonHelper polygonHelper) {
+        int ScanX, ScanY;
+        Rectangled rect = new Rectangled();
+        
+        ScanX = 1;
+        ScanY = 1;
+        do
+        {
+            
+        } while (rectangle inside polygon);   
+         
+        
+        return rect;
     }
 }
 
