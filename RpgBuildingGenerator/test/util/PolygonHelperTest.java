@@ -97,4 +97,14 @@ public class PolygonHelperTest {
         assertEquals(false, result);
     }
     
+    @Test
+    public void testfindLargestRect() {
+        Rect result;
+        
+        System.out.println("testfindLargestRect");
+        
+        result = polygonHelper.findLargestRect();
+
+    }
+    
 }

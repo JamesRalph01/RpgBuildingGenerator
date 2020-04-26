@@ -41,30 +41,6 @@ public class BuildingOutline extends Shape {
          return this.isComplete;
      }
      
-     public Rectangled boundingRect() {
-        Rectangled bounds = new Rectangled();
-        boolean firstPoint = true;
-        
-        if (this.isComplete) {
-            
-            for (Vector2i point : points) {
-                if (firstPoint) {
-                    bounds.minX = point.x;
-                    bounds.maxX = point.x;
-                    bounds.minY = point.y;
-                    bounds.maxY = point.x;
-                    firstPoint = false;
-                } else {
-                    bounds.minX = Math.min(bounds.minX, point.x);
-                    bounds.maxX = Math.max(bounds.maxX, point.x);
-                    bounds.minY = Math.min(bounds.minY, point.y);
-                    bounds.maxY = Math.max(bounds.maxY, point.y);
-                }
-            }
-        }
-        return bounds;
-     }
-     
      @Override
      public float[] getPositionData() {
          return CoordSystemHelper.deviceToOpenGLf(points);
