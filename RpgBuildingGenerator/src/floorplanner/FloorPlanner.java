@@ -8,10 +8,8 @@ package floorplanner;
 import util.Rect;
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import org.joml.Vector2d;
 import shapes.Shape;
 import shapes.BuildingOutline;
-import util.ConvexHull;
 import util.CoordSystemHelper;
 import org.joml.Vector2i;
 import util.PolygonHelper;
@@ -54,8 +52,8 @@ public class FloorPlanner extends Shape{
         transY = -1.0f;
         
         //Step 1: Find largest rectangle inside user drawn building outline
-        // Rect bounds = findLargestRect(buildingOutline, w, h);
-        Rect bounds = new Rect(10,10, w-20, h-20);
+        Rect bounds = findLargestRect(buildingOutline, w, h);
+        //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:
@@ -153,9 +151,10 @@ public class FloorPlanner extends Shape{
     }
     
     
-    private Rectangled findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
+    private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
         ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
         ArrayList<Rectangled> rectangles = new ArrayList<>();
+        Rectangled largestRect = new Rectangled(0,0,0,0);
         ArrayList<Vector2i> polygon;
         Rectangled bounds;
         Vector2i pointToCheck;
@@ -166,12 +165,37 @@ public class FloorPlanner extends Shape{
         polygonHelper = new PolygonHelper(polygon);
         pointsToCheck = calcPointstoCheck(bounds, polygon, polygonHelper);
         
+        // find largest rect for each sample point
         for (Vector2i point : pointsToCheck) {
             rectangles.add(calcLargestRect(point, polygon, polygonHelper));
         }
         
+        // Now pick best candidate based on size and aspect ratio
+
+        for (Rectangled rect: rectangles) {
+            double areaLargest, areaToCheck, aspectRatio;
+            double w, h;
+            
+            w = rect.maxX - rect.minX;
+            h = rect.maxY = rect.minX;
+            areaToCheck =  w * h;
+            aspectRatio = Math.max(w/h, h/w);
+            
+            w = largestRect.maxX - largestRect.minX;
+            h = largestRect.maxY = largestRect.minX;
+            areaLargest =  w * h;
+            
+            if (aspectRatio > 0.3 ) {
+                if (areaToCheck > areaLargest) {
+                    largestRect = rect;
+                }
+            }          
+        }
         
-        return largestRect;
+        return new Rect(largestRect.minX, 
+                        largestRect.minY, 
+                        largestRect.maxX - largestRect.minX, 
+                        largestRect.maxY - largestRect.minY);
     }
 
     private ArrayList<Vector2i> calcPointstoCheck(Rectangled bounds, ArrayList<Vector2i> polygon, PolygonHelper polygonHelper) {
@@ -192,16 +216,45 @@ public class FloorPlanner extends Shape{
     
     private Rectangled calcLargestRect(Vector2i pointToCheck, ArrayList<Vector2i> polygon, PolygonHelper polygonHelper) {
         int ScanX, ScanY;
-        Rectangled rect = new Rectangled();
+        Rectangled rect = new Rectangled(pointToCheck.x, pointToCheck.y, pointToCheck.x, pointToCheck.y);
         
-        ScanX = 1;
-        ScanY = 1;
+        // expand rectange until it intersects with polygon edge on both width and height.
+        boolean expandwidthL = true;
+        boolean expandwidthR = true;
+        boolean expandheightT = true;
+        boolean expandheightB = true;
+        
         do
-        {
-            
-        } while (rectangle inside polygon);   
+        {   
+            Rectangled rectToTest = new Rectangled(rect);
+
+            // Check if height and width can be expanded
+            rectToTest.minY -= 1.0;
+            if (expandheightT && polygonHelper.isRectInsidePolygon(rectToTest) == false) {
+                expandheightT = false;
+            }
+            rectToTest = rect;
+            rectToTest.maxY += 1.0;
+            if (expandheightB && polygonHelper.isRectInsidePolygon(rectToTest) == false) {
+                expandheightB = false;
+            }
+            rectToTest.minX -= 1.0;
+            if (expandwidthL && polygonHelper.isRectInsidePolygon(rectToTest) == false) {
+                expandwidthL = false;
+            }
+            rectToTest = rect;
+            rectToTest.maxY += 1.0;
+            if (expandwidthR && polygonHelper.isRectInsidePolygon(rectToTest) == false) {
+                expandwidthR = false;
+            }
+            rectToTest = rect;
+            if (expandwidthL) rect.minX -= 1.0;
+            if (expandwidthR) rect.maxX += 1.0;
+            if (expandheightT) rect.minY -= 1.0;
+            if (expandheightB) rect.maxY -= 1.0;
+
+        } while (expandwidthL || expandwidthR || expandheightT || expandheightB);   
          
-        
         return rect;
     }
 }
