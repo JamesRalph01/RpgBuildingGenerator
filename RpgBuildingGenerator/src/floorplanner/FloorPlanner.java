@@ -31,6 +31,7 @@ public class FloorPlanner extends Shape{
     private BuildingType buildingType;
     private float normalisedX, normalisedY, transX, transY;
     private boolean activeFloorPlan = false;
+    private ArrayList<Vector2i> points = new ArrayList<>();
     
     public FloorPlanner() {
         this.buildingType = BuildingType.TAVERN;
@@ -54,6 +55,19 @@ public class FloorPlanner extends Shape{
         //Step 1: Find largest rectangle inside user drawn building outline
         PolygonHelper polygonHelper = new PolygonHelper(buildingOutline.points());
         Rect bounds = polygonHelper.findLargestRect();
+        points = new ArrayList<>();
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+        
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+        
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+        
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
+        
         //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
@@ -84,7 +98,9 @@ public class FloorPlanner extends Shape{
     
     @Override
     public float[] getPositionData() {
-
+        return CoordSystemHelper.deviceToOpenGLf(points);
+                 
+                 /*
         Rect rect;
         
         Mappable[] items = mapModel.getItems();
@@ -130,25 +146,37 @@ public class FloorPlanner extends Shape{
             positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;          
         }
-        return positionData;
+        return positionData; */
     }
 
     @Override
     public float[] getColourData() {
 
-        Mappable[] items = mapModel.getItems();
+         float colourData[];
+         int i = 0;
+         
+         colourData = new float[points.size() * 3];   
+         //White 255,255,255
+         for (Vector2i point : points) {
+            colourData[i++] = 102f/255f;
+            colourData[i++] = 224f/255f;
+            colourData[i++] = 20f/255f;   
+         }
+        
+        /*Mappable[] items = mapModel.getItems();
         float colourData[] = new float[items.length*3*8];
         int p = 0;
         while (p < colourData.length) {
             colourData[p++] = 102f/255f;
             colourData[p++] = 224f/255f;
             colourData[p++] = 20f/255f;                
-        }
+        } */
         return colourData;
     }
     
     public int numbervertices() {
-        return mapModel.getItems().length*8;
+        return points.size();
+        //return mapModel.getItems().length*8;
     }
 
 }

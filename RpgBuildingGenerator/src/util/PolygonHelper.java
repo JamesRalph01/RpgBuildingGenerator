@@ -113,13 +113,13 @@ public class PolygonHelper {
             double areaLargest, areaToCheck, aspectRatio;
             double w, h;
             
-            w = rect.maxX - rect.minX;
-            h = rect.maxY = rect.minX;
+            w = Math.abs(rect.maxX - rect.minX);
+            h = Math.abs(rect.maxY - rect.minY);
             areaToCheck =  w * h;
             aspectRatio = Math.max(w/h, h/w);
             
             w = largestRect.maxX - largestRect.minX;
-            h = largestRect.maxY = largestRect.minY;
+            h = largestRect.maxY - largestRect.minY;
             areaLargest =  w * h;
             
             if (aspectRatio > 0.3 ) {
