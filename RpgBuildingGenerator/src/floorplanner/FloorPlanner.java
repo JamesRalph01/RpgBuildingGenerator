@@ -35,18 +35,14 @@ public class FloorPlanner extends Shape{
     
     public FloorPlanner() {
         this.buildingType = BuildingType.TAVERN;
-    }
-    
+    } 
     
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
     }
     
     public void generate(BuildingOutline buildingOutline, int w, int h) {
-        
-        // TODO: need to look at being consistent with coordinate systems.
-        // at the moment w and h are screen coords whereas buidlingOutline has OpenGL coord system (-1, 1)
-    
+
         normalisedX = 2.0f / (float) w;
         normalisedY = 2.0f / (float) h;
         transX = -1.0f;
@@ -55,30 +51,16 @@ public class FloorPlanner extends Shape{
         //Step 1: Find largest rectangle inside user drawn building outline
         PolygonHelper polygonHelper = new PolygonHelper(buildingOutline.points());
         Rect bounds = polygonHelper.findLargestRect();
-        points = new ArrayList<>();
-        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
-        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
-        
-        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
-        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
-        
-        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
-        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
-        
-        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
-        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
-        
-        //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:
-                mapModel = new TavernMapModel(w, h);
+                mapModel = new TavernMapModel(bounds.w, bounds.h);
                 break;
             case CHURCH:
-                mapModel = new ChurchMapModel(w, h);
+                mapModel = new ChurchMapModel(bounds.w, bounds.h);
                 break;
             case HOUSE:
-                mapModel = new HouseMapModel(w, h);
+                mapModel = new HouseMapModel(bounds.w, bounds.h);
                 break;       
         }
         
@@ -98,6 +80,28 @@ public class FloorPlanner extends Shape{
     
     @Override
     public float[] getPositionData() {
+        Rect bounds;
+        Mappable[] items = mapModel.getItems();
+        
+        points = new ArrayList<>();
+        
+        int p = 0;
+        for (int i=0; i<items.length; i++) {
+            bounds = items[i].getBounds();
+            
+            points.add(new Vector2i((int)bounds.x,(int)bounds.y));
+            points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+
+            points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+            points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+
+            points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+            points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+
+            points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+            points.add(new Vector2i((int)bounds.x,(int)bounds.y));     
+        }
+       
         return CoordSystemHelper.deviceToOpenGLf(points);
                  
                  /*

@@ -18,7 +18,7 @@ public class DemoMapModel implements MapModel {
      * @param width Width of the display area
      * @param height Height of the display area
      */
-    public DemoMapModel(int[] itemRatio,int width, int height) {
+    public DemoMapModel(int[] itemRatio, double width, double height) {
         this.items = new MapItem[itemRatio.length];
         double totalArea = width * height;
         double sum = IntStream.of(itemRatio).sum();
