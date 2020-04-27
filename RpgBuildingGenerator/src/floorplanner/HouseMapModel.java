@@ -15,7 +15,7 @@ public class HouseMapModel implements MapModel {
 
     private MapItem[] items;
 
-    public HouseMapModel(int width, int height) {
+    public HouseMapModel(double width, double height) {
         int[] itemRatio = {4,5,3};
         
         

@@ -15,7 +15,7 @@ public class ChurchMapModel implements MapModel {
     
     private MapItem[] items;
 
-    public ChurchMapModel(int width, int height) {
+    public ChurchMapModel(double width, double height) {
         int[] itemRatio = {1};
                 
         this.items = new MapItem[itemRatio.length];
