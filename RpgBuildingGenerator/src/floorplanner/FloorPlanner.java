@@ -7,12 +7,12 @@ package floorplanner;
 
 import util.Rect;
 import java.util.ArrayList;
-import org.joml.Vector2f;
+import org.joml.Rectangled;
 import shapes.Shape;
 import shapes.BuildingOutline;
-import util.ConvexHull;
 import util.CoordSystemHelper;
 import org.joml.Vector2i;
+import util.PolygonHelper;
 
 /**
  *
@@ -31,6 +31,7 @@ public class FloorPlanner extends Shape{
     private BuildingType buildingType;
     private float normalisedX, normalisedY, transX, transY;
     private boolean activeFloorPlan = false;
+    private ArrayList<Vector2i> points = new ArrayList<>();
     
     public FloorPlanner() {
         this.buildingType = BuildingType.TAVERN;
@@ -52,8 +53,22 @@ public class FloorPlanner extends Shape{
         transY = -1.0f;
         
         //Step 1: Find largest rectangle inside user drawn building outline
-        // Rect bounds = findLargestRect(buildingOutline, w, h);
-        Rect bounds = new Rect(10,10, w-20, h-20);
+        PolygonHelper polygonHelper = new PolygonHelper(buildingOutline.points());
+        Rect bounds = polygonHelper.findLargestRect();
+        points = new ArrayList<>();
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+        
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y));
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+        
+        points.add(new Vector2i((int)bounds.x+(int)bounds.w,(int)bounds.y+(int)bounds.h));
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+        
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y+(int)bounds.h));
+        points.add(new Vector2i((int)bounds.x,(int)bounds.y));
+        
+        //Rect bounds = new Rect(10,10, w-20, h-20);
                 
         switch (buildingType) {
             case TAVERN:
@@ -83,7 +98,9 @@ public class FloorPlanner extends Shape{
     
     @Override
     public float[] getPositionData() {
-
+        return CoordSystemHelper.deviceToOpenGLf(points);
+                 
+                 /*
         Rect rect;
         
         Mappable[] items = mapModel.getItems();
@@ -129,63 +146,38 @@ public class FloorPlanner extends Shape{
             positionData[p++] = normalisedY * (float) rect.y + transY;
             positionData[p++] = 1.0f;          
         }
-        return positionData;
+        return positionData; */
     }
 
     @Override
     public float[] getColourData() {
 
-        Mappable[] items = mapModel.getItems();
+         float colourData[];
+         int i = 0;
+         
+         colourData = new float[points.size() * 3];   
+         //White 255,255,255
+         for (Vector2i point : points) {
+            colourData[i++] = 102f/255f;
+            colourData[i++] = 224f/255f;
+            colourData[i++] = 20f/255f;   
+         }
+        
+        /*Mappable[] items = mapModel.getItems();
         float colourData[] = new float[items.length*3*8];
         int p = 0;
         while (p < colourData.length) {
             colourData[p++] = 102f/255f;
             colourData[p++] = 224f/255f;
             colourData[p++] = 20f/255f;                
-        }
+        } */
         return colourData;
     }
     
     public int numbervertices() {
-        return mapModel.getItems().length*8;
+        return points.size();
+        //return mapModel.getItems().length*8;
     }
-    
-    /*private Rect findLargestRect(BuildingOutline buildingOutline, int deviceWidth, int deviceHeight) {
-        
-        ConvexHull convexHull = new ConvexHull();
-        ArrayList<Vector2i> deviceCoords;
-        Rect largestRect = new Rect();
-        
-        //Prove
-        Vector2i p1 = new Vector2i(50,70);
-        Vector2f p2 = CoordSystemHelper.deviceToOpenGL(deviceWidth, deviceHeight, p1);
-        Vector2i p3 = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, p2);
-        System.out.printf("width %d, height %d \n", deviceWidth, deviceHeight);
-        System.out.printf("normx %f, normy %f \n", 2.0f / deviceWidth, 2.0f / deviceHeight);
-        System.out.printf("p1 x %d, y %d \n", p1.x, p1.y);
-        System.out.printf("p2 x %f, y %f \n", p2.x, p2.y);
-        System.out.printf("p3 x %d, y %d \n", p3.x, p3.y);
-        
-        //Convert building outline to device coords and add to Convex hull 
 
-        deviceCoords = CoordSystemHelper.openGLToDevice(deviceWidth, deviceHeight, buildingOutline.points()); 
-        deviceCoords.forEach((Vector2i point) -> {
-            System.out.printf("Original building outline %d, %d \n", point.x, point.y);
-        });
-        convexHull.addPointsToHull(deviceCoords);        
-        convexHull.forEach((Vector2i point) -> {
-            System.out.printf("Converted building outline %d, %d \n", point.x, point.y);
-        });
-        
-        convexHull.computeLargestRectangle();
-        
-        if (convexHull.rectangles().isEmpty() == false) {
-            largestRect = convexHull.rectangles().get(6);
-            System.out.printf("Final rect x %f, y %f, w %f, h %f \n", largestRect.x, largestRect.y, largestRect.w, largestRect.h);
-         } 
-        return largestRect;
-    } */
-    
-  
 }
 

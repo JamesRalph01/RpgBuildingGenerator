@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import shapes.*;
 import util.CoordSystemHelper;
-import util.GeoHelper;
+import util.PolygonHelper;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
 
@@ -212,10 +212,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Vector2i pointToCheck;
             
             polygon = controller.getBuildingOutLine().points(); 
-            //pointToCheck = new Vector2i(e.getX(), e.getY());
             pointToCheck = nearestGridPoint;
+            PolygonHelper polygonHelper = new PolygonHelper(polygon);
             
-            if (GeoHelper.isPointInsidePolygon(polygon, pointToCheck)) {
+            if (polygonHelper.isPointInsidePolygon(pointToCheck)) {
                 System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
             } else {
                 System.out.printf("Cursor outside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
