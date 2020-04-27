@@ -27,6 +27,7 @@ public class PolygonHelperTest {
     public PolygonHelperTest() {
         polygon = new ArrayList<>();
         polygon.add(new Vector2i(10,10));
+        polygon.add(new Vector2i(15,15));
         polygon.add(new Vector2i(20,10));
         polygon.add(new Vector2i(20,20)); 
         polygon.add(new Vector2i(10,20)); 
@@ -68,6 +69,14 @@ public class PolygonHelperTest {
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(false, result);
         
+        pointToTest = new Vector2i(15,10);
+        result = polygonHelper.isPointInsidePolygon(pointToTest);
+        assertEquals(false, result);
+        
+        pointToTest = new Vector2i(15,16);
+        result = polygonHelper.isPointInsidePolygon(pointToTest);
+        assertEquals(true, result);
+        
         pointToTest = new Vector2i(10,10);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(false, result);
@@ -86,11 +95,11 @@ public class PolygonHelperTest {
         
         rectToTest = new Rectangled(11,11, 19,19);
         result = polygonHelper.isRectInsidePolygon(rectToTest);
-        assertEquals(true, result);
+        assertEquals(false, result);
         
-        rectToTest = new Rectangled(10,10, 20,20);
+        rectToTest = new Rectangled(10,16, 20,20);
         result = polygonHelper.isRectInsidePolygon(rectToTest);
-        assertEquals(false, result);  
+        assertEquals(true, result);  
         
         rectToTest = new Rectangled(5,5, 25,25);
         result = polygonHelper.isRectInsidePolygon(rectToTest);
@@ -103,8 +112,8 @@ public class PolygonHelperTest {
         
         System.out.println("testfindLargestRect");
         
-        result = polygonHelper.findLargestRect();
-
+        result = polygonHelper.findLargestRect(new Vector2i(15,18));
+        
     }
     
 }

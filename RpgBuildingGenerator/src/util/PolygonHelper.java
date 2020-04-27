@@ -69,7 +69,7 @@ public class PolygonHelper {
                 result = Intersectiond.intersectLineSegmentAar(edgeFrom.x, edgeFrom.y,
                                                           edgeTo.x, edgeTo.y,                      
                                                           rectToTest.minX, rectToTest.minY,
-                                                          rectToTest.maxX, rectToTest.minY,
+                                                          rectToTest.maxX, rectToTest.maxY,
                                                           intersectionPoint);
                 if (result != Intersectiond.OUTSIDE) {
                     return false;
@@ -85,7 +85,7 @@ public class PolygonHelper {
             result = Intersectiond.intersectLineSegmentAar(edgeFrom.x, edgeFrom.y, 
                                                             edgeTo.x, edgeTo.y,
                                                             rectToTest.minX, rectToTest.minY, 
-                                                            rectToTest.maxX, rectToTest.minY,
+                                                            rectToTest.maxX, rectToTest.maxY,
                                                             intersectionPoint);
             if (result != Intersectiond.OUTSIDE) return false;
         }
@@ -135,6 +135,19 @@ public class PolygonHelper {
                         Math.abs(largestRect.maxY - largestRect.minY));
     }
 
+    public Rect findLargestRect(Vector2i fromPoint) {
+
+        Rect largestRect;
+        Rectangled rect;
+        
+        rect = calcLargestRect(fromPoint);
+        
+        return new Rect(rect.minX, 
+                        rect.minY, 
+                        Math.abs(rect.maxX - rect.minX), 
+                        Math.abs(rect.maxY - rect.minY));
+    }
+    
     private ArrayList<Vector2i> calcPointstoCheck(Rectangled bounds) {
     
             ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
