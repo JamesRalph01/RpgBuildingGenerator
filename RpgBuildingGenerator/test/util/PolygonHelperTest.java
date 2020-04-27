@@ -97,7 +97,7 @@ public class PolygonHelperTest {
         result = polygonHelper.isRectInsidePolygon(rectToTest);
         assertEquals(false, result);
         
-        rectToTest = new Rectangled(10,16, 20,20);
+        rectToTest = new Rectangled(11,16, 19,19);
         result = polygonHelper.isRectInsidePolygon(rectToTest);
         assertEquals(true, result);  
         
@@ -114,6 +114,10 @@ public class PolygonHelperTest {
         
         result = polygonHelper.findLargestRect(new Vector2i(15,18));
         
+        assertEquals(11.0f, result.x, 0);
+        assertEquals(16.0f, result.y, 0);
+        assertEquals(8.0f, result.w, 0);
+        assertEquals(3.0f, result.h, 0);
     }
     
 }
