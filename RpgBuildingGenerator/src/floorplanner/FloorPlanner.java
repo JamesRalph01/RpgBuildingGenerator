@@ -103,54 +103,6 @@ public class FloorPlanner extends Shape{
         }
        
         return CoordSystemHelper.deviceToOpenGLf(points);
-                 
-                 /*
-        Rect rect;
-        
-        Mappable[] items = mapModel.getItems();
-        float positionData[] = new float[items.length*3*8];
-
-        int p = 0;
-        for (int i=0; i<items.length; i++) {
-            rect = items[i].getBounds();
-            
-            //1
-            positionData[p++] = normalisedX * (float) rect.x + transX;
-            positionData[p++] = normalisedY * (float) rect.y + transY;
-            positionData[p++] = 1.0f;
-
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
-            positionData[p++] = normalisedY * (float) rect.y + transY;
-            positionData[p++] = 1.0f;
-
-            //2
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
-            positionData[p++] = normalisedY * (float) rect.y + transY;
-            positionData[p++] = 1.0f;
-
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
-            positionData[p++] = 1.0f;
-
-            //3
-            positionData[p++] = normalisedX * (float) (rect.x + rect.w) + transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
-            positionData[p++] = 1.0f;
-
-            positionData[p++] = normalisedX * (float) rect.x + transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
-            positionData[p++] = 1.0f;
-
-            //4
-            positionData[p++] = normalisedX * (float) rect.x + transX;
-            positionData[p++] = normalisedY * (float) (rect.y + rect.h) + transY;
-            positionData[p++] = 1.0f;
-
-            positionData[p++] = normalisedX * (float) rect.x + transX;
-            positionData[p++] = normalisedY * (float) rect.y + transY;
-            positionData[p++] = 1.0f;          
-        }
-        return positionData; */
     }
 
     @Override

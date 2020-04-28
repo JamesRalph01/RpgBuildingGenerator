@@ -19,6 +19,7 @@ import org.joml.Vector2i;
 public class PolygonHelper {
 
     private PolygonsIntersection ppi;
+    private ArrayList<Edge> edges;
     private final ArrayList<Vector2i> polygon;
     
     public PolygonHelper(ArrayList<Vector2i> points) {
@@ -35,6 +36,7 @@ public class PolygonHelper {
             vertices[i++] = point.x;
             vertices[i++] = point.y;
         }
+        calcEdges();
         ppi = new PolygonsIntersection(vertices, nPolygons, nVertices);
     }
     
@@ -43,6 +45,8 @@ public class PolygonHelper {
     }
 
     public boolean isRectInsidePolygon(Rectangled rectToTest) {
+        int result;
+        
         // Are all points inside Polygon?
         if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.minX, (int)rectToTest.minY)) == false) return false;
         if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.maxX, (int)rectToTest.minY)) == false) return false;
@@ -50,50 +54,23 @@ public class PolygonHelper {
         if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.minX, (int)rectToTest.maxY)) == false) return false;
         
         // Check if any sides of the rectangle intersect with the polygon        
-        int i = 1;
-        Vector2d edgeFrom = new Vector2d();
-        Vector2d edgeTo = new Vector2d();
         Vector2d intersectionPoint = new Vector2d();
-        
-        int result;
-                
-        if (polygon.size() > 1) {
-            do {
-                edgeFrom.x = polygon.get(i-1).x;
-                edgeFrom.y = polygon.get(i-1).y;               
-                edgeTo.x = polygon.get(i).x;
-                edgeTo.y = polygon.get(i).y;
-                
-                // Check rect top edge
 
-                result = Intersectiond.intersectLineSegmentAar(edgeFrom.x, edgeFrom.y,
-                                                          edgeTo.x, edgeTo.y,                      
+        for (Edge edge: edges) {
+            result = Intersectiond.intersectLineSegmentAar((double)edge.x1(), (double)edge.y1(),
+                                                          (double)edge.x2(), (double)edge.y2(),                      
                                                           rectToTest.minX, rectToTest.minY,
                                                           rectToTest.maxX, rectToTest.maxY,
                                                           intersectionPoint);
-                if (result != Intersectiond.OUTSIDE) {
-                    return false;
-                }
-                i++;
-            } while (i < polygon.size());
-             
-            // check closing edge (i.e. last point to fist)
-            edgeFrom.x = polygon.get(i-1).x;
-            edgeFrom.y = polygon.get(i-1).y;               
-            edgeTo.x = polygon.get(0).x;
-            edgeTo.y = polygon.get(0).y;               
-            result = Intersectiond.intersectLineSegmentAar(edgeFrom.x, edgeFrom.y, 
-                                                            edgeTo.x, edgeTo.y,
-                                                            rectToTest.minX, rectToTest.minY, 
-                                                            rectToTest.maxX, rectToTest.maxY,
-                                                            intersectionPoint);
-            if (result != Intersectiond.OUTSIDE) return false;
+            if (result != Intersectiond.OUTSIDE) {
+                return false;
+            }    
         }
         return true;
     }
     
     public Rect findLargestRect() {
-        ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
+        ArrayList<Vector2i> pointsToCheck;
         ArrayList<Rectangled> rectangles = new ArrayList<>();
         Rectangled largestRect = new Rectangled(0,0,0,0);
         Rectangled bounds;
@@ -231,4 +208,31 @@ public class PolygonHelper {
  
         return bounds;
      }
+    
+    private void calcEdges() {
+        Vector2i edgeFrom = new Vector2i();
+        Vector2i edgeTo = new Vector2i();
+        int i = 1;
+        
+        edges = new ArrayList<>();
+        
+        if (polygon.size() > 1) {
+            do {
+                edgeFrom.x = polygon.get(i-1).x;
+                edgeFrom.y = polygon.get(i-1).y;               
+                edgeTo.x = polygon.get(i).x;
+                edgeTo.y = polygon.get(i).y;
+                i++;
+                edges.add(new Edge(edgeFrom, edgeTo));
+                
+            } while (i < polygon.size());
+             
+            // check closing edge (i.e. last point to fist)
+            edgeFrom.x = polygon.get(i-1).x;
+            edgeFrom.y = polygon.get(i-1).y;               
+            edgeTo.x = polygon.get(0).x;
+            edgeTo.y = polygon.get(0).y;
+            edges.add(new Edge(edgeFrom, edgeTo));
+        }    
+    }
 }
