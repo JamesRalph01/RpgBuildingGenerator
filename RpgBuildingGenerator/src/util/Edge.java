@@ -114,15 +114,19 @@ public class Edge {
             //shrink y
             if (Math.min(this.y1(), this.y2()) == this.y1()) {
                 points[0].y += delta;
+                points[1].y -= delta;
             } else {
-                points[1].y -= delta;             
+                points[0].y -= delta;
+                points[1].y += delta;             
             }              
         } else {
             //shrink x
             if (Math.min(this.x1(), this.x2()) == this.x1()) {
                 points[0].x += delta;
+                points[1].x -= delta;
             } else {
-                points[1].x -= delta;             
+                points[0].x -= delta;
+                points[1].x += delta;             
             }
         }
     }

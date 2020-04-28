@@ -36,6 +36,7 @@ public class PolygonHelper {
             vertices[i++] = point.x;
             vertices[i++] = point.y;
         }
+        
         calcEdges();
         ppi = new PolygonsIntersection(vertices, nPolygons, nVertices);
     }
@@ -45,7 +46,7 @@ public class PolygonHelper {
     }
     
     public ArrayList<Vector2i> points() {
-        return this.points();
+        return this.polygon;
     }
     
     public  boolean isPointInsidePolygon(Vector2i pointToTest) {

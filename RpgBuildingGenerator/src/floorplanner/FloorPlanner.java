@@ -8,7 +8,6 @@ package floorplanner;
 import util.Rect;
 import java.util.ArrayList;
 import org.joml.Intersectiond;
-import org.joml.Rectangled;
 import shapes.Shape;
 import shapes.BuildingOutline;
 import util.CoordSystemHelper;
@@ -67,6 +66,8 @@ public class FloorPlanner extends Shape{
         algorithm = new TreemapLayout();
         algorithm.layout(mapModel, bounds);
         
+        generateRooms();
+        
         activeFloorPlan = true;
     }
     
@@ -77,9 +78,11 @@ public class FloorPlanner extends Shape{
     public boolean activeFloorPlan() {
         return activeFloorPlan;
     }
-    
+ 
+    /*
     @Override
     public float[] getPositionData() {
+ 
         Rect bounds;
         Mappable[] items = mapModel.getItems();
         
@@ -103,8 +106,24 @@ public class FloorPlanner extends Shape{
         }
        
         return CoordSystemHelper.deviceToOpenGLf(points);
-    }
-
+    } */
+    
+    @Override
+    public float[] getPositionData() {
+        
+        points = new ArrayList<>();
+        
+        for (Room room : rooms) {
+            for (Edge edge : room.edges()) {
+                points.add(edge.point1());
+                points.add(edge.point2());           
+            }
+        
+        }
+        return CoordSystemHelper.deviceToOpenGLf(points);
+    } 
+    
+    
     @Override
     public float[] getColourData() {
 
@@ -183,7 +202,7 @@ public class FloorPlanner extends Shape{
             Edge nearestInternalEdge = null;
             Vector2i nearestPoint = new Vector2i();
             Room nearestRoom = null;
-            boolean first = false;
+            boolean first = true;
             
             // Check if building outline edge hits an external treemap edge
             // and if more than one, amend the nearest        
@@ -194,7 +213,7 @@ public class FloorPlanner extends Shape{
                         
                         // check if intersects on x axis
                         Vector3d result = new Vector3d();
-                        Intersectiond.findClosestPointOnLineSegment((double)roomEdge.x1(), (double)roomEdge.y2(), 0, 
+                        Intersectiond.findClosestPointOnLineSegment((double)roomEdge.x1(), (double)roomEdge.y1(), 0, 
                                                                     (double)roomEdge.x2(), (double)roomEdge.y2(), 0, 
                                                                     (double)externalPoint.x, (double)externalPoint.y, 0, 
                                                                     result);
@@ -216,7 +235,7 @@ public class FloorPlanner extends Shape{
                 }
             }
             
-            // Now adjust room and edge to fit building outline point
+            // Adjust room and edge to fit building outline point
             if (nearestRoom != null) nearestRoom.adjust(externalPoint, nearestPoint, nearestInternalEdge);                
             
         }
