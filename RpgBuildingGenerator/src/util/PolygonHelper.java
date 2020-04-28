@@ -40,6 +40,14 @@ public class PolygonHelper {
         ppi = new PolygonsIntersection(vertices, nPolygons, nVertices);
     }
     
+    public ArrayList<Edge> edges() {
+        return this.edges;
+    }
+    
+    public ArrayList<Vector2i> points() {
+        return this.points();
+    }
+    
     public  boolean isPointInsidePolygon(Vector2i pointToTest) {
         return ppi.testPoint((float)pointToTest.x, (float)pointToTest.y);
     }
@@ -233,6 +241,6 @@ public class PolygonHelper {
             edgeTo.x = polygon.get(0).x;
             edgeTo.y = polygon.get(0).y;
             edges.add(new Edge(edgeFrom, edgeTo));
-        }    
+        }  
     }
 }
