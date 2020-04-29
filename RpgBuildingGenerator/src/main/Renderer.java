@@ -198,28 +198,28 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void mouseMoved(MouseEvent e) {
 
-        System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
-        System.out.printf("dimensions width %d, height %d \n", CoordSystemHelper.deviceWidth, CoordSystemHelper.deviceHeight);
-        
+//        System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
+//        System.out.printf("dimensions width %d, height %d \n", CoordSystemHelper.deviceWidth, CoordSystemHelper.deviceHeight);
+//        
         cursorPosition = new Point(e.getX(), e.getY());
         nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
         gridCursor.cursorPosition(nearestGridPoint);
         editCursorLine.ToPoint(nearestGridPoint);
         
-        //is point inside polygon?
-        if (controller.getBuildingOutLine().isComplete()) {
-            ArrayList<Point> polygon;
-            Point pointToCheck;
-            
-            polygon = controller.getBuildingOutLine().points(); 
-            pointToCheck = nearestGridPoint;
-            PolygonHelper polygonHelper = new PolygonHelper(polygon);
-            
-            if (polygonHelper.isPointInsidePolygon(pointToCheck)) {
-                System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
-            } else {
-                System.out.printf("Cursor outside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
-            }
-        }
+//        //is point inside polygon?
+//        if (controller.getBuildingOutLine().isComplete()) {
+//            ArrayList<Point> polygon;
+//            Point pointToCheck;
+//            
+//            polygon = controller.getBuildingOutLine().points(); 
+//            pointToCheck = nearestGridPoint;
+//            PolygonHelper polygonHelper = new PolygonHelper(polygon);
+//            
+//            if (polygonHelper.isPointInsidePolygon(pointToCheck)) {
+//                System.out.printf("Cursor inside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
+//            } else {
+//                System.out.printf("Cursor outside x %d, y %d \n", pointToCheck.x, pointToCheck.y );
+//            }
+//        }
     }
 }

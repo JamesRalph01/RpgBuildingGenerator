@@ -59,15 +59,15 @@ public class Edge {
             
             if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
                 if (p.x == (int)bounds.x || p.x == (int)bounds.x+bounds.w) {
-                    if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
+                    //if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
                         p.scope = Point.Scope.EXTERNAL;                        
-                    }
+                    //}
                 }
             } else {
                 if (p.y == (int)bounds.y || p.y == (int)bounds.y+bounds.h) {
-                    if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
+                    //if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
                         p.scope = Point.Scope.EXTERNAL;                  
-                    }
+                    //}
                 }   
             }
             

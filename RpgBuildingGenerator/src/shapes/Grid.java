@@ -16,7 +16,7 @@ import util.CoordSystemHelper;
  */
 public class Grid extends Shape {
     
-    static int MAX_GRID_ELEMENTS = 20;
+    static int MAX_GRID_ELEMENTS = 40;
     static int GRID_SPACING = 20;
     
     ArrayList<Point> points = new ArrayList<>();

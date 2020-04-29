@@ -191,7 +191,6 @@ public class PolygonHelper {
 
         } while (expandwidthL || expandwidthR || expandheightT || expandheightB);   
         
-        System.out.printf("Found rect x1 %f, y1 %f, x2 %f, y2 %f\n", rect.minX, rect.minY, rect.maxX, rect.maxY);
         return rect;
     }
     
