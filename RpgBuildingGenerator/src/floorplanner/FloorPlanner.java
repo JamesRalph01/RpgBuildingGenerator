@@ -157,15 +157,58 @@ public class FloorPlanner extends Shape{
     public float[] getColourData() {
 
          float colourData[];
+         Mappable[] items = mapModel.getItems();
          int i = 0;
-         
          colourData = new float[points.size() * 3];   
          //White 255,255,255
-         for (Vector2i point : points) {
+         float R=0, G=0, B=0;
+         
+         for (int item=0; item<items.length; item++) {
+             String type = items[item].getRoomType();
+             if (!type.equals("NA")) {
+                // Social
+                if (type == "Li" || type == "Dr") {
+                   R = 255f/255f;
+                   G = 20f/255f;
+                   B = 20f/255f;  
+                }
+                // Service
+                else if (type == "Ki" || type == "Ut") {
+                    R = 255f/255f;
+                    G = 255f/255f;
+                    B = 20f/255f;     
+                }
+                // Private
+                else if (type == "Mb" || type == "Sr" || type == "To" || type == "Br") {
+                    R = 20f/255f;
+                    G = 20f/255f;
+                    B = 255f/255f; 
+                }
+                else {
+                    R = 255f/255f;
+                    G = 255f/255f;
+                    B = 255f/255f; 
+                } 
+             }
+             else {
+                 R = 102f/255f;
+                 G = 224f/255f;
+                 B = 20f/255f; 
+             }
+             
+             // Loop over points in room
+             for (int point=0; point<8; point++) {
+                 colourData[i++] = R;
+                 colourData[i++] = G;
+                 colourData[i++] = B; 
+             }
+         }
+         
+         /*for (Vector2i point : points) {
             colourData[i++] = 102f/255f;
             colourData[i++] = 224f/255f;
             colourData[i++] = 20f/255f;   
-         }
+         }*/
         
         /*Mappable[] items = mapModel.getItems();
         float colourData[] = new float[items.length*3*8];

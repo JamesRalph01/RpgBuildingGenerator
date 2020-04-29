@@ -10,6 +10,7 @@ public class MapItem implements Mappable {
 	Rect bounds;
 	int order = 0;
 	int depth;
+        String roomType;
 
 	public void setDepth(int depth) {
 		this.depth = depth;
@@ -20,13 +21,14 @@ public class MapItem implements Mappable {
 	}
 
 	public MapItem() {
-		this(1, 0);
+		this(1, 0, "NA");
 	}
 
-	public MapItem(double size, int order) {
+	public MapItem(double size, int order, String roomType) {
 		this.size = size;
 		this.order = order;
 		bounds = new Rect();
+                this.roomType = roomType;
 	}
 
 	public double getSize() {
@@ -56,4 +58,8 @@ public class MapItem implements Mappable {
 	public void setOrder(int order) {
 		this.order = order;
 	}
+        
+        public String getRoomType() {
+            return this.roomType;
+        }
 }

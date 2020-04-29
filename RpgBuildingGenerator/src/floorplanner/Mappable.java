@@ -27,4 +27,5 @@ public interface Mappable
     public void   setOrder(int order);
     public int    getDepth();
     public void   setDepth(int depth);
+    public String getRoomType();
 }
