@@ -171,4 +171,20 @@ public class Edge {
         }
     }
     
+    @Override
+    public boolean equals(Object o) {
+        // self check
+        if (this == o)
+            return true;
+        // null check
+        if (o == null)
+            return false;
+        // type check and cast
+        if (getClass() != o.getClass())
+            return false;
+        Edge edge = (Edge) o;
+        // field comparison
+        return this.point1().equals(edge.point1()) && this.point2().equals(edge.point2());
+    }
+    
 }

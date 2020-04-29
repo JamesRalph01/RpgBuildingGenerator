@@ -7,7 +7,6 @@ package util;
 
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import util.Point;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

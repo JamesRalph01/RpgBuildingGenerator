@@ -229,6 +229,7 @@ public class FloorPlanner extends Shape{
                                 nearestInternalEdge = roomEdge;
                                 nearestRoom = room;            
                                 nearestPoint = new Point((int)result.x, (int)result.y);
+                                
                             }
                         }
                     }
