@@ -7,7 +7,7 @@ package shapes;
 
 
 import java.util.ArrayList;
-import org.joml.Vector2i;
+import util.Point;
 import util.CoordSystemHelper;
 
 /**
@@ -19,7 +19,7 @@ public class Grid extends Shape {
     static int MAX_GRID_ELEMENTS = 20;
     static int GRID_SPACING = 20;
     
-    ArrayList<Vector2i> points = new ArrayList<>();
+    ArrayList<Point> points = new ArrayList<>();
     private float[] colourData;
     
     public Grid()
@@ -38,9 +38,9 @@ public class Grid extends Shape {
         return this.colourData;    
     }
     
-    public Vector2i getNearestGridPoint(Vector2i pointToTest) {
-        Vector2i nearestGridPoint = new Vector2i(32000,32000);
-        for (Vector2i point : points) {
+    public Point getNearestGridPoint(Point pointToTest) {
+        Point nearestGridPoint = new Point(32000,32000);
+        for (Point point : points) {
             if (pointToTest.distance(point) < pointToTest.distance(nearestGridPoint)) {
                 nearestGridPoint = point;
 
@@ -59,7 +59,7 @@ public class Grid extends Shape {
     private void initPositionData() {
         for (int x=0; x<MAX_GRID_ELEMENTS; x++) {
             for (int y=0; y<MAX_GRID_ELEMENTS; y++){
-                points.add(new Vector2i(GRID_SPACING+x*GRID_SPACING,GRID_SPACING+y*GRID_SPACING));
+                points.add(new Point(GRID_SPACING+x*GRID_SPACING,GRID_SPACING+y*GRID_SPACING));
             }
         }
     }
@@ -69,7 +69,7 @@ public class Grid extends Shape {
          
          // Green 50, 168, 82
          colourData = new float[points.size() * 3];   
-         for (Vector2i point : points) {
+         for (Point point : points) {
              colourData[i++] = 1.0f; //R
              colourData[i++] = 1.0f; //G
              colourData[i++] = 1.0f; //B

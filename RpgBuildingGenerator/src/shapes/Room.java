@@ -7,7 +7,7 @@ package shapes;
 
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import org.joml.Vector2i;
+import util.Point;
 import util.CoordSystemHelper;
 import util.Edge;
 import util.PolygonHelper;
@@ -28,8 +28,8 @@ public class Room extends Shape {
         return this.edges;
     }
     
-    public ArrayList<Vector2i> points() {
-        ArrayList<Vector2i> points = new ArrayList<>();
+    public ArrayList<Point> points() {
+        ArrayList<Point> points = new ArrayList<>();
         for (Edge edge : edges) {
             if (points.contains(edge.point1()) == false) points.add(edge.point1());
             if (points.contains(edge.point2()) == false) points.add(edge.point2());
@@ -63,14 +63,14 @@ public class Room extends Shape {
         // Green 50, 168, 82
         colourData = new float[this.points().size() * 3]; 
         // pink 245, 66, 230
-        for (Vector2i point : this.points()) {
+        for (Point point : this.points()) {
             colourData[i++] = 245f/255f;
             colourData[i++] = 66f/255f;
             colourData[i++] = 230f/255f;   
         }
     }
     
-    public void adjust(Vector2i adjustmentPoint, Vector2i pointOnEdge, Edge edgeToAdjust) {
+    public void adjust(Point adjustmentPoint, Point pointOnEdge, Edge edgeToAdjust) {
     
         // if the point to adjust is at either end of the edge, leave as is
         // otherwise split the edge in two
@@ -87,7 +87,18 @@ public class Room extends Shape {
             this.edges.add(index, edge2);
             this.edges.add(index, edge1);  
         }
-        
+    }
+    
+    public void adjust(Point currentPoint, Point adjustedPoint) {
+        // adjust any matching point to new point across all edges
+        for (Edge edge : edges) {
+            if (currentPoint.equals(edge.point1())) {
+                edge.point1().set(adjustedPoint.x, adjustedPoint.y);
+            } else if (currentPoint.equals(edge.point2())) {
+                edge.point2().set(adjustedPoint.x, adjustedPoint.y);
+            }
+        }
+                
     }
     
 }

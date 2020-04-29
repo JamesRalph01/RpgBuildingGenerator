@@ -5,7 +5,7 @@
  */
 package util;
 import java.util.ArrayList;
-import org.joml.Vector2i;
+import util.Point;
 import org.joml.Vector2f;
 
 /**
@@ -17,16 +17,16 @@ public class CoordSystemHelper {
     public static int deviceWidth, deviceHeight;
     private static float normalisedX, normalisedY;
     
-    public static ArrayList<Vector2i> openGLToDevice(ArrayList<Vector2f> openGLCoords) {
+    public static ArrayList<Point> openGLToDevice(ArrayList<Vector2f> openGLCoords) {
         float transX, transY;
-        ArrayList<Vector2i> deviceCoords = new ArrayList<>();
+        ArrayList<Point> deviceCoords = new ArrayList<>();
         
 
         transX = 1.0f;
         transY = 1.0f;
        
         openGLCoords.forEach((openGLPoint) -> {
-            Vector2i devicePoint = new Vector2i();
+            Point devicePoint = new Point();
             devicePoint.x = (int) ((openGLPoint.x + transX) / normalisedX);  
             devicePoint.y = (int) ((openGLPoint.y + transY) / normalisedY);
             deviceCoords.add(devicePoint);      
@@ -34,20 +34,20 @@ public class CoordSystemHelper {
         return deviceCoords;
     }
     
-    public static Vector2i openGLToDevice(Vector2f openGLPoint) {
+    public static Point openGLToDevice(Vector2f openGLPoint) {
         float transX, transY;
         
         transX = 1.0f;
         transY = 1.0f;
         
-        Vector2i devicePoint = new Vector2i();
+        Point devicePoint = new Point();
         devicePoint.x = (int) ((openGLPoint.x + transX) / normalisedX);  
         devicePoint.y = (int) -((openGLPoint.y + transY) / normalisedY);
 
         return devicePoint;
     }
     
-    public static ArrayList<Vector2f> deviceToOpenGL(ArrayList<Vector2i> deviceCoords) {
+    public static ArrayList<Vector2f> deviceToOpenGL(ArrayList<Point> deviceCoords) {
         float transX, transY;
         ArrayList<Vector2f> openGLCoords;
         
@@ -66,7 +66,7 @@ public class CoordSystemHelper {
         return openGLCoords;
     }
     
-    public static Vector2f deviceToOpenGL(Vector2i devicePoint) {
+    public static Vector2f deviceToOpenGL(Point devicePoint) {
         float transX, transY;
         
         transX = deviceWidth / 2;
@@ -79,7 +79,7 @@ public class CoordSystemHelper {
         return openGLPoint;
     }
     
-    public static float[] deviceToOpenGLf(ArrayList<Vector2i> deviceCoords) {
+    public static float[] deviceToOpenGLf(ArrayList<Point> deviceCoords) {
         float transX, transY;
         float[] openGLCoords;
         int i = 0;
@@ -88,7 +88,7 @@ public class CoordSystemHelper {
         transY = deviceHeight / 2;
 
         openGLCoords= new float[deviceCoords.size() * 3]; 
-        for (Vector2i point : deviceCoords) {
+        for (Point point : deviceCoords) {
              openGLCoords[i++] = (point.x - transX) * normalisedX;
              openGLCoords[i++] = -(point.y - transY) * normalisedY;
              openGLCoords[i++] = 0.0f;  

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import org.joml.Intersectiond;
 import org.joml.Rectangled;
 import org.joml.Vector2d;
-import org.joml.Vector2i;
 
 /**
  *
@@ -17,7 +16,11 @@ import org.joml.Vector2i;
  */
 public class Edge {
 
-    private Vector2i[] points;
+    public enum EdgeAlignment {
+        HORIZONTAL, VERTICAL, SLANTED
+    }
+            
+    private Point[] points;
     private boolean isInternal = false;
     private ArrayList<Edge> connectedEdges;
     
@@ -27,17 +30,54 @@ public class Edge {
              edgeToCopy.isInternal);
     }
     
-    public Edge(Vector2i point1, Vector2i point2) {
-        points = new Vector2i[2];
+    public Edge(Point point1, Point point2) {
+        points = new Point[2];
         connectedEdges = new ArrayList<>();
         
-        points[0] = new Vector2i(point1);
-        points[1] = new Vector2i(point2);
+        points[0] = new Point(point1);
+        points[1] = new Point(point2);
     }
     
-    public Edge(Vector2i point1, Vector2i point2, boolean isInternal) {
+    public Edge(Point point1, Point point2, Rect bounds) {
+        this(point1,point2);
+        calcExternalPoints(bounds);
+    }
+        
+    public Edge(Point point1, Point point2, boolean isInternal) {
        this(point1, point2);
        this.isInternal = isInternal;
+    }
+  
+    public void calcExternalPoints(Rect bounds) {
+        // check if edge lies on bounding rectangle
+
+        for (int i = 0; i < 2; i++) {
+            Point p = points[i];
+
+            // does the point lie on the rect ?
+            p.scope = Point.Scope.INTERNAL;
+            
+            if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+                if (p.x == (int)bounds.x || p.x == (int)bounds.x+bounds.w) {
+                    if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
+                        p.scope = Point.Scope.EXTERNAL;                        
+                    }
+                }
+            } else {
+                if (p.y == (int)bounds.y || p.y == (int)bounds.y+bounds.h) {
+                    if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
+                        p.scope = Point.Scope.EXTERNAL;                  
+                    }
+                }   
+            }
+            
+        }
+    }
+    
+    public EdgeAlignment alignment() {
+        if (points[0].x == points[1].x) return EdgeAlignment.VERTICAL;
+        if (points[0].y == points[1].y) return EdgeAlignment.HORIZONTAL;
+        return EdgeAlignment.SLANTED;        
     }
     
     public int x1(){
@@ -56,11 +96,11 @@ public class Edge {
         return points[1].y;
     }
     
-    public Vector2i point1() {
+    public Point point1() {
         return points[0];
     }
     
-    public Vector2i point2() {
+    public Point point2() {
         return points[1];
     }
     
@@ -68,7 +108,7 @@ public class Edge {
         return this.isInternal;
     }
     
-    public void isInternal(boolean isInside) {
+    public void isInternal(boolean isInternal) {
         this.isInternal = isInternal;
     }
     

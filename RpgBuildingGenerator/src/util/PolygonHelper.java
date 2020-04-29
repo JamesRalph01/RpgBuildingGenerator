@@ -10,7 +10,7 @@ import org.joml.Intersectiond;
 import org.joml.PolygonsIntersection;
 import org.joml.Rectangled;
 import org.joml.Vector2d;
-import org.joml.Vector2i;
+import org.joml.Vector3d;
 
 /**
  *
@@ -20,9 +20,9 @@ public class PolygonHelper {
 
     private PolygonsIntersection ppi;
     private ArrayList<Edge> edges;
-    private final ArrayList<Vector2i> polygon;
+    private final ArrayList<Point> polygon;
     
-    public PolygonHelper(ArrayList<Vector2i> points) {
+    public PolygonHelper(ArrayList<Point> points) {
         
         polygon = points;
 
@@ -32,7 +32,7 @@ public class PolygonHelper {
         int nVertices = points.size();
         
         int i = 0;
-        for (Vector2i point : points) {
+        for (Point point : points) {
             vertices[i++] = point.x;
             vertices[i++] = point.y;
         }
@@ -45,11 +45,11 @@ public class PolygonHelper {
         return this.edges;
     }
     
-    public ArrayList<Vector2i> points() {
+    public ArrayList<Point> points() {
         return this.polygon;
     }
     
-    public  boolean isPointInsidePolygon(Vector2i pointToTest) {
+    public  boolean isPointInsidePolygon(Point pointToTest) {
         return ppi.testPoint((float)pointToTest.x, (float)pointToTest.y);
     }
 
@@ -57,10 +57,10 @@ public class PolygonHelper {
         int result;
         
         // Are all points inside Polygon?
-        if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.minX, (int)rectToTest.minY)) == false) return false;
-        if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.maxX, (int)rectToTest.minY)) == false) return false;
-        if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.maxX, (int)rectToTest.maxY)) == false) return false;
-        if (this.isPointInsidePolygon(new Vector2i((int)rectToTest.minX, (int)rectToTest.maxY)) == false) return false;
+        if (this.isPointInsidePolygon(new Point((int)rectToTest.minX, (int)rectToTest.minY)) == false) return false;
+        if (this.isPointInsidePolygon(new Point((int)rectToTest.maxX, (int)rectToTest.minY)) == false) return false;
+        if (this.isPointInsidePolygon(new Point((int)rectToTest.maxX, (int)rectToTest.maxY)) == false) return false;
+        if (this.isPointInsidePolygon(new Point((int)rectToTest.minX, (int)rectToTest.maxY)) == false) return false;
         
         // Check if any sides of the rectangle intersect with the polygon        
         Vector2d intersectionPoint = new Vector2d();
@@ -79,17 +79,17 @@ public class PolygonHelper {
     }
     
     public Rect findLargestRect() {
-        ArrayList<Vector2i> pointsToCheck;
+        ArrayList<Point> pointsToCheck;
         ArrayList<Rectangled> rectangles = new ArrayList<>();
         Rectangled largestRect = new Rectangled(0,0,0,0);
         Rectangled bounds;
-        Vector2i pointToCheck;
+        Point pointToCheck;
 
         bounds = this.boundingRect();
         pointsToCheck = calcPointstoCheck(bounds);
         
         // find largest rect for each sample point
-        for (Vector2i point : pointsToCheck) {
+        for (Point point : pointsToCheck) {
             rectangles.add(calcLargestRect(point));
         }
         
@@ -121,7 +121,7 @@ public class PolygonHelper {
                         Math.abs(largestRect.maxY - largestRect.minY));
     }
 
-    public Rect findLargestRect(Vector2i fromPoint) {
+    public Rect findLargestRect(Point fromPoint) {
 
         Rect largestRect;
         Rectangled rect;
@@ -134,13 +134,13 @@ public class PolygonHelper {
                         Math.abs(rect.maxY - rect.minY));
     }
     
-    private ArrayList<Vector2i> calcPointstoCheck(Rectangled bounds) {
+    private ArrayList<Point> calcPointstoCheck(Rectangled bounds) {
     
-            ArrayList<Vector2i> pointsToCheck = new ArrayList<>();
+            ArrayList<Point> pointsToCheck = new ArrayList<>();
         
             // Create 100 sample points within the bounding rectangle
             for (int i=0; i<100; i++) {
-                Vector2i point = new Vector2i();
+                Point point = new Point();
                 point.x = (int) ((Math.random() * (bounds.maxX-bounds.minX)) + bounds.minX);
                 point.y = (int) ((Math.random() * (bounds.maxY-bounds.minY)) + bounds.minX);
                 if (this.isPointInsidePolygon(point)) {
@@ -150,7 +150,7 @@ public class PolygonHelper {
             return pointsToCheck;
     }
     
-    private Rectangled calcLargestRect(Vector2i pointToCheck) {
+    private Rectangled calcLargestRect(Point pointToCheck) {
         Rectangled rect = new Rectangled(pointToCheck.x, pointToCheck.y, pointToCheck.x, pointToCheck.y);
         
         // expand rectange until it intersects with polygon edge on both width and height.
@@ -199,7 +199,7 @@ public class PolygonHelper {
         Rectangled bounds = new Rectangled();
         boolean firstPoint = true;
           
-        for (Vector2i point : polygon) {
+        for (Point point : polygon) {
             if (firstPoint) {
                 bounds.minX = point.x;
                 bounds.maxX = point.x;
@@ -218,9 +218,37 @@ public class PolygonHelper {
         return bounds;
      }
     
+    public Edge closestEdge(Point point) {
+        Edge nearestEdge = null;
+        Point nearestPoint = new Point();
+        boolean first = true;
+
+        for (Edge edge: this.edges()) {
+
+            Vector3d result = new Vector3d();
+            Intersectiond.findClosestPointOnLineSegment((double)edge.x1(), (double)edge.y1(), 0, 
+                                                        (double)edge.x2(), (double)edge.y2(), 0, 
+                                                        (double)point.x, (double)point.y, 0, 
+                                                        result);
+            if (first) {
+                nearestEdge = edge;
+                nearestPoint = new Point((int)result.x, (int)result.y);
+                first = false;
+            } else {
+                // found closer edge?
+                if (point.distance(new Point((int)result.x, (int)result.y)) < 
+                    point.distance(nearestPoint)) {
+                    nearestEdge = edge;        
+                    nearestPoint = new Point((int)result.x, (int)result.y);
+                }
+            }
+        }
+        return nearestEdge;
+    }
+    
     private void calcEdges() {
-        Vector2i edgeFrom = new Vector2i();
-        Vector2i edgeTo = new Vector2i();
+        Point edgeFrom = new Point();
+        Point edgeTo = new Point();
         int i = 1;
         
         edges = new ArrayList<>();

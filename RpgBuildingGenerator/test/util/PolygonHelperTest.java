@@ -7,7 +7,7 @@ package util;
 
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import org.joml.Vector2i;
+import util.Point;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,16 +21,16 @@ import static org.junit.Assert.*;
  */
 public class PolygonHelperTest {
     
-    private ArrayList<Vector2i> polygon;
+    private ArrayList<Point> polygon;
     private PolygonHelper polygonHelper;
 
     public PolygonHelperTest() {
         polygon = new ArrayList<>();
-        polygon.add(new Vector2i(10,10));
-        polygon.add(new Vector2i(15,15));
-        polygon.add(new Vector2i(20,10));
-        polygon.add(new Vector2i(20,20)); 
-        polygon.add(new Vector2i(10,20)); 
+        polygon.add(new Point(10,10));
+        polygon.add(new Point(15,15));
+        polygon.add(new Point(20,10));
+        polygon.add(new Point(20,20)); 
+        polygon.add(new Point(10,20)); 
         polygonHelper = new PolygonHelper(polygon);
     }
     
@@ -57,27 +57,27 @@ public class PolygonHelperTest {
     @Test
     public void testIsPointInsidePolygon() {
         boolean result;
-        Vector2i pointToTest;
+        Point pointToTest;
         
         System.out.println("isPointInsidePolygon");
         
-        pointToTest = new Vector2i(15,15);
+        pointToTest = new Point(15,15);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(true, result);
         
-        pointToTest = new Vector2i(0,0);
+        pointToTest = new Point(0,0);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(false, result);
         
-        pointToTest = new Vector2i(15,10);
+        pointToTest = new Point(15,10);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(false, result);
         
-        pointToTest = new Vector2i(15,16);
+        pointToTest = new Point(15,16);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(true, result);
         
-        pointToTest = new Vector2i(10,10);
+        pointToTest = new Point(10,10);
         result = polygonHelper.isPointInsidePolygon(pointToTest);
         assertEquals(false, result);
     }
@@ -88,7 +88,7 @@ public class PolygonHelperTest {
     @Test
     public void testIsRectInsidePolygon() {
         boolean result;
-        Vector2i pointToTest;
+        Point pointToTest;
         Rectangled rectToTest;
         
         System.out.println("isRectInsidePolygon");
@@ -112,7 +112,7 @@ public class PolygonHelperTest {
         
         System.out.println("testfindLargestRect");
         
-        result = polygonHelper.findLargestRect(new Vector2i(15,18));
+        result = polygonHelper.findLargestRect(new Point(15,18));
         
         assertEquals(11.0f, result.x, 0);
         assertEquals(16.0f, result.y, 0);

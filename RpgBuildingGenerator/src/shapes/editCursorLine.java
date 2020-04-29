@@ -6,7 +6,7 @@
 package shapes;
 
 import java.util.ArrayList;
-import org.joml.Vector2i;
+import util.Point;
 import util.CoordSystemHelper;
 
 /**
@@ -15,7 +15,7 @@ import util.CoordSystemHelper;
  */
 public class editCursorLine extends Shape {
 
-    ArrayList<Vector2i> points;
+    ArrayList<Point> points;
     // Gold 252, 186, 3
     private float[] colourData = {
         252f/255f, 186f/255f, 3f/255f,
@@ -41,12 +41,12 @@ public class editCursorLine extends Shape {
         return points.size();
     }
     
-    public void fromPoint(Vector2i point) {
+    public void fromPoint(Point point) {
         points.get(0).x = point.x;
         points.get(0).y = point.y;
     }
     
-    public void ToPoint(Vector2i point) {
+    public void ToPoint(Point point) {
         points.get(1).x = point.x;
         points.get(1).y = point.y;
     }
@@ -54,7 +54,7 @@ public class editCursorLine extends Shape {
     private void initPositionData() {
 
         points = new ArrayList<>();
-        points.add(new Vector2i(0, 0));
-        points.add(new Vector2i(0, 0));
+        points.add(new Point(0, 0));
+        points.add(new Point(0, 0));
     }
 }
