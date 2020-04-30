@@ -28,6 +28,7 @@ public class Point extends Vector2i {
     
     public Point(Point p) {
         super(p);
+        this.scope = p.scope;
     }
     
     public Point() {
