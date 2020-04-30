@@ -70,6 +70,7 @@ public class Room extends Shape {
         }
     }
     
+    // remove?
     public void adjust(Point adjustmentPoint, Point pointOnEdge, Edge edgeToAdjust) {
     
         // if the point to adjust is at either end of the edge, leave as is
@@ -80,12 +81,33 @@ public class Room extends Shape {
             int index = this.edges.indexOf(edgeToAdjust);
             this.edges.remove(edgeToAdjust);
             
-            //Create new edges
+            //Create new edge and keep existing one
             Edge edge1 = new Edge(edgeToAdjust.point1(), adjustmentPoint);
             Edge edge2 = new Edge(adjustmentPoint, edgeToAdjust.point2());
             
             this.edges.add(index, edge2);
             this.edges.add(index, edge1);  
+        }
+    }
+    
+    public void adjust(Edge edgeToAdjust) {
+    
+        // if the point to adjust is at either end of the edge, leave as is
+        // otherwise split the edge in two
+        for (Point adjustmentPoint : edgeToAdjust.adjustmentPoints()) {
+            
+            if (adjustmentPoint.equals(edgeToAdjust.point1()) == false &&
+                adjustmentPoint.equals(edgeToAdjust.point2()) == false) {
+                // 
+                int index = this.edges.indexOf(edgeToAdjust);
+
+                // Create new edge (i.e. split this edge) and insert in front of this edge
+                Edge newEdge = new Edge(edgeToAdjust.point1(), adjustmentPoint);
+                this.edges.add(index, newEdge);
+                
+                // Amend existing edge
+                edgeToAdjust.point1().set(adjustmentPoint);
+            }            
         }
     }
     

@@ -17,6 +17,7 @@ public class Point extends Vector2i {
         NA, INTERNAL, EXTERNAL
     }
     public Point.Scope scope = Scope.NA;
+    public int orginalIndex = 0; // for sorting adjustment points.  TODO move to a new subclass of point
     
     public Point(int x, int y) {
         super(x,y);

@@ -6,6 +6,8 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 import org.joml.Intersectiond;
 import org.joml.Rectangled;
 import org.joml.Vector2d;
@@ -23,6 +25,7 @@ public class Edge {
     private Point[] points;
     private boolean isInternal = false;
     private ArrayList<Edge> connectedEdges;
+    private ArrayList<Point> adjustmentPoints; // used during expansion
     
     public Edge(Edge edgeToCopy) {
         this(edgeToCopy.point1(), 
@@ -33,6 +36,7 @@ public class Edge {
     public Edge(Point point1, Point point2) {
         points = new Point[2];
         connectedEdges = new ArrayList<>();
+        adjustmentPoints = new ArrayList<>();
         
         points[0] = new Point(point1);
         points[1] = new Point(point2);
@@ -106,6 +110,10 @@ public class Edge {
     
     public boolean isInternal() {
         return this.isInternal;
+    }
+    
+    public ArrayList<Point> adjustmentPoints() {
+        return this.adjustmentPoints;
     }
     
     public void isInternal(boolean isInternal) {
@@ -185,6 +193,16 @@ public class Edge {
         Edge edge = (Edge) o;
         // field comparison
         return this.point1().equals(edge.point1()) && this.point2().equals(edge.point2());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + Arrays.deepHashCode(this.points);
+        hash = 47 * hash + (this.isInternal ? 1 : 0);
+        hash = 47 * hash + Objects.hashCode(this.connectedEdges);
+        hash = 47 * hash + Objects.hashCode(this.adjustmentPoints);
+        return hash;
     }
     
 }
