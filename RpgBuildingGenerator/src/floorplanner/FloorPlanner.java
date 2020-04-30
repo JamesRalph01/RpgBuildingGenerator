@@ -41,6 +41,7 @@ public class FloorPlanner extends Shape{
     private ArrayList<Point> points = new ArrayList<>();
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
+    private ArrayList<EdgeAdjustment> listEdgeAdjustments;
     private int indexColourStart = 0;
     
     private boolean DEBUG = false;
@@ -129,8 +130,15 @@ public class FloorPlanner extends Shape{
                 points.add(new Point((int)bounds.x,(int)bounds.y));     
             }           
         }
- 
         
+         for (EdgeAdjustment adj : listEdgeAdjustments) {
+            points.add(new Point(adj.splitPoint.x-5, adj.splitPoint.y));
+            points.add(new Point(adj.splitPoint.x+5, adj.splitPoint.y));
+            
+            points.add(new Point(adj.splitPoint.x, adj.splitPoint.y-5));
+            points.add(new Point(adj.splitPoint.x, adj.splitPoint.y+5));
+        }
+ 
         return CoordSystemHelper.deviceToOpenGLf(points);
     } 
     
@@ -148,14 +156,15 @@ public class FloorPlanner extends Shape{
         // Final 'fitted' layout Pink! 255, 0, 255
         for (Point point : points) {
             // Treemap output
-            if (DEBUG && i > (indexColourStart * 3)) {
-                colourData[i++] = 0f/255f;
+            if (i <= (points.size() * 3) - (listEdgeAdjustments.size() * 4) * 3) {
                 colourData[i++] = 255f/255f;
-                colourData[i++] = 0f/255f;                
+                colourData[i++] = 0f/255f;
+                colourData[i++] = 255f/255f;      
             } else {
-                colourData[i++] = 255f/255f;
-                colourData[i++] = 0f/255f;
-                colourData[i++] = 255f/255f;                  
+                //245, 182, 66
+                colourData[i++] = 245f/255f;
+                colourData[i++] = 182f/255f;
+                colourData[i++] = 66f/255f;                  
             }
         }
         return colourData;
@@ -167,7 +176,9 @@ public class FloorPlanner extends Shape{
     
     private void generateRooms(Rect overallBounds)
     {
-      Rect bounds;
+        Rect bounds;
+        
+        listEdgeAdjustments= new ArrayList<>();
         Mappable[] items = mapModel.getItems();
         
         System.out.printf("Treemap bounds x1: %f, y1: %f, x2: %f, y2: %f\n", 
@@ -177,6 +188,7 @@ public class FloorPlanner extends Shape{
         rooms = new ArrayList<>();
         
         // Convert treemap output into a Rooms collection with edges
+        System.out.println("Step 1: Load Treemap");
         for (int i=0; i<items.length; i++) {
             bounds = items[i].getBounds();
             
@@ -197,12 +209,11 @@ public class FloorPlanner extends Shape{
             
             rooms.add(new Room(edges));
         }
-        System.out.println("After Step 1: Treemap load");
         printAllPoints();
         
-        
         // Detect whether edges are internal or external so that we can expand external edges to fit 
-        // the building outline polygon      
+        // the building outline polygon  
+        System.out.println("Step 2: internal/external edge detection");
         for (Room room: rooms) {
             for (Edge edge: room.edges()) {
                 // check if this edge shares any other room edge
@@ -223,13 +234,60 @@ public class FloorPlanner extends Shape{
                 }
             }
         }
-        System.out.println("After Step 2: internal/external edge detection");
         printAllPoints();
 
-                
-        // Now extend internal edges that have externally facing end points to a points on the building outline
-        for (Room room: rooms) {
+        // Split existing treemap edges where a point on the building outline would intersect it 
+        System.out.println("Step 3: split external edges");
+        for (Point externalPoint: polygonHelper.points()) {
             
+            Edge nearestExternalEdge = null;
+            Point nearestPoint = new Point();
+            Room nearestRoom = null;
+            boolean first = true;
+
+            // Check if building outline edge hits an external treemap edge
+            // and if more than one, amend the nearest        
+            
+            for (Room room: rooms) {
+                
+                for (Edge roomEdge: room.edges()) {
+                    if (roomEdge.isInternal() == false) {
+                        
+                        Vector3d result = new Vector3d();
+                        Intersectiond.findClosestPointOnLineSegment((double)roomEdge.x1(), (double)roomEdge.y1(), 0, 
+                                                                    (double)roomEdge.x2(), (double)roomEdge.y2(), 0, 
+                                                                    (double)externalPoint.x, (double)externalPoint.y, 0, 
+                                                                    result);
+                        if (first) {
+                            nearestExternalEdge = roomEdge;
+                            nearestRoom = room;
+                            nearestPoint = new Point(result.x, result.y);
+                            first = false;
+                        } else {
+                            // found closer edge?
+                            if (externalPoint.distance(new Point(result.x, result.y)) < 
+                                externalPoint.distance(nearestPoint)) {
+                                nearestExternalEdge = roomEdge;
+                                nearestRoom = room;            
+                                nearestPoint = new Point(result.x, result.y);
+                                
+                            }
+                        }
+                    }  
+                }
+
+            }
+            // Adjust room and edge to fit building outline point
+            if (nearestRoom != null) {
+                listEdgeAdjustments.add(new EdgeAdjustment(nearestRoom, nearestExternalEdge, nearestPoint, externalPoint));
+            }
+
+        }
+        printAllPoints();    
+                
+        // Now extend internal edges that have externally facing end points to a point on the building outline
+        System.out.println("Step 4: expand internal edges with one external point");
+        for (Room room: rooms) {  
             for (Edge edge: room.edges()) {
 
                 for (int i = 0; i < 2; i++) {
@@ -260,105 +318,26 @@ public class FloorPlanner extends Shape{
 
                     }   
                 }
-                
             }
         }
-        System.out.println("After Step 4: expand internal edges with one external point");
         printAllPoints();
         
-        
-        // Extend external room edges generated by treemap to match building outline   
-        for (Point externalPoint: polygonHelper.points()) {
-            
-            Edge nearestInternalEdge = null;
-            Point nearestPoint = new Point();
-            Room nearestRoom = null;
-            boolean first = true;
-            
-            // Check if building outline edge hits an external treemap edge
-            // and if more than one, amend the nearest        
-            
-            for (Room room: rooms) {
-                for (Edge roomEdge: room.edges()) {
-                    if (roomEdge.isInternal() == false) {
-                        
-                        Vector3d result = new Vector3d();
-                        Intersectiond.findClosestPointOnLineSegment((double)roomEdge.x1(), (double)roomEdge.y1(), 0, 
-                                                                    (double)roomEdge.x2(), (double)roomEdge.y2(), 0, 
-                                                                    (double)externalPoint.x, (double)externalPoint.y, 0, 
-                                                                    result);
-                        if (first) {
-                            nearestInternalEdge = roomEdge;
-                            nearestRoom = room;
-                            nearestPoint = new Point((int)result.x, (int)result.y);
-                            first = false;
-                        } else {
-                            // found closer edge?
-                            if (externalPoint.distance(new Point((int)result.x, (int)result.y)) < 
-                                externalPoint.distance(nearestPoint)) {
-                                nearestInternalEdge = roomEdge;
-                                nearestRoom = room;            
-                                nearestPoint = new Point((int)result.x, (int)result.y);
-                                
-                            }
-                        }
-                    }
-                    // Adjust room and edge to fit building outline point
-                    if (nearestRoom != null) nearestRoom.adjust(externalPoint, nearestPoint, nearestInternalEdge);    
-                }
-            }    
-
+        //Split external facing edges
+        System.out.println("Step 5: split external edges");
+        for (EdgeAdjustment adj : listEdgeAdjustments) {
+            adj.room.split(adj.splitPoint, adj.edge);
         }
-        System.out.println("After Step 3: expand external edges");
         printAllPoints();
-
-        
-    }
-   
-    
-    
-    
-    public void adjustEdge(ArrayList<Edge> edges, Edge edgeToAdjust) {
-    
-        // if the point to adjust is at either end of the edge, leave as is
-        // otherwise split the edge in two
-        
-        System.out.println("Adjusting edge...");
-        
-        Collections.sort(edgeToAdjust.adjustmentPoints(), new adjustmentPointsComp());
-        for (Point adjustmentPoint : edgeToAdjust.adjustmentPoints()) {
-            
-            if (adjustmentPoint.equals(edgeToAdjust.point1()) == false &&
-                adjustmentPoint.equals(edgeToAdjust.point2()) == false) {
-                // 
-                
-                System.out.printf("Adjusting for point x: %d, y: %d, index: %d \n", 
-                        adjustmentPoint.x, adjustmentPoint.y, adjustmentPoint.orginalIndex);
-                
-                
-                int index = edges.indexOf(edgeToAdjust);
-
-                // Create new edge (i.e. split this edge) and insert in front of this edge
-                Edge newEdge = new Edge(edgeToAdjust.point1(), adjustmentPoint);
-                edges.add(index, newEdge);
-                
-                // Amend existing edge
-                edgeToAdjust.point1().set(adjustmentPoint);
-                
-
-//                int index = edges.indexOf(edgeToAdjust);
-//                edges.
-//                edges.remove(index);
-//
-//                //Create new edges
-//                Edge edge1 = new Edge(edgeToAdjust.point1(), adjustmentPoint);
-//                Edge edge2 = new Edge(adjustmentPoint, edgeToAdjust.point2());
-//
-//                edges.add(index, edge2);
-//                edges.add(index, edge1);  
-            }            
+  
+        //Finally move split points to building outline
+        System.out.println("Step 6: move split point");
+        for (EdgeAdjustment adj : listEdgeAdjustments) {
+            adj.room.adjust(adj.splitPoint, adj.movePoint);
         }
+        printAllPoints();
+        
     }
+
     
     private void printAllPoints() {
         for (Room room: rooms) {
@@ -368,9 +347,9 @@ public class FloorPlanner extends Shape{
                 System.out.printf("x1: %d, y1: %d, scope1: %s -> x2: %d, y2: %d, scope2: %s \n", 
                         edge.point1().x, edge.point1().y, edge.point1().scope.toString(),
                         edge.point2().x, edge.point2().y, edge.point2().scope.toString());
-                for (Point point : edge.adjustmentPoints()) {
-                    System.out.printf("... adjustment point x1: %d, y1: %d, index %d \n", point.x, point.y, point.orginalIndex);
-                }
+//                for (EdgeAdjustment adj : listEdgeAdjustments) {
+//                    System.out.printf("... adjustment point x1: %d, y1: %d, index %d \n", point.x, point.y, point.orginalIndex);
+//                }
             }
             System.out.println("===========================");
         }

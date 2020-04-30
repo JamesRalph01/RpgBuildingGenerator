@@ -70,46 +70,44 @@ public class Room extends Shape {
         }
     }
     
-    // remove?
-    public void adjust(Point adjustmentPoint, Point pointOnEdge, Edge edgeToAdjust) {
+    public void split(Point pointOnEdge, Edge edgeToAdjust) {
     
         // if the point to adjust is at either end of the edge, leave as is
-        // otherwise split the edge in two
+        // otherwise split the edge in two, but keep aligned aith the other two points
+        
         if (pointOnEdge.equals(edgeToAdjust.point1()) == false &&
             pointOnEdge.equals(edgeToAdjust.point2()) == false) {
             // 
             int index = this.edges.indexOf(edgeToAdjust);
-            this.edges.remove(edgeToAdjust);
             
             //Create new edge and keep existing one
-            Edge edge1 = new Edge(edgeToAdjust.point1(), adjustmentPoint);
-            Edge edge2 = new Edge(adjustmentPoint, edgeToAdjust.point2());
-            
-            this.edges.add(index, edge2);
+            Edge edge1 = new Edge(edgeToAdjust.point1(), pointOnEdge);
             this.edges.add(index, edge1);  
-        }
-    }
-    
-    public void adjust(Edge edgeToAdjust) {
-    
-        // if the point to adjust is at either end of the edge, leave as is
-        // otherwise split the edge in two
-        for (Point adjustmentPoint : edgeToAdjust.adjustmentPoints()) {
-            
-            if (adjustmentPoint.equals(edgeToAdjust.point1()) == false &&
-                adjustmentPoint.equals(edgeToAdjust.point2()) == false) {
-                // 
-                int index = this.edges.indexOf(edgeToAdjust);
+            edgeToAdjust.point1().set(pointOnEdge);
 
-                // Create new edge (i.e. split this edge) and insert in front of this edge
-                Edge newEdge = new Edge(edgeToAdjust.point1(), adjustmentPoint);
-                this.edges.add(index, newEdge);
-                
-                // Amend existing edge
-                edgeToAdjust.point1().set(adjustmentPoint);
-            }            
         }
     }
+    
+//    public void adjust(Edge edgeToAdjust) {
+//    
+//        // if the point to adjust is at either end of the edge, leave as is
+//        // otherwise split the edge in two
+//        for (Point adjustmentPoint : edgeToAdjust.adjustmentPoints()) {
+//            
+//            if (adjustmentPoint.equals(edgeToAdjust.point1()) == false &&
+//                adjustmentPoint.equals(edgeToAdjust.point2()) == false) {
+//                // 
+//                int index = this.edges.indexOf(edgeToAdjust);
+//
+//                // Create new edge (i.e. split this edge) and insert in front of this edge
+//                Edge newEdge = new Edge(edgeToAdjust.point1(), adjustmentPoint);
+//                this.edges.add(index, newEdge);
+//                
+//                // Amend existing edge
+//                edgeToAdjust.point1().set(adjustmentPoint);
+//            }            
+//        }
+//    }
     
     public void adjust(Point currentPoint, Point adjustedPoint) {
         // adjust any matching point to new point across all edges
@@ -119,8 +117,8 @@ public class Room extends Shape {
             } else if (currentPoint.equals(edge.point2())) {
                 edge.point2().set(adjustedPoint.x, adjustedPoint.y);
             }
-        }
-                
+        }          
     }
+   
     
 }

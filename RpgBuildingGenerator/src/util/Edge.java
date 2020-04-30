@@ -25,7 +25,6 @@ public class Edge {
     private Point[] points;
     private boolean isInternal = false;
     private ArrayList<Edge> connectedEdges;
-    private ArrayList<Point> adjustmentPoints; // used during expansion
     
     public Edge(Edge edgeToCopy) {
         this(edgeToCopy.point1(), 
@@ -36,7 +35,6 @@ public class Edge {
     public Edge(Point point1, Point point2) {
         points = new Point[2];
         connectedEdges = new ArrayList<>();
-        adjustmentPoints = new ArrayList<>();
         
         points[0] = new Point(point1);
         points[1] = new Point(point2);
@@ -110,10 +108,6 @@ public class Edge {
     
     public boolean isInternal() {
         return this.isInternal;
-    }
-    
-    public ArrayList<Point> adjustmentPoints() {
-        return this.adjustmentPoints;
     }
     
     public void isInternal(boolean isInternal) {
@@ -201,7 +195,6 @@ public class Edge {
         hash = 47 * hash + Arrays.deepHashCode(this.points);
         hash = 47 * hash + (this.isInternal ? 1 : 0);
         hash = 47 * hash + Objects.hashCode(this.connectedEdges);
-        hash = 47 * hash + Objects.hashCode(this.adjustmentPoints);
         return hash;
     }
     
