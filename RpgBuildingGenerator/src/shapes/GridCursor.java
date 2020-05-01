@@ -6,13 +6,13 @@
 package shapes;
 
 import java.util.ArrayList;
-import org.joml.Vector2i;
+import util.Point;
 import util.CoordSystemHelper;
 
 public class GridCursor extends Shape {
     
-    ArrayList<Vector2i> points;   
-    private Vector2i cursorPostion = new Vector2i(0,0);    
+    ArrayList<Point> points;   
+    private Point cursorPostion = new Point(0,0);    
     private float[] colourData = {
         245f/255f, 250f/255f, 90f/255f,
         245f/255f, 250f/255f, 90f/255f,
@@ -39,7 +39,7 @@ public class GridCursor extends Shape {
         return points.size();
     }
     
-    public void cursorPosition(Vector2i point) {
+    public void cursorPosition(Point point) {
         cursorPostion = point;
         initPositionData();
     }
@@ -47,10 +47,10 @@ public class GridCursor extends Shape {
     private void initPositionData() {
 
         points = new ArrayList<>();
-        points.add(new Vector2i(cursorPostion.x-5, cursorPostion.y));
-        points.add(new Vector2i(cursorPostion.x+5, cursorPostion.y));
-        points.add(new Vector2i(cursorPostion.x, cursorPostion.y-5));
-        points.add(new Vector2i(cursorPostion.x, cursorPostion.y+5)); 
+        points.add(new Point(cursorPostion.x-5, cursorPostion.y));
+        points.add(new Point(cursorPostion.x+5, cursorPostion.y));
+        points.add(new Point(cursorPostion.x, cursorPostion.y-5));
+        points.add(new Point(cursorPostion.x, cursorPostion.y+5)); 
     }
 }
 

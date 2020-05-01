@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import shapes.BuildingOutline;
 import util.CoordSystemHelper;
+import util.Point;
 
 /**
  *
@@ -105,6 +106,7 @@ public class Window extends JFrame implements ActionListener {
         
         addButton("GENERATE", optionsPanel);
         addButton("CLEAR", optionsPanel);
+        addButton("TEST", optionsPanel);
         
         mainPanel.add(optionsPanel, pos);
     }
@@ -135,16 +137,35 @@ public class Window extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String action;
         String type;
+        BuildingOutline buildingOutline;
+        int w, h;
 
+        w = this.mainPanel.getComponent(0).getWidth();
+        h = this.mainPanel.getComponent(0).getHeight();
+        buildingOutline = controller.getBuildingOutLine();
+        
         action = e.getActionCommand();
         
         switch (action) {
             case "GENERATE":
-                int w = this.mainPanel.getComponent(0).getWidth();
-                int h = this.mainPanel.getComponent(0).getHeight();
-                BuildingOutline buildingOutline = controller.getBuildingOutLine();
                 controller.getFloorPlanner().generate(buildingOutline, w, h);
                 break;
+            case "TEST":
+                controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TEST);
+                controller.getBuildingOutLine().clear();
+                controller.getBuildingOutLine().addPoint(new Point(50,200));
+                controller.getBuildingOutLine().addPoint(new Point(150,100));
+                controller.getBuildingOutLine().addPoint(new Point(250,50));
+                controller.getBuildingOutLine().addPoint(new Point(350,50));
+                controller.getBuildingOutLine().addPoint(new Point(450,150));
+                controller.getBuildingOutLine().addPoint(new Point(450,350));
+                controller.getBuildingOutLine().addPoint(new Point(300,400));
+                controller.getBuildingOutLine().addPoint(new Point(130,400));
+       
+                // finish outline by finishing on same point
+                controller.getBuildingOutLine().addPoint(new Point(50,200));
+                controller.getFloorPlanner().generate(buildingOutline, w, h);
+                break;               
             case "CLEAR":
                 controller.getBuildingOutLine().clear();
                 controller.getFloorPlanner().clear();

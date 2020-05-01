@@ -6,15 +6,15 @@
 package shapes;
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import org.joml.Vector2i;
+import util.Point;
 import util.CoordSystemHelper;
 
 public class BuildingOutline extends Shape {
     
-    ArrayList<Vector2i> points = new ArrayList<>();
+    ArrayList<Point> points = new ArrayList<>();
     boolean isComplete = false;
     
-    public void addPoint(Vector2i point) {
+    public void addPoint(Point point) {
          // Don't allow further points to be added if outline is a closed polygon
          checkIsComplete(point);
          
@@ -33,7 +33,7 @@ public class BuildingOutline extends Shape {
          return points.size();
      }
      
-     public ArrayList<Vector2i> points() {
+     public ArrayList<Point> points() {
          return this.points;
      }
      
@@ -54,7 +54,7 @@ public class BuildingOutline extends Shape {
          
          colourData = new float[points.size() * 3];   
          //White 255,255,255
-         for (Vector2i point : points) {
+         for (Point point : points) {
              colourData[i++] = 1.0f; //R
              colourData[i++] = 1.0f; //G
              colourData[i++] = 1.0f; //B
@@ -66,7 +66,7 @@ public class BuildingOutline extends Shape {
         return points.size();
      }
 
-     private void checkIsComplete(Vector2i point) {
+     private void checkIsComplete(Point point) {
          
          // Can consider if complete if user has defined more than 3 points 
          // i.e. a triangle with last point equal to first

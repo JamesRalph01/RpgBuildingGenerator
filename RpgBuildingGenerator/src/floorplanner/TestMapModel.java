@@ -11,11 +11,11 @@ import java.util.stream.IntStream;
  *
  * @author chrisralph
  */
-public class TavernMapModel implements MapModel {
+public class TestMapModel implements MapModel {
 
     private MapItem[] items;
 
-    public TavernMapModel(double width, double height) {
+    public TestMapModel(double width, double height) {
         int[] itemRatio = {3, 8};
                 
         this.items = new MapItem[itemRatio.length];
@@ -30,6 +30,5 @@ public class TavernMapModel implements MapModel {
     @Override
     public Mappable[] getItems() {
         return items;
-    }
-    
+    }   
 }
