@@ -202,6 +202,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 //        System.out.printf("dimensions width %d, height %d \n", CoordSystemHelper.deviceWidth, CoordSystemHelper.deviceHeight);
 //        
         cursorPosition = new Point(e.getX(), e.getY());
+
         nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
         gridCursor.cursorPosition(nearestGridPoint);
         editCursorLine.ToPoint(nearestGridPoint);

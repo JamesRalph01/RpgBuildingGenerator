@@ -119,7 +119,7 @@ public class FloorPlanner extends Shape{
             colourData[i++] = point.getGreenf();
             colourData[i++] = point.getBluef();
          };
-
+      
         return colourData;
     }
     
