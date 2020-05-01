@@ -5,6 +5,7 @@
  */
 package util;
 
+import java.awt.Color;
 import org.joml.Vector2i;
 
 /**
@@ -18,6 +19,7 @@ public class Point extends Vector2i {
     }
     public Point.Scope scope = Scope.NA;
     public int orginalIndex = 0; // for sorting adjustment points.  TODO move to a new subclass of point
+    private Color colour = new Color(116, 235, 52);
     
     public Point(int x, int y) {
         super(x,y);
@@ -34,6 +36,30 @@ public class Point extends Vector2i {
     
     public Point() {
         super();
-    }  
+    }
+    
+    public Color getColour() {
+        return this.colour;
+    }
+    
+    public void setColour(int R, int G, int B) {
+        this.colour = new Color(R,G,B);
+    }
+    
+    public void setColour(Color colour) {
+        this.colour = colour;
+    }
+    
+    public float getRedf() {
+        return (float) colour.getRed() / 255f;
+    }
+
+    public float getGreenf() {
+        return (float) colour.getGreen() / 255f;
+    }
+    
+    public float getBluef() {
+        return (float) colour.getBlue() / 255f;
+    }
     
 }

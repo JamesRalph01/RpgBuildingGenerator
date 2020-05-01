@@ -23,7 +23,7 @@ public class TestMapModel implements MapModel {
         double sum = IntStream.of(itemRatio).sum();
 
         for (int i = 0; i < items.length; i++) {
-            items[i] = new MapItem(totalArea / sum * itemRatio[i], 0);
+            items[i] = new MapItem(totalArea / sum * itemRatio[i], 0, "NA");
         }
     }
     
