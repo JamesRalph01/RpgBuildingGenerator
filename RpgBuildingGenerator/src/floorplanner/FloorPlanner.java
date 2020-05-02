@@ -27,7 +27,7 @@ import util.Point;
 
 public class FloorPlanner extends Shape{
 
-    private boolean DEBUG = true;
+    private boolean DEBUG = false;
     
     public enum BuildingType {
         TAVERN, CHURCH, HOUSE, 
@@ -279,7 +279,6 @@ public class FloorPlanner extends Shape{
                 if (nearestRoom != null) {
                     listEdgeAdjustments.add(new EdgeAdjustment(nearestRoom, nearestExternalEdge, nearestPoint, externalPoint));
                 }
-
             }
             printAllPoints();    
 
