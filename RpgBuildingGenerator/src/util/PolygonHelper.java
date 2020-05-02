@@ -223,7 +223,7 @@ public class PolygonHelper {
         boolean first = true;
 
         for (Edge edge: this.edges()) {
-
+            
             Vector3d result = new Vector3d();
             Intersectiond.findClosestPointOnLineSegment((double)edge.x1(), (double)edge.y1(), 0, 
                                                         (double)edge.x2(), (double)edge.y2(), 0, 
@@ -241,6 +241,40 @@ public class PolygonHelper {
                     nearestPoint = new Point((int)result.x, (int)result.y);
                 }
             }
+        }
+        return nearestEdge;
+    }
+    
+    public Edge closestEdge2(Edge testEdge, Point testPoint) {
+        Edge nearestEdge = null;
+        Point nearestPoint = new Point();
+        boolean first = true;
+
+        // closest point along nearest edge this edge intersects with
+        for (Edge edge: this.edges()) {
+                        
+            Vector2d result = new Vector2d();
+            boolean intersects;
+            intersects = Intersectiond.intersectLineLine((double)testEdge.x1(), (double)testEdge.y1(), 
+                                                         (double)testEdge.x2(), (double)testEdge.y2(), 
+                                                         (double)edge.x1(), (double)edge.y1(), 
+                                                         (double)edge.x2(), (double)edge.y2(),
+                                                          result);
+            if (intersects) {
+                if (first) {
+                    nearestEdge = edge;
+                    nearestPoint = new Point((int)result.x, (int)result.y);
+                    first = false;
+                } else {
+                    // found closer edge?
+                    if (testPoint.distance(new Point((int)result.x, (int)result.y)) < 
+                        testPoint.distance(nearestPoint)) {
+                        nearestEdge = edge;        
+                        nearestPoint = new Point((int)result.x, (int)result.y);
+                    }
+                }                
+            }
+
         }
         return nearestEdge;
     }

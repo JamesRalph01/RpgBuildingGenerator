@@ -57,20 +57,29 @@ public class Edge {
             Point p = points[i];
 
             // does the point lie on the rect ?
-            p.scope = Point.Scope.INTERNAL;
+            p.scope = Point.Scope.NA;
             
-            if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
-                if (p.x == (int)bounds.x || p.x == (int)bounds.x+bounds.w) {
-                    //if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
-                        p.scope = Point.Scope.EXTERNAL;                        
-                    //}
-                }
-            } else {
-                if (p.y == (int)bounds.y || p.y == (int)bounds.y+bounds.h) {
-                    //if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
-                        p.scope = Point.Scope.EXTERNAL;                  
-                    //}
-                }   
+//            if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+//                if (p.x == (int)bounds.x || p.x == (int)bounds.x+bounds.w) {
+//                    //if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
+//                        p.scope = Point.Scope.EXTERNAL;                        
+//                    //}
+//                }
+//            } else {
+//                if (p.y == (int)bounds.y || p.y == (int)bounds.y+bounds.h) {
+//                    //if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
+//                        p.scope = Point.Scope.EXTERNAL;                  
+//                    //}
+//                }   
+//            }
+
+            // returns true if point lies inside rectangle
+            if (Intersectiond.testPointAar​(p.x, p.y, 
+                                       bounds.x, bounds.y, bounds.x+bounds.w, bounds.y+bounds.h)) {
+                p.scope = Point.Scope.EXTERNAL;
+            } else
+            {
+                p.scope = Point.Scope.INTERNAL;
             }
             
         }
@@ -127,7 +136,7 @@ public class Edge {
         return result != Intersectiond.OUTSIDE;
     }
     
-    public boolean intersets(Edge edgeToCheck) {
+    public boolean intersets(Edge edgeToCheck, int tolerance) {
         Rectangled rect;
         int result;
         
@@ -136,6 +145,10 @@ public class Edge {
         rect.maxX = Math.max((double) edgeToCheck.x1(), (double) edgeToCheck.x2());
         rect.minY = Math.min((double) edgeToCheck.y1(), (double) edgeToCheck.y2());
         rect.maxY = Math.max((double) edgeToCheck.y1(), (double) edgeToCheck.y2());
+        rect.minX -= tolerance;
+        rect.maxX -= tolerance;
+        rect.maxX += tolerance;
+        rect.maxY += tolerance;
         
         Vector2d intersectionPoint = new Vector2d();
         

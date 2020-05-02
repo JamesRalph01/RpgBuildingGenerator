@@ -5,6 +5,7 @@
  */
 package floorplanner;
 
+import java.util.ArrayList;
 import shapes.Room;
 import util.Edge;
 import util.Point;
@@ -17,14 +18,12 @@ public class EdgeAdjustment {
     
     public Room room;
     public Edge edge;
-    public Point splitPoint;
-    public Point movePoint;
+    public ArrayList<Point> movePoints;
     
-    public EdgeAdjustment(Room room, Edge edge, Point splitPoint, Point movePoint) {
+    public EdgeAdjustment(Room room, Edge edge) {
         this.room = room;
         this.edge = edge;
-        this.splitPoint = splitPoint;
-        this.movePoint = movePoint;
+        this.movePoints = new ArrayList<>();  
     }
     
 }

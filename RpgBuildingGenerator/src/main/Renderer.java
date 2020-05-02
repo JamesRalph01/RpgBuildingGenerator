@@ -120,26 +120,29 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
                 
         //draw building outline
-        int[] houseOutlineVaoHandle = new int[1];
-        if (controller.getBuildingOutLine().size() >= 1) {
+        if (controller.showOutline || controller.getBuildingOutLine().isComplete() == false) {
+            int[] houseOutlineVaoHandle = new int[1];
+            if (controller.getBuildingOutLine().size() >= 1) {
 
-            BufferHandler.setupBuffers(houseOutlineVaoHandle, controller.getBuildingOutLine().getPositionData(), 
-                    controller.getBuildingOutLine().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-            if (loc != -1)
-            {
-                FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
-                new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
-                gl.glUniformMatrix4fv(loc, 1, false, fb2);
-            }
-            gl.glLineWidth(4.0f);
-            gl.glBindVertexArray(houseOutlineVaoHandle[0]);
-            if (controller.getBuildingOutLine().isComplete()) {
-                gl.glDrawArrays(GL4.GL_LINE_LOOP, 0, controller.getBuildingOutLine().numbervertices());  
-            } else {
-                gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getBuildingOutLine().numbervertices());                  
-            }
+                BufferHandler.setupBuffers(houseOutlineVaoHandle, controller.getBuildingOutLine().getPositionData(), 
+                        controller.getBuildingOutLine().getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
+                if (loc != -1)
+                {
+                    FloatBuffer fb2 = Buffers.newDirectFloatBuffer(16);
+                    new Matrix4f().translate(0.0f,0.0f,0.0f).get(fb2);
+                    gl.glUniformMatrix4fv(loc, 1, false, fb2);
+                }
+                gl.glLineWidth(4.0f);
+                gl.glBindVertexArray(houseOutlineVaoHandle[0]);
+                if (controller.getBuildingOutLine().isComplete()) {
+                    gl.glDrawArrays(GL4.GL_LINE_LOOP, 0, controller.getBuildingOutLine().numbervertices());  
+                } else {
+                    gl.glDrawArrays(GL4.GL_LINE_STRIP, 0, controller.getBuildingOutLine().numbervertices());                  
+                }
 
+            }            
         }
+
         
         //draw floorplan
         if (controller.getFloorPlanner().activeFloorPlan()) {
@@ -156,7 +159,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             gl.glBindVertexArray(floorplanVaoHandle[0]);
             gl.glDrawArrays(GL4.GL_LINES, 0, controller.getFloorPlanner().numbervertices());  
         }
-        
+
         gl.glFlush();
         
     }

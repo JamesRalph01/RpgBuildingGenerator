@@ -9,6 +9,10 @@ import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import org.joml.Intersectiond;
 import shapes.Shape;
 import shapes.BuildingOutline;
@@ -41,7 +45,7 @@ public class FloorPlanner extends Shape{
     private ArrayList<Point> points = new ArrayList<>();
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
-    private ArrayList<EdgeAdjustment> listEdgeAdjustments;
+    private HashMap<Edge, EdgeAdjustment> listEdgeAdjustments;
     private int indexColourStart = 0;
     
 
@@ -167,7 +171,7 @@ public class FloorPlanner extends Shape{
     {
         Rect bounds;
         
-        listEdgeAdjustments= new ArrayList<>();
+        listEdgeAdjustments= new HashMap<>();
         Mappable[] items = mapModel.getItems();
         
         System.out.printf("Treemap bounds x1: %f, y1: %f, x2: %f, y2: %f\n", 
@@ -204,7 +208,7 @@ public class FloorPlanner extends Shape{
             }
             rooms.add(new Room(edges));
         }
-        printAllPoints();
+        printAllPoints(false);
 
         if (DEBUG == false) {
 
@@ -218,24 +222,26 @@ public class FloorPlanner extends Shape{
                     // take a partial piece of the edge and check if intersects with another room
                     // partial to prevent overlaps where rooms touch
                     Edge partial = new Edge(edge);
-                    partial.shrink(1);
+                    partial.shrink(5);
 
                     for (Room roomToCheck: rooms) {    
                         if (roomToCheck != room) {
                             for (Edge edgeToCheck : roomToCheck.edges()) {
-                                if (partial.intersets(edgeToCheck)) {
+                                if (partial.intersets(edgeToCheck,2)) {
                                     edge.connectedEdges().add(edgeToCheck);
                                     edge.isInternal(true);
+                                    edge.point1().setColour(235, 168, 52);
+                                    edge.point2().setColour(235, 168, 52);
                                 }                          
                             }
                         }
                     }
                 }
             }
-            printAllPoints();
+            printAllPoints(false);
 
-            // Split existing treemap edges where a point on the building outline would intersect it 
-            System.out.println("Step 3: split external edges");
+            // For each building outline point, find closet external edge on Treemap
+            System.out.println("Step 3: calc external edges");
             for (Point externalPoint: polygonHelper.points()) {
 
                 Edge nearestExternalEdge = null;
@@ -273,70 +279,119 @@ public class FloorPlanner extends Shape{
                             }
                         }  
                     }
-
                 }
+                
                 // Adjust room and edge to fit building outline point
                 if (nearestRoom != null) {
-                    listEdgeAdjustments.add(new EdgeAdjustment(nearestRoom, nearestExternalEdge, nearestPoint, externalPoint));
+                    // allow 2 pixel tollerance due to double conversion
+                    //if (nearestPoint.distance(externalPoint) > 2) {
+                        EdgeAdjustment adj;
+                        if (listEdgeAdjustments.containsKey(nearestExternalEdge) == false) {
+                            adj = new EdgeAdjustment(nearestRoom, nearestExternalEdge);
+                            listEdgeAdjustments.put(nearestExternalEdge, adj);
+                        } else {
+                            adj = listEdgeAdjustments.get(nearestExternalEdge);
+                        }
+                        adj.movePoints.add(externalPoint);                        
+                    //}
                 }
             }
-            printAllPoints();    
+            printAllPoints(true);    
 
-            // Now extend internal edges that have externally facing end points to a point on the building outline
-            System.out.println("Step 4: expand internal edges with one external point");
-            for (Room room: rooms) {  
-                for (Edge edge: room.edges()) {
+//            // Now extend internal edges that have externally facing end points to a point on the building outline
+//            System.out.println("Step 4: expand internal edges with one external point");
+//            for (Room room: rooms) {  
+//                for (Edge edge: room.edges()) {
+//
+//                    if (edge.isInternal())
+//                    {
+//                        for (int i = 0; i < 2; i++) {
+//
+//                            Point p;
+//                            p = (i == 0 ? new Point(edge.point1()) : new Point(edge.point2()));
+//
+//                            if (p.scope == Point.Scope.EXTERNAL) {
+//                                Edge closestOutsideEdge;
+//                                Vector2d intersection = new Vector2d();
+//                                closestOutsideEdge = polygonHelper.closestEdge2(edge, p);
+//                                if (closestOutsideEdge != null) {
+//                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+//                                                                        edge.point2().x, edge.point2().y,
+//                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+//                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+//                                                                        intersection)) {
+//                                        //set all matching points to new position 
+//                                        for (Room bRoom: rooms) {
+//                                            bRoom.adjust(p, new Point(intersection.x, intersection.y));    
+//                                        }
+//                                        //p.set((int)intersection.x, (int)intersection.y);
+//
+//                                    }
+//                                }
+//
+//                            }   
+//                        }
+//                    }
+//                }
+//            }
+//            printAllPoints(false);
 
-                    for (int i = 0; i < 2; i++) {
-
-                        Point p;
-                        if (i==0) {
-                            p = new Point(edge.point1()); // take a copy to avoid changing original
-                        }
-                        else {
-                            p = new Point(edge.point2());
-                        }
-
-                        if (p.scope == Point.Scope.EXTERNAL) {
-                            Edge closestOutsideEdge;
-                            Vector2d intersection = new Vector2d();
-                            closestOutsideEdge = polygonHelper.closestEdge(p);
-                            if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-                                                                edge.point2().x, edge.point2().y,
-                                                                closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-                                                                closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-                                                                intersection)) {
-                                // set all matching points to new position 
-                                for (Room bRoom: rooms) {
-                                    bRoom.adjust(p, new Point(intersection.x, intersection.y));    
-                                }
-
-                            }
-
-                        }   
-                    }
-                }
-            }
-            printAllPoints();
-
-            //Split external facing edges
-            System.out.println("Step 5: split external edges");
-            for (EdgeAdjustment adj : listEdgeAdjustments) {
-                adj.room.split(adj.splitPoint, adj.edge);
-            }
-            printAllPoints();
-
-            //Finally move split points to building outline
-            System.out.println("Step 6: move split point");
-            for (EdgeAdjustment adj : listEdgeAdjustments) {
-                adj.room.adjust(adj.splitPoint, adj.movePoint);
-            }
-            printAllPoints();
+//            //Split and move external facing edges
+//            System.out.println("Step 5: split external edges");
+//            
+//            Set set = listEdgeAdjustments.entrySet();
+//            Iterator iterator = set.iterator();
+//            while(iterator.hasNext()) {
+//                
+//                Map.Entry mentry = (Map.Entry)iterator.next();
+//                EdgeAdjustment adj = (EdgeAdjustment) mentry.getValue();
+//
+//                
+//                ArrayList<Edge> adjEdges = new ArrayList<>();
+//                adjEdges.add(adj.edge);
+//                
+//                for (Point adjPoint : adj.movePoints) {
+//                    boolean first = true;
+//                    Edge nearestEdge = null;
+//                    Point nearestPoint = null;
+//                
+//                    // find nearest point on edges being adjusted, split nearest edge and continue until all 
+//                    // associated external points have been processed
+//                    for (Edge adjEdge: adjEdges) {
+//                        Vector3d result = new Vector3d();
+//                        Intersectiond.findClosestPointOnLineSegment((double)adjEdge.x1(), (double)adjEdge.y1(), 0, 
+//                                                                    (double)adjEdge.x2(), (double)adjEdge.y2(), 0, 
+//                                                                    (double)adjPoint.x, (double)adjPoint.y, 0, 
+//                                                                    result);   
+//                        if (first) {
+//                            nearestEdge = adjEdge;
+//                            nearestPoint = new Point(result.x, result.y);
+//                            first = false;
+//                        } else {
+//                            // found closer edge?
+//                            if (adjPoint.distance(new Point(result.x, result.y)) < 
+//                                adjPoint.distance(nearestPoint)) {
+//                                nearestEdge = adjEdge;
+//                                nearestPoint = new Point(result.x, result.y);
+//                            }
+//                        }
+//                    }
+//                        
+//                    // split edge
+//                    Edge newEdge = adj.room.split(adjPoint, nearestEdge);
+//                    // add new edge to list of edges being adjusted
+//                    if (newEdge != null) adjEdges.add(newEdge);
+//                    
+//                    //Adjust any matching points
+//                    //adj.room.adjust(nearestPoint, adjPoint);
+//                }
+//            }
+//
+//            printAllPoints(false);
         }
     }
-
-    
-    private void printAllPoints() {
+        
+    private void printAllPoints(boolean includeadj) {
         for (Room room: rooms) {
             System.out.println("Room");
             for (Edge edge: room.edges()) {
@@ -344,12 +399,24 @@ public class FloorPlanner extends Shape{
                 System.out.printf("x1: %d, y1: %d, scope1: %s -> x2: %d, y2: %d, scope2: %s \n", 
                         edge.point1().x, edge.point1().y, edge.point1().scope.toString(),
                         edge.point2().x, edge.point2().y, edge.point2().scope.toString());
-//                for (EdgeAdjustment adj : listEdgeAdjustments) {
-//                    System.out.printf("... adjustment point x1: %d, y1: %d, index %d \n", point.x, point.y, point.orginalIndex);
-//                }
             }
+
             System.out.println("===========================");
         }
+        if (includeadj) {
+            Set set = listEdgeAdjustments.entrySet();
+            Iterator iterator = set.iterator();
+            while(iterator.hasNext()) {
+                Map.Entry mentry = (Map.Entry)iterator.next();
+                EdgeAdjustment adj = (EdgeAdjustment) mentry.getValue();
+                System.out.printf("Adjustment Edge... x1: %d, y1: %d -> x2: %d, y2: %d \n", 
+                                  adj.edge.point1().x,adj.edge.point1().y, adj.edge.point2().x, adj.edge.point2().y);
+                for (Point adjPoint : adj.movePoints) {
+                    System.out.printf("Adjustment Point... x1: %d, y1: %d \n", adjPoint.x, adjPoint.y);                   
+                }
+            }            
+        }
+
     }
     
     class adjustmentPointsComp implements Comparator<Point>{
