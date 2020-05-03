@@ -128,7 +128,7 @@ public class RoomTest {
         Point adjustmentPoint = new Point(15,5);
         Point pointOnEdge = new Point(15,10);
         Edge edgeToAdjust = room.edges().get(0);
-        room.adjust(adjustmentPoint, pointOnEdge, edgeToAdjust);
+        room.adjust(adjustmentPoint, pointOnEdge);
         assertTrue(room.edges().size()==5);
         assertEquals(new Edge(new Point(5,10), new Point(15,5)), room.edges().get(0));
         assertEquals(new Edge(new Point(15,5), new Point(20,10)), room.edges().get(1));

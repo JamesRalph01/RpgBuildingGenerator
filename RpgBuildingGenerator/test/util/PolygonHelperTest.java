@@ -119,4 +119,21 @@ public class PolygonHelperTest {
         assertEquals(3.0f, result.h, 0);
     }
     
+    @Test
+    public void testclosestEdge() {
+        Edge result;
+        Point pointToCheck;
+        Edge edgeToCheck;
+        
+        pointToCheck = new Point(18,18);
+        edgeToCheck = new Edge(pointToCheck,new Point(18,16));
+        
+        result = polygonHelper.closestEdge(edgeToCheck, pointToCheck);
+        assertEquals(20.0f, result.point1().x, 0);
+        assertEquals(20.0f, result.point1().y, 0);
+        assertEquals(10.0f, result.point2().x, 0);
+        assertEquals(20.0f, result.point2().y, 0);
+        
+    }
+    
 }

@@ -22,16 +22,23 @@ public class Point extends Vector2i {
     private Color colour = new Color(116, 235, 52);
     
     public Point(int x, int y) {
-        super(x,y);
+        super();
+        this.x = x;
+        this.y = y;
     }
     
     public Point(double x, double y) {
-        super((int) x,(int) y);
+        super();
+        this.x = (int) x;
+        this.y = (int) y;
     }
     
     public Point(Point p) {
-        super(p);
+        super();
+        this.x = p.x;
+        this.y = p.y;
         this.scope = p.scope;
+        this.colour = p.colour;
     }
     
     public Point() {

@@ -17,6 +17,8 @@ public class Controller {
     private final BuildingOutline buildingOutline = new BuildingOutline();
     private final FloorPlanner floorPlanner = new FloorPlanner();
     
+    public boolean showOutline = true;
+    
     public FloorPlanner getFloorPlanner() {
         return this.floorPlanner;
     }

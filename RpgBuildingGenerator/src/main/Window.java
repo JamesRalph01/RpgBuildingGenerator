@@ -107,6 +107,7 @@ public class Window extends JFrame implements ActionListener {
         addButton("GENERATE", optionsPanel);
         addButton("CLEAR", optionsPanel);
         addButton("TEST", optionsPanel);
+        addButton("Toggle outline", optionsPanel);
         
         mainPanel.add(optionsPanel, pos);
     }
@@ -169,7 +170,11 @@ public class Window extends JFrame implements ActionListener {
             case "CLEAR":
                 controller.getBuildingOutLine().clear();
                 controller.getFloorPlanner().clear();
-                break;                
+                controller.showOutline = true; // reset
+                break;   
+            case "Toggle outline":
+                controller.showOutline = !controller.showOutline;
+                break; 
         }   
     }  
     
