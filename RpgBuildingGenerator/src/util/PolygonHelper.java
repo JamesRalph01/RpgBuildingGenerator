@@ -217,32 +217,69 @@ public class PolygonHelper {
         return bounds;
      }
     
-    public Edge closestEdge(Point point) {
+    public Edge closestEdge(Edge edgeToCheck, Point pointToCheck) {
         Edge nearestEdge = null;
         Point nearestPoint = new Point();
         boolean first = true;
-
+        
+        Edge extended = new Edge(edgeToCheck);
+        extendLine(pointToCheck, extended);
+        
         for (Edge edge: this.edges()) {
             
-            Vector3d result = new Vector3d();
-            Intersectiond.findClosestPointOnLineSegment((double)edge.x1(), (double)edge.y1(), 0, 
-                                                        (double)edge.x2(), (double)edge.y2(), 0, 
-                                                        (double)point.x, (double)point.y, 0, 
-                                                        result);
-            if (first) {
-                nearestEdge = edge;
-                nearestPoint = new Point((int)result.x, (int)result.y);
-                first = false;
-            } else {
-                // found closer edge?
-                if (point.distance(new Point((int)result.x, (int)result.y)) < 
-                    point.distance(nearestPoint)) {
-                    nearestEdge = edge;        
-                    nearestPoint = new Point((int)result.x, (int)result.y);
-                }
+            Vector2d result = new Vector2d();
+            boolean intersects;
+           
+           
+//            intersects = Intersectiond.intersectLineLine((double)edge.x1(), (double)edge.y1(), 
+//                                                         (double)edge.x2(), (double)edge.y2(), 
+//                                                         (double)extended.x1(), (double)extended.y1(), 
+//                                                         (double)extended.x2(), (double)extended.y2(),
+//                                                          result);
+
+            if (doIntersect(edge, extended)) {
+                if (first) {
+                  nearestEdge = edge;
+                  nearestPoint = new Point((int)result.x, (int)result.y);
+                  first = false;
+                } else {
+                    // found closer edge?
+                    if (pointToCheck.distance(new Point((int)result.x, (int)result.y)) < 
+                        pointToCheck.distance(nearestPoint)) {
+                        nearestEdge = edge;        
+                        nearestPoint = new Point((int)result.x, (int)result.y);
+                    }
+                }                       
             }
+                       
+         
         }
         return nearestEdge;
+    }
+    
+    
+    private void extendLine(Point pointToExtend, Edge edge) {
+        int direction = 1;
+        
+        if (edge.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+ 
+            if (pointToExtend.equals(edge.point1())) {
+                direction = (edge.point1().x < edge.point2().x ? -1 : 1);
+                edge.point1().set(edge.point1().x + 1000 * direction, edge.point1().y);
+            } else {
+                direction = (edge.point2().x < edge.point1().x ? -1 : 1);
+                edge.point2().set(edge.point2().x + 1000 * direction, edge.point2().y);
+            }
+                    
+        } else {
+              if (pointToExtend.equals(edge.point1())) {
+                direction = (edge.point1().y < edge.point2().y ? -1 : 1); 
+                edge.point1().set(edge.point1().x, edge.point1().y + 1000 * direction);
+            } else {
+                direction = (edge.point2().y < edge.point1().y ? -1 : 1);
+                edge.point2().set(edge.point2().x, edge.point2().y + 1000 * direction);
+            }          
+        }
     }
     
     public Edge closestEdge2(Edge testEdge, Point testPoint) {
@@ -250,17 +287,26 @@ public class PolygonHelper {
         Point nearestPoint = new Point();
         boolean first = true;
 
+        Edge extended = new Edge(testEdge);
+        extendLine(testPoint, extended);
+        
         // closest point along nearest edge this edge intersects with
         for (Edge edge: this.edges()) {
                         
             Vector2d result = new Vector2d();
-            boolean intersects;
-            intersects = Intersectiond.intersectLineLine((double)testEdge.x1(), (double)testEdge.y1(), 
-                                                         (double)testEdge.x2(), (double)testEdge.y2(), 
-                                                         (double)edge.x1(), (double)edge.y1(), 
-                                                         (double)edge.x2(), (double)edge.y2(),
-                                                          result);
-            if (intersects) {
+            int intersects;
+            intersects = Intersectiond.intersectLineSegmentAab((double)extended.x1(), (double)extended.y1(), 0,
+                                                               (double)extended.x2(), (double)extended.y2(), 0,
+                                                               (double)edge.x1(), (double)edge.y1(), 0,
+                                                               (double)edge.x2(), (double)edge.y2(), 0,
+                                                                result);
+            System.out.printf("Checking x1:%f, y1:%f, x2:%f, y2:%f against rect minx:%f, miny:%f, maxx:%f, maxy:%f \n",
+                    (double)extended.x1(), (double)extended.y1(),
+                    (double)extended.x2(), (double)extended.y2(),
+                    (double)edge.x1(), (double)edge.y1(),
+                    (double)edge.x2(), (double)edge.y2());
+            
+            if (intersects != Intersectiond.OUTSIDE) {
                 if (first) {
                     nearestEdge = edge;
                     nearestPoint = new Point((int)result.x, (int)result.y);
@@ -303,6 +349,71 @@ public class PolygonHelper {
             edgeTo.x = polygon.get(0).x;
             edgeTo.y = polygon.get(0).y;
             edges.add(new Edge(edgeFrom, edgeTo));
-        }  
+        }
+        
     }
+    
+    // Given three colinear points p, q, r, the function checks if 
+    // point q lies on line segment 'pr' 
+    private boolean onSegment(Point p, Point q, Point r) 
+    { 
+       if (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && 
+           q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)) 
+       return true; 
+
+       return false; 
+    } 
+
+    // To find orientation of ordered triplet (p, q, r). 
+    // The function returns following values 
+    // 0 --> p, q and r are colinear 
+    // 1 --> Clockwise 
+    // 2 --> Counterclockwise 
+    private  int orientation(Point p, Point q, Point r) 
+    { 
+       // See https://www.geeksforgeeks.org/orientation-3-ordered-points/ 
+       // for details of below formula. 
+       int val = (q.y - p.y) * (r.x - q.x) - 
+               (q.x - p.x) * (r.y - q.y); 
+
+       if (val == 0) return 0; // colinear 
+
+       return (val > 0)? 1: 2; // clock or counterclock wise 
+    } 
+
+    // The main function that returns true if line segment 'p1q1' 
+    // and 'p2q2' intersect. 
+    private  boolean doIntersect(Edge edge1, Edge edge2) 
+    { 
+        
+       Point p1 = edge1.point1();
+       Point q1 = edge1.point2();
+       Point p2 = edge2.point1();
+       Point q2 = edge2.point2();
+       // Find the four orientations needed for general and 
+       // special cases 
+       int o1 = orientation(p1, q1, p2); 
+       int o2 = orientation(p1, q1, q2); 
+       int o3 = orientation(p2, q2, p1); 
+       int o4 = orientation(p2, q2, q1); 
+
+       // General case 
+       if (o1 != o2 && o3 != o4) 
+           return true; 
+
+       // Special Cases 
+       // p1, q1 and p2 are colinear and p2 lies on segment p1q1 
+       if (o1 == 0 && onSegment(p1, p2, q1)) return true; 
+
+       // p1, q1 and q2 are colinear and q2 lies on segment p1q1 
+       if (o2 == 0 && onSegment(p1, q2, q1)) return true; 
+
+       // p2, q2 and p1 are colinear and p1 lies on segment p2q2 
+       if (o3 == 0 && onSegment(p2, p1, q2)) return true; 
+
+       // p2, q2 and q1 are colinear and q1 lies on segment p2q2 
+       if (o4 == 0 && onSegment(p2, q1, q2)) return true; 
+
+       return false; // Doesn't fall in any of the above cases 
+    } 
 }

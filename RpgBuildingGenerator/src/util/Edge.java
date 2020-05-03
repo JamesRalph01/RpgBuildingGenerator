@@ -53,29 +53,22 @@ public class Edge {
     public void calcExternalPoints(Rect bounds) {
         // check if edge lies on bounding rectangle
 
+        int x1,x2,y1,y2;
+
+        x1 = (int) bounds.x;
+        x2 = (int) (bounds.x+bounds.w);
+        y1 = (int) bounds.y;
+        y2 = (int) (bounds.y+bounds.h);
+        
         for (int i = 0; i < 2; i++) {
             Point p = points[i];
 
             // does the point lie on the rect ?
             p.scope = Point.Scope.NA;
-            
-//            if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
-//                if (p.x == (int)bounds.x || p.x == (int)bounds.x+bounds.w) {
-//                    //if (p.y >= (int)bounds.y && p.y <= (int)bounds.y+bounds.h){
-//                        p.scope = Point.Scope.EXTERNAL;                        
-//                    //}
-//                }
-//            } else {
-//                if (p.y == (int)bounds.y || p.y == (int)bounds.y+bounds.h) {
-//                    //if (p.x >= (int)bounds.x && p.x <= (int)bounds.x+bounds.w){
-//                        p.scope = Point.Scope.EXTERNAL;                  
-//                    //}
-//                }   
-//            }
 
-            // returns true if point lies inside rectangle
-            if (Intersectiond.testPointAar​(p.x, p.y, 
-                                       bounds.x, bounds.y, bounds.x+bounds.w, bounds.y+bounds.h)) {
+            // Does point lie on border
+            if (((p.x==x1 || p.x==x2) && (p.y>=y1 && p.y<=y2)) ||
+                ((p.x>=x1 && p.x<=x2) && (p.y==y1 || p.y==y2))) {       
                 p.scope = Point.Scope.EXTERNAL;
             } else
             {

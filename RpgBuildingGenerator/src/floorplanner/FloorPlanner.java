@@ -298,43 +298,42 @@ public class FloorPlanner extends Shape{
             }
             printAllPoints(true);    
 
-//            // Now extend internal edges that have externally facing end points to a point on the building outline
-//            System.out.println("Step 4: expand internal edges with one external point");
-//            for (Room room: rooms) {  
-//                for (Edge edge: room.edges()) {
-//
-//                    if (edge.isInternal())
-//                    {
-//                        for (int i = 0; i < 2; i++) {
-//
-//                            Point p;
-//                            p = (i == 0 ? new Point(edge.point1()) : new Point(edge.point2()));
-//
-//                            if (p.scope == Point.Scope.EXTERNAL) {
-//                                Edge closestOutsideEdge;
-//                                Vector2d intersection = new Vector2d();
-//                                closestOutsideEdge = polygonHelper.closestEdge2(edge, p);
-//                                if (closestOutsideEdge != null) {
-//                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-//                                                                        edge.point2().x, edge.point2().y,
-//                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-//                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-//                                                                        intersection)) {
-//                                        //set all matching points to new position 
-//                                        for (Room bRoom: rooms) {
-//                                            bRoom.adjust(p, new Point(intersection.x, intersection.y));    
-//                                        }
-//                                        //p.set((int)intersection.x, (int)intersection.y);
-//
-//                                    }
-//                                }
-//
-//                            }   
-//                        }
-//                    }
-//                }
-//            }
-//            printAllPoints(false);
+            // Now extend internal edges that have externally facing end points to a point on the building outline
+            System.out.println("Step 4: expand internal edges with one external point");
+            for (Room room: rooms) {  
+                for (Edge edge: room.edges()) {
+
+                    if (edge.isInternal())
+                    {
+                        for (int i = 0; i < 2; i++) {
+
+                            Point p = (i == 0 ? edge.point1() : edge.point2());
+
+                            if (p.scope == Point.Scope.EXTERNAL) {
+                                Edge closestOutsideEdge;
+                                Vector2d intersection = new Vector2d();
+                                closestOutsideEdge = polygonHelper.closestEdge(p, edge);
+                                if (closestOutsideEdge != null) {
+                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+                                                                        edge.point2().x, edge.point2().y,
+                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+                                                                        intersection)) {
+                                        //set all matching points to new position 
+                                        //for (Room bRoom: rooms) {
+                                        //    bRoom.adjust(p, new Point(intersection.x, intersection.y));    
+                                        //}
+                                        p.set((int)intersection.x, (int)intersection.y);
+
+                                    }
+                                }
+
+                            }   
+                        }
+                    }
+                }
+            }
+            printAllPoints(false);
 
 //            //Split and move external facing edges
 //            System.out.println("Step 5: split external edges");
