@@ -170,6 +170,7 @@ public class Window extends JFrame implements ActionListener {
             case "CLEAR":
                 controller.getBuildingOutLine().clear();
                 controller.getFloorPlanner().clear();
+                controller.showOutline = true; // reset
                 break;   
             case "Toggle outline":
                 controller.showOutline = !controller.showOutline;

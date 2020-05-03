@@ -241,9 +241,61 @@ public class FloorPlanner extends Shape{
                     }
                 }
             }
+            printAllPoints(false); 
+
+            // Now extend internal edges that have externally facing end points to a point on the building outline
+            System.out.println("Step 4: expand internal edges with one external point");
+            for (Room room: rooms) {  
+                for (Edge edge: room.edges()) {
+
+                    if (edge.isInternal())
+                    {
+                        for (int i = 0; i < 2; i++) {
+
+                            Point p = (i == 0 ? edge.point1() : edge.point2());
+
+                            if (p.scope == Point.Scope.EXTERNAL) {
+                                Edge closestOutsideEdge;
+                                Vector2d intersection = new Vector2d();
+                                closestOutsideEdge = polygonHelper.closestEdge(edge, p);
+                                if (closestOutsideEdge != null) {
+                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+                                                                        edge.point2().x, edge.point2().y,
+                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+                                                                        intersection)) {
+                                        //set all matching points to new position 
+                                        //for (Room bRoom: rooms) {
+                                        //    bRoom.adjust(p, new Point(intersection.x, intersection.y));    
+                                        //}
+                                        //p.set((int)intersection.x, (int)intersection.y);
+                                        
+                                        if (listPointAdjustments.containsKey(p) == false) {
+                                            listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
+                                        }
+
+                                    }
+                                }
+
+                            }   
+                        }
+                    }
+                }
+            }
+            // apply changes
+            Set set = listPointAdjustments.entrySet();
+            Iterator iterator = set.iterator();
+            while(iterator.hasNext()) {
+                Map.Entry mentry = (Map.Entry)iterator.next();
+                Point pOld = (Point) mentry.getKey();
+                Point pNew = (Point) mentry.getValue();
+                for (Room bRoom: rooms) {
+                    bRoom.adjust(pOld, pNew);    
+                }
+            }
             printAllPoints(false);
 
-            // For each building outline point, find closet external edge on Treemap
+           // For each building outline point, find closet external edge on Treemap
             System.out.println("Step 3: calc external edges");
             for (Point externalPoint: polygonHelper.points()) {
 
@@ -299,65 +351,14 @@ public class FloorPlanner extends Shape{
                     //}
                 }
             }
-            printAllPoints(true);    
-
-            // Now extend internal edges that have externally facing end points to a point on the building outline
-            System.out.println("Step 4: expand internal edges with one external point");
-            for (Room room: rooms) {  
-                for (Edge edge: room.edges()) {
-
-                    if (edge.isInternal())
-                    {
-                        for (int i = 0; i < 2; i++) {
-
-                            Point p = (i == 0 ? edge.point1() : edge.point2());
-
-                            if (p.scope == Point.Scope.EXTERNAL) {
-                                Edge closestOutsideEdge;
-                                Vector2d intersection = new Vector2d();
-                                closestOutsideEdge = polygonHelper.closestEdge(edge, p);
-                                if (closestOutsideEdge != null) {
-                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-                                                                        edge.point2().x, edge.point2().y,
-                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-                                                                        intersection)) {
-                                        //set all matching points to new position 
-                                        //for (Room bRoom: rooms) {
-                                        //    bRoom.adjust(p, new Point(intersection.x, intersection.y));    
-                                        //}
-                                        //p.set((int)intersection.x, (int)intersection.y);
-                                        
-                                        if (listPointAdjustments.containsKey(p) == false) {
-                                            listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
-                                        }
-
-                                    }
-                                }
-
-                            }   
-                        }
-                    }
-                }
-            }
-            // apply changes
-            Set set = listPointAdjustments.entrySet();
-            Iterator iterator = set.iterator();
-            while(iterator.hasNext()) {
-                Map.Entry mentry = (Map.Entry)iterator.next();
-                Point pOld = (Point) mentry.getKey();
-                Point pNew = (Point) mentry.getValue();
-                for (Room bRoom: rooms) {
-                    bRoom.adjust(pOld, pNew);    
-                }
-            }
-            printAllPoints(false);
-
+            printAllPoints(true);   
+            
+            
 //            //Split and move external facing edges
 //            System.out.println("Step 5: split external edges");
 //            
-//            Set set = listEdgeAdjustments.entrySet();
-//            Iterator iterator = set.iterator();
+//            set = listEdgeAdjustments.entrySet();
+//            iterator = set.iterator();
 //            while(iterator.hasNext()) {
 //                
 //                Map.Entry mentry = (Map.Entry)iterator.next();
