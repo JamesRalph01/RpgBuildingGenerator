@@ -282,49 +282,6 @@ public class PolygonHelper {
         }
     }
     
-    public Edge closestEdge2(Edge testEdge, Point testPoint) {
-        Edge nearestEdge = null;
-        Point nearestPoint = new Point();
-        boolean first = true;
-
-        Edge extended = new Edge(testEdge);
-        extendLine(testPoint, extended);
-        
-        // closest point along nearest edge this edge intersects with
-        for (Edge edge: this.edges()) {
-                        
-            Vector2d result = new Vector2d();
-            int intersects;
-            intersects = Intersectiond.intersectLineSegmentAab((double)extended.x1(), (double)extended.y1(), 0,
-                                                               (double)extended.x2(), (double)extended.y2(), 0,
-                                                               (double)edge.x1(), (double)edge.y1(), 0,
-                                                               (double)edge.x2(), (double)edge.y2(), 0,
-                                                                result);
-            System.out.printf("Checking x1:%f, y1:%f, x2:%f, y2:%f against rect minx:%f, miny:%f, maxx:%f, maxy:%f \n",
-                    (double)extended.x1(), (double)extended.y1(),
-                    (double)extended.x2(), (double)extended.y2(),
-                    (double)edge.x1(), (double)edge.y1(),
-                    (double)edge.x2(), (double)edge.y2());
-            
-            if (intersects != Intersectiond.OUTSIDE) {
-                if (first) {
-                    nearestEdge = edge;
-                    nearestPoint = new Point((int)result.x, (int)result.y);
-                    first = false;
-                } else {
-                    // found closer edge?
-                    if (testPoint.distance(new Point((int)result.x, (int)result.y)) < 
-                        testPoint.distance(nearestPoint)) {
-                        nearestEdge = edge;        
-                        nearestPoint = new Point((int)result.x, (int)result.y);
-                    }
-                }                
-            }
-
-        }
-        return nearestEdge;
-    }
-    
     private void calcEdges() {
         Point edgeFrom = new Point();
         Point edgeTo = new Point();

@@ -27,9 +27,10 @@ public class Edge {
     private ArrayList<Edge> connectedEdges;
     
     public Edge(Edge edgeToCopy) {
-        this(edgeToCopy.point1(), 
-             edgeToCopy.point2(), 
-             edgeToCopy.isInternal);
+        points = new Point[2];
+        points[0] = new Point(edgeToCopy.point1());
+        points[1] = new Point(edgeToCopy.point2());
+        this.isInternal = edgeToCopy.isInternal();
     }
     
     public Edge(Point point1, Point point2) {

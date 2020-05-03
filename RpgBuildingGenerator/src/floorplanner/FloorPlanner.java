@@ -46,6 +46,7 @@ public class FloorPlanner extends Shape{
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
     private HashMap<Edge, EdgeAdjustment> listEdgeAdjustments;
+    private HashMap<Point, Point> listPointAdjustments;
     private int indexColourStart = 0;
     
 
@@ -101,6 +102,7 @@ public class FloorPlanner extends Shape{
         
         points = new ArrayList<>();
         for (Room room : rooms) {
+            //Room room = rooms.get(1);
             for (Edge edge : room.edges()) {
                 points.add(edge.point1());
                 points.add(edge.point2());           
@@ -172,6 +174,7 @@ public class FloorPlanner extends Shape{
         Rect bounds;
         
         listEdgeAdjustments= new HashMap<>();
+        listPointAdjustments = new HashMap<>();
         Mappable[] items = mapModel.getItems();
         
         System.out.printf("Treemap bounds x1: %f, y1: %f, x2: %f, y2: %f\n", 
@@ -312,7 +315,7 @@ public class FloorPlanner extends Shape{
                             if (p.scope == Point.Scope.EXTERNAL) {
                                 Edge closestOutsideEdge;
                                 Vector2d intersection = new Vector2d();
-                                closestOutsideEdge = polygonHelper.closestEdge(p, edge);
+                                closestOutsideEdge = polygonHelper.closestEdge(edge, p);
                                 if (closestOutsideEdge != null) {
                                     if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
                                                                         edge.point2().x, edge.point2().y,
@@ -323,7 +326,11 @@ public class FloorPlanner extends Shape{
                                         //for (Room bRoom: rooms) {
                                         //    bRoom.adjust(p, new Point(intersection.x, intersection.y));    
                                         //}
-                                        p.set((int)intersection.x, (int)intersection.y);
+                                        //p.set((int)intersection.x, (int)intersection.y);
+                                        
+                                        if (listPointAdjustments.containsKey(p) == false) {
+                                            listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
+                                        }
 
                                     }
                                 }
@@ -331,6 +338,17 @@ public class FloorPlanner extends Shape{
                             }   
                         }
                     }
+                }
+            }
+            // apply changes
+            Set set = listPointAdjustments.entrySet();
+            Iterator iterator = set.iterator();
+            while(iterator.hasNext()) {
+                Map.Entry mentry = (Map.Entry)iterator.next();
+                Point pOld = (Point) mentry.getKey();
+                Point pNew = (Point) mentry.getValue();
+                for (Room bRoom: rooms) {
+                    bRoom.adjust(pOld, pNew);    
                 }
             }
             printAllPoints(false);
