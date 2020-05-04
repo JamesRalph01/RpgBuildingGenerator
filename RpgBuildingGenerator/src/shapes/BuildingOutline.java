@@ -53,11 +53,20 @@ public class BuildingOutline extends Shape {
          int i = 0;
          
          colourData = new float[points.size() * 3];   
-         //White 255,255,255
+
          for (Point point : points) {
-             colourData[i++] = 1.0f; //R
-             colourData[i++] = 1.0f; //G
-             colourData[i++] = 1.0f; //B
+             if (this.isComplete) {
+                colourData[i++] = 140f/255f; //R
+                colourData[i++] = 140f/255f; //G
+                colourData[i++] = 140f/255f; //B               
+             } else
+             {
+                //White 255,255,255
+                colourData[i++] = 1.0f; //R
+                colourData[i++] = 1.0f; //G
+                colourData[i++] = 1.0f; //B
+             }
+
          }
          return colourData;
      }
