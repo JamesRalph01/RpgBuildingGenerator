@@ -5,6 +5,7 @@
  */
 package shapes;
 
+import building.Room;
 import java.util.ArrayList;
 import org.joml.Rectangled;
 import org.junit.After;

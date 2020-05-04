@@ -5,8 +5,6 @@
  */
 package main;
 
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,6 +12,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
@@ -22,6 +21,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import shapes.BuildingOutline;
@@ -32,7 +34,7 @@ import util.Point;
  *
  * @author James
  */
-public class Window extends JFrame implements ActionListener {
+public class zApplicationMainWindow extends JFrame implements ActionListener {
     
     private Renderer renderer;
     private JPanel mainPanel;
@@ -42,48 +44,53 @@ public class Window extends JFrame implements ActionListener {
     private Controller controller;
     RadioListener radioListener = new RadioListener();
         
-    public Window(String title, FPSAnimator animator, int width, int height) {
-        
+    public zApplicationMainWindow(String title, int width, int height, Controller controller) {        
         super(title);
-        setupWindow(animator, width, height);
-        CoordSystemHelper.initDevice(width, height);
+        this.controller = controller;
+        initUI(width, height);
+    }
+    
+    private void initUI(int width, int height) {
+        
+        // Set window hight and layout
+        this.setSize(new Dimension(width, height));
+        this.setLocationRelativeTo(null); 
+        this.setLayout(new BorderLayout());
+
+        // Configure controls and layout
+        createMenuBar();
+        createDesignerPanel();
+        createOptionsPanel();
+        
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+    
+    private void createDesignerPanel() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+        this.getContentPane().add(mainPanel, BorderLayout.CENTER);        
     }
     
-    private void setupWindow(FPSAnimator animator, int width,int height) {
-        this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(width, height));
-        this.setLocationRelativeTo(null);
-        
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (animator.isStarted()) {
-                    System.out.println("Stopping FPSAnimator...");
-                    animator.stop();
-                    System.out.println("FPSAnimator stopped...");
-                }
-                System.out.println("Closing Window...");
-                System.exit(0);
-            }
-        });
+    private void createMenuBar() {
+
+        JMenuBar menuBar = new JMenuBar();
+        //var exitIcon = new ImageIcon("src/resources/exit.png");
+
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+
+        JMenuItem eMenuItem = new JMenuItem("Exit");
+        eMenuItem.setMnemonic(KeyEvent.VK_E);
+        eMenuItem.setToolTipText("Exit application");
+        eMenuItem.addActionListener((event) -> System.exit(0));
+
+        fileMenu.add(eMenuItem);
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
     }
     
-    public void setVisibility(boolean isVisible) {
-        this.setVisible(isVisible);
-    }
-    
-    public void setGLCanvas(GLCanvas canvas, String pos) {
-        mainPanel.add(canvas, pos, 0);
-    }
-    
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-    
-    public void createOptionsJPanel(String pos) {
+    private void createOptionsPanel() {
         optionsPanel = new JPanel();
                 
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
@@ -109,7 +116,7 @@ public class Window extends JFrame implements ActionListener {
         addButton("TEST", optionsPanel);
         addButton("Toggle outline", optionsPanel);
         
-        mainPanel.add(optionsPanel, pos);
+        mainPanel.add(optionsPanel, BorderLayout.LINE_END);
     }
     
     private void addButton(String text, Container container) {

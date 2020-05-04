@@ -16,7 +16,7 @@ import org.joml.Intersectiond;
 import shapes.Shape;
 import shapes.BuildingOutline;
 import org.joml.Vector2d;
-import shapes.Room;
+import building.Room;
 import util.Edge;
 import util.PolygonHelper;
 import util.CoordSystemHelper;
