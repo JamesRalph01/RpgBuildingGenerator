@@ -231,11 +231,11 @@ public class PolygonHelper {
             boolean intersects;
            
            
-//            intersects = Intersectiond.intersectLineLine((double)edge.x1(), (double)edge.y1(), 
-//                                                         (double)edge.x2(), (double)edge.y2(), 
-//                                                         (double)extended.x1(), (double)extended.y1(), 
-//                                                         (double)extended.x2(), (double)extended.y2(),
-//                                                          result);
+            intersects = Intersectiond.intersectLineLine((double)edge.x1(), (double)edge.y1(), 
+                                                         (double)edge.x2(), (double)edge.y2(), 
+                                                         (double)extended.x1(), (double)extended.y1(), 
+                                                         (double)extended.x2(), (double)extended.y2(),
+                                                          result);
 
             if (doIntersect(edge, extended)) {
                 if (first) {
