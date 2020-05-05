@@ -8,6 +8,9 @@ package main;
 import designer.BuildingOutline;
 import floorplanner.FloorPlanner;
 import util.Point;
+import viewer.DummyGame;
+import viewer.GameEngine;
+import viewer.IGameLogic;
 
 /**
  *
@@ -261,6 +264,13 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
 
     private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
         designerPanel.Generate();
+//         try {
+//            boolean vSync = true;
+//            IGameLogic gameLogic = new DummyGame();
+//            GameEngine gameEng = new GameEngine("GAME", 600, 480, vSync, gameLogic);
+//            gameEng.run();
+//        } catch (Exception excp) {
+//        }
     }//GEN-LAST:event_buttonGenerateActionPerformed
 
     private void radioTavernActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTavernActionPerformed
