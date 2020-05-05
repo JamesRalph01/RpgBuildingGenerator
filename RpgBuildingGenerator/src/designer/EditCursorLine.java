@@ -17,7 +17,7 @@ import util.Point;
 public class EditCursorLine implements IDesignerComponent {
 
     private Point fromPoint, toPoint;
-    boolean enabled = false;
+    private boolean enabled = false;
     
     
     public EditCursorLine()

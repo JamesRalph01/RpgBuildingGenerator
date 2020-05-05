@@ -63,8 +63,16 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         labelType.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelType.setText("Type");
 
+        buttongroupType.add(radioTavern);
+        radioTavern.setSelected(true);
         radioTavern.setText("Tavern");
+        radioTavern.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioTavernActionPerformed(evt);
+            }
+        });
 
+        buttongroupType.add(radioChurch);
         radioChurch.setText("Church");
         radioChurch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -72,9 +80,20 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             }
         });
 
+        buttongroupType.add(radioHouse);
         radioHouse.setText("House");
+        radioHouse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioHouseActionPerformed(evt);
+            }
+        });
 
         buttonGenerate.setText("Generate");
+        buttonGenerate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonGenerateActionPerformed(evt);
+            }
+        });
 
         buttonClear.setText("Clear");
         buttonClear.addActionListener(new java.awt.event.ActionListener() {
@@ -84,6 +103,11 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         });
 
         buttonTest.setText("Test");
+        buttonTest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonTestActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelOptionsLayout = new javax.swing.GroupLayout(panelOptions);
         panelOptions.setLayout(panelOptionsLayout);
@@ -211,42 +235,41 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_menuitemExitActionPerformed
 
     private void radioChurchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioChurchActionPerformed
-        // TODO add your handling code here:
+        controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.CHURCH);
     }//GEN-LAST:event_radioChurchActionPerformed
 
     private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
-        String action;
-        BuildingOutline buildingOutline;
-
-        buildingOutline = controller.getBuildingOutLine();
-        
-        action = evt.getActionCommand();
-        
-        switch (action) {
-//            case "GENERATE":
-//                controller.getFloorPlanner().generate(buildingOutline, w, h);
-//                break;
-//            case "TEST":
-//                controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TEST);
-//                controller.getBuildingOutLine().clear();
-//                controller.getBuildingOutLine().addPoint(new Point(50,200));
-//                controller.getBuildingOutLine().addPoint(new Point(150,100));
-//                controller.getBuildingOutLine().addPoint(new Point(250,50));
-//                controller.getBuildingOutLine().addPoint(new Point(350,50));
-//                controller.getBuildingOutLine().addPoint(new Point(450,150));
-//                controller.getBuildingOutLine().addPoint(new Point(450,350));
-//                controller.getBuildingOutLine().addPoint(new Point(300,400));
-//                controller.getBuildingOutLine().addPoint(new Point(130,400));
-//       
-//                // finish outline by finishing on same point
-//                controller.getBuildingOutLine().addPoint(new Point(50,200));
-//                controller.getFloorPlanner().generate(buildingOutline, w, h);
-//                break;               
-            case "Clear":
-                designerPanel.Clear();
-                break;   
-        }   
+        designerPanel.Clear();
     }//GEN-LAST:event_buttonClearActionPerformed
+
+    private void buttonTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestActionPerformed
+        designerPanel.Clear();
+        controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TEST);
+        controller.getBuildingOutLine().addPoint(new Point(50,200));
+        controller.getBuildingOutLine().addPoint(new Point(150,100));
+        controller.getBuildingOutLine().addPoint(new Point(250,50));
+        controller.getBuildingOutLine().addPoint(new Point(350,50));
+        controller.getBuildingOutLine().addPoint(new Point(450,150));
+        controller.getBuildingOutLine().addPoint(new Point(450,350));
+        controller.getBuildingOutLine().addPoint(new Point(300,400));
+        controller.getBuildingOutLine().addPoint(new Point(130,400));
+
+        // finish outline by finishing on same point
+        controller.getBuildingOutLine().addPoint(new Point(50,200));
+        designerPanel.Generate();
+    }//GEN-LAST:event_buttonTestActionPerformed
+
+    private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
+        designerPanel.Generate();
+    }//GEN-LAST:event_buttonGenerateActionPerformed
+
+    private void radioTavernActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTavernActionPerformed
+        controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TAVERN);
+    }//GEN-LAST:event_radioTavernActionPerformed
+
+    private void radioHouseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioHouseActionPerformed
+        controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.HOUSE);
+    }//GEN-LAST:event_radioHouseActionPerformed
 
     /**
      * @param args the command line arguments

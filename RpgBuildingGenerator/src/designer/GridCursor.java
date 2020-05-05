@@ -12,7 +12,7 @@ import util.Point;
 public class GridCursor implements IDesignerComponent {
     
     private Point position = new Point(0,0);
-    boolean enabled = true;
+    private boolean enabled = true;
    
     public void cursorPosition(Point point) {
         position = point;

@@ -67,9 +67,9 @@ public class DesignerPanel extends JPanel implements MouseListener, MouseMotionL
         editCursorLine.fromPoint(nearestGridPoint);
         
         if (controller.getBuildingOutLine().isComplete) {
-            editCursorLine.enabled = false;
+            editCursorLine.setEnabled(false);
         } else {
-            editCursorLine.enabled = true;         
+            editCursorLine.setEnabled(true);         
         }
         this.repaint();
     }
@@ -116,7 +116,6 @@ public class DesignerPanel extends JPanel implements MouseListener, MouseMotionL
         GridCursor gridCursor = (GridCursor) designComponents.get("GridCursor");
         EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
         
-        System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
         cursorPosition = new Point(e.getX(), e.getY());
         nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
         gridCursor.cursorPosition(nearestGridPoint);
@@ -126,10 +125,19 @@ public class DesignerPanel extends JPanel implements MouseListener, MouseMotionL
         this.repaint();
     }
     
+    public void Generate() {
+        controller.getFloorPlanner().generate(controller.getBuildingOutLine());
+        designComponents.put("Floorplan", controller.getFloorPlanner().get2DFloorplan()); 
+        this.repaint();
+    }
+    
     public void Clear() {
         EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
         controller.getBuildingOutLine().clear();
-        editCursorLine.enabled = false;
+        controller.getFloorPlanner().clear();
+        editCursorLine.setEnabled(false);
+        
+        designComponents.remove("Floorplan"); 
         this.repaint();
     }
 }

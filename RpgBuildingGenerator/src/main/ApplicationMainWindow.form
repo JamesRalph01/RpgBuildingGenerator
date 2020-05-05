@@ -150,11 +150,21 @@
         </Component>
         <Component class="javax.swing.JRadioButton" name="radioTavern">
           <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttongroupType"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Tavern"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioTavernActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JRadioButton" name="radioChurch">
           <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttongroupType"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Church"/>
           </Properties>
           <Events>
@@ -163,13 +173,22 @@
         </Component>
         <Component class="javax.swing.JRadioButton" name="radioHouse">
           <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttongroupType"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="House"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioHouseActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="buttonGenerate">
           <Properties>
             <Property name="text" type="java.lang.String" value="Generate"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonGenerateActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="buttonClear">
           <Properties>
@@ -183,6 +202,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Test"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonTestActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

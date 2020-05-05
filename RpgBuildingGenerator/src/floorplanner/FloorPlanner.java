@@ -5,6 +5,7 @@
  */
 package floorplanner;
 
+import building.Building;
 import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import shapes.Shape;
 import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
+import designer.FloorPlan;
 import floorplanner.ChurchMapModel;
 import floorplanner.HouseMapModel;
 import floorplanner.MapModel;
@@ -26,7 +28,6 @@ import floorplanner.TestMapModel;
 import floorplanner.TreemapLayout;
 import util.Edge;
 import util.PolygonHelper;
-import util.CoordSystemHelper;
 import util.Point;
 /**
  *
@@ -34,7 +35,7 @@ import util.Point;
  */
 
 
-public class FloorPlanner extends Shape{
+public class FloorPlanner {
 
     private boolean DEBUG = false;
     
@@ -47,6 +48,11 @@ public class FloorPlanner extends Shape{
     private MapModel mapModel;
     private BuildingType buildingType;
     private boolean activeFloorPlan = false;
+    
+    private Building building;
+    private FloorPlan floorplan;
+    
+    
     private ArrayList<Point> points = new ArrayList<>();
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
@@ -60,9 +66,12 @@ public class FloorPlanner extends Shape{
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
     }
-    
-    public void generate(BuildingOutline buildingOutline, int w, int h) {
+   
+    public void generate(BuildingOutline buildingOutline) {
         
+        building = new Building();
+        floorplan = new FloorPlan();
+
         //Step 1: Find largest rectangle inside user drawn building outline
         polygonHelper = new PolygonHelper(buildingOutline.points());
         Rect bounds = polygonHelper.findLargestRect();
@@ -86,57 +95,25 @@ public class FloorPlanner extends Shape{
         algorithm.layout(mapModel, bounds);
         
         generateRooms(bounds);
+        generate2DFloorplan(); // for display in designer view
+        //generate3DBuilding(); // for 3D rendering view
         
         activeFloorPlan = true;
+    }
+    
+    public boolean getActiveFloorplan() {
+        return activeFloorPlan;
     }
     
     public void clear() {
         activeFloorPlan = false;
     }
     
-    public boolean activeFloorPlan() {
-        return activeFloorPlan;
+    public FloorPlan get2DFloorplan()
+    {
+        return this.floorplan;
     }
- 
-   
-    @Override
-    public float[] getPositionData() {
         
-        points = new ArrayList<>();
-        for (Room room : rooms) {
-            //Room room = rooms.get(1);
-            for (Edge edge : room.edges()) {
-                if (DEBUG == true || edge.isInternal()) {
-                    points.add(edge.point1());
-                    points.add(edge.point2());                       
-                }        
-            }
-        }
-        return CoordSystemHelper.deviceToOpenGLf(points);
-    } 
-    
-    
-    @Override
-    public float[] getColourData() {
-
-         float colourData[];
-         
-         colourData = new float[points.size() * 3];   
-         
-         int i = 0;
-         for (Point point : points) {
-            colourData[i++] = point.getRedf();
-            colourData[i++] = point.getGreenf();
-            colourData[i++] = point.getBluef();
-         };
-      
-        return colourData;
-    }
-    
-    public int numbervertices() {
-        return points.size();
-    }
-    
     private Color getRoomColour(String roomType) {
         int R,G,B;
         
@@ -216,82 +193,78 @@ public class FloorPlanner extends Shape{
         }
         printAllPoints(false);
 
-        if (DEBUG == false) {
+        // Detect whether edges are internal or external so that we can expand external edges to fit 
+        // the building outline polygon  
+        System.out.println("Step 2: internal/external edge detection");
+        for (Room room: rooms) {
+            for (Edge edge: room.edges()) {
+                // check if this edge shares any other room edge
+                // take a partial piece of the edge and check if intersects with another room
+                // partial to prevent overlaps where rooms touch
+                Edge partial = new Edge(edge);
+                partial.shrink(5);
 
-
-            // Detect whether edges are internal or external so that we can expand external edges to fit 
-            // the building outline polygon  
-            System.out.println("Step 2: internal/external edge detection");
-            for (Room room: rooms) {
-                for (Edge edge: room.edges()) {
-                    // check if this edge shares any other room edge
-                    // take a partial piece of the edge and check if intersects with another room
-                    // partial to prevent overlaps where rooms touch
-                    Edge partial = new Edge(edge);
-                    partial.shrink(5);
-
-                    for (Room roomToCheck: rooms) {    
-                        if (roomToCheck != room) {
-                            for (Edge edgeToCheck : roomToCheck.edges()) {
-                                if (partial.intersets(edgeToCheck,2)) {
-                                    edge.connectedEdges().add(edgeToCheck);
-                                    edge.isInternal(true);
-                                }                          
-                            }
+                for (Room roomToCheck: rooms) {    
+                    if (roomToCheck != room) {
+                        for (Edge edgeToCheck : roomToCheck.edges()) {
+                            if (partial.intersets(edgeToCheck,2)) {
+                                edge.connectedEdges().add(edgeToCheck);
+                                edge.isInternal(true);
+                            }                          
                         }
                     }
                 }
             }
-            printAllPoints(false); 
-
-            // Now extend internal edges that have externally facing end points to a point on the building outline
-            System.out.println("Step 3: expand internal edges");
-            for (Room room: rooms) {  
-                for (Edge edge: room.edges()) {
-
-                    if (edge.isInternal())
-                    {
-                        for (int i = 0; i < 2; i++) {
-
-                            Point p = (i == 0 ? edge.point1() : edge.point2());
-
-                            if (p.scope == Point.Scope.EXTERNAL) {
-                                Edge closestOutsideEdge;
-                                Vector2d intersection = new Vector2d();
-                                closestOutsideEdge = polygonHelper.closestEdge(edge, p);
-                                if (closestOutsideEdge != null) {
-                                    if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-                                                                        edge.point2().x, edge.point2().y,
-                                                                        closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-                                                                        closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-                                                                        intersection)) {
-                                        
-                                        if (listPointAdjustments.containsKey(p) == false) {
-                                            listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
-                                        }
-
-                                    }
-                                }
-
-                            }   
-                        }
-                    }
-                }
-            }
-            // apply changes
-            Set set = listPointAdjustments.entrySet();
-            Iterator iterator = set.iterator();
-            while(iterator.hasNext()) {
-                Map.Entry mentry = (Map.Entry)iterator.next();
-                Point pOld = (Point) mentry.getKey();
-                Point pNew = (Point) mentry.getValue();
-                for (Room bRoom: rooms) {
-                    bRoom.adjust(pOld, pNew);    
-                }
-            }
-            printAllPoints(false);
-          
         }
+        printAllPoints(false); 
+
+        // Now extend internal edges that have externally facing end points to a point on the building outline
+        System.out.println("Step 3: expand internal edges");
+        for (Room room: rooms) {  
+            for (Edge edge: room.edges()) {
+
+                if (edge.isInternal())
+                {
+                    for (int i = 0; i < 2; i++) {
+
+                        Point p = (i == 0 ? edge.point1() : edge.point2());
+
+                        if (p.scope == Point.Scope.EXTERNAL) {
+                            Edge closestOutsideEdge;
+                            Vector2d intersection = new Vector2d();
+                            closestOutsideEdge = polygonHelper.closestEdge(edge, p);
+                            if (closestOutsideEdge != null) {
+                                if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+                                                                    edge.point2().x, edge.point2().y,
+                                                                    closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+                                                                    closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+                                                                    intersection)) {
+
+                                    if (listPointAdjustments.containsKey(p) == false) {
+                                        listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
+                                    }
+
+                                }
+                            }
+
+                        }   
+                    }
+                }
+            }
+        }
+        // apply changes
+        Set set = listPointAdjustments.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            Point pOld = (Point) mentry.getKey();
+            Point pNew = (Point) mentry.getValue();
+            for (Room bRoom: rooms) {
+                bRoom.adjust(pOld, pNew);    
+            }
+        }
+        printAllPoints(false);
+
     }
         
     private void printAllPoints(boolean includeadj) {
@@ -308,6 +281,28 @@ public class FloorPlanner extends Shape{
         }
 
     }
+    
+    private void generate2DFloorplan() {
+
+        // Add external walls
+        for (Edge edge : polygonHelper.edges()) {
+            floorplan.addEdge(edge);
+        }
+        
+        // Add internal walls
+        for (Room room : rooms) {
+            for (Edge edge : room.edges()) {
+                if (edge.isInternal()) {
+                    floorplan.addEdge(edge);
+                }        
+            }
+        }
+    } 
+    
+    private void generate3DBuilding() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
         
 }
 

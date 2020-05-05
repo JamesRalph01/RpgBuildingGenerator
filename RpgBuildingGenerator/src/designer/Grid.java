@@ -20,7 +20,7 @@ public class Grid implements IDesignerComponent {
     static int MAX_GRID_ELEMENTS = 40;
     static int GRID_SPACING = 20;  
     ArrayList<Point> points = new ArrayList<>();
-    boolean enabled = true;
+    private boolean enabled = true;
     
     public Grid()
     {
