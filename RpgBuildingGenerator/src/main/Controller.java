@@ -5,8 +5,8 @@
  */
 package main;
 
+import designer.BuildingOutline;
 import floorplanner.FloorPlanner;
-import shapes.BuildingOutline;
 
 /**
  *

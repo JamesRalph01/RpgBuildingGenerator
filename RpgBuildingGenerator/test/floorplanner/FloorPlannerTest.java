@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import shapes.BuildingOutline;
+import designer.BuildingOutline;
 import building.Room;
 import util.Point;
 

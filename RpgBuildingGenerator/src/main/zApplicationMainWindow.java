@@ -5,6 +5,7 @@
  */
 package main;
 
+import designer.BuildingOutline;
 import floorplanner.FloorPlanner;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -26,7 +27,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import shapes.BuildingOutline;
 import util.CoordSystemHelper;
 import util.Point;
 

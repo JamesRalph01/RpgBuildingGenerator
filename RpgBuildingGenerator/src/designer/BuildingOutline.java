@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shapes;
+package designer;
 import java.util.ArrayList;
 import org.joml.Rectangled;
+import shapes.Shape;
 import util.Point;
 import util.CoordSystemHelper;
 

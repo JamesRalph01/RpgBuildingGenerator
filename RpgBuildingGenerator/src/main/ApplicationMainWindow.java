@@ -38,8 +38,8 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         buttonClear = new javax.swing.JButton();
         buttonTest = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        panelDesigner = new javax.swing.JPanel();
         labelDesigner = new javax.swing.JLabel();
+        designerPanel1 = new designer.DesignerPanel();
         menuMain = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuitemExit = new javax.swing.JMenuItem();
@@ -115,21 +115,19 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                 .addContainerGap(44, Short.MAX_VALUE))
         );
 
-        panelDesigner.setBackground(new java.awt.Color(0, 0, 0));
-
-        javax.swing.GroupLayout panelDesignerLayout = new javax.swing.GroupLayout(panelDesigner);
-        panelDesigner.setLayout(panelDesignerLayout);
-        panelDesignerLayout.setHorizontalGroup(
-            panelDesignerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        panelDesignerLayout.setVerticalGroup(
-            panelDesignerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
         labelDesigner.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelDesigner.setText("Designer");
+
+        javax.swing.GroupLayout designerPanel1Layout = new javax.swing.GroupLayout(designerPanel1);
+        designerPanel1.setLayout(designerPanel1Layout);
+        designerPanel1Layout.setHorizontalGroup(
+            designerPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 464, Short.MAX_VALUE)
+        );
+        designerPanel1Layout.setVerticalGroup(
+            designerPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 391, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -137,21 +135,24 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelDesigner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(labelDesigner)
-                        .addGap(0, 468, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(labelDesigner)
+                .addContainerGap(403, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(designerPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelDesigner, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(13, 13, 13)
-                .addComponent(panelDesigner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGap(33, 33, 33)
+                    .addComponent(designerPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         menuFile.setText("File");
@@ -184,7 +185,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 58, Short.MAX_VALUE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -243,6 +244,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JButton buttonGenerate;
     private javax.swing.JButton buttonTest;
     private javax.swing.ButtonGroup buttongroupType;
+    private designer.DesignerPanel designerPanel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelDesigner;
     private javax.swing.JLabel labelOptionsTitle;
@@ -250,7 +252,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuBar menuMain;
     private javax.swing.JMenuItem menuitemExit;
-    private javax.swing.JPanel panelDesigner;
     private javax.swing.JPanel panelOptions;
     private javax.swing.JRadioButton radioChurch;
     private javax.swing.JRadioButton radioHouse;

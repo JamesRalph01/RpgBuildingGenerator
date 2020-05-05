@@ -5,6 +5,9 @@
  */
 package main;
 
+import designer.editCursorLine;
+import designer.GridCursor;
+import designer.Grid;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
