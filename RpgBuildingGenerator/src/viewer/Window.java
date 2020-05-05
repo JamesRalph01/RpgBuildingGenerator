@@ -87,7 +87,8 @@ public class Window {
         }
 
         // Make the window visible
-        glfwShowWindow(windowHandle);
+        glfwShowWindow(windowHandle);         
+
         
         GL.createCapabilities();
 
