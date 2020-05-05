@@ -7,9 +7,6 @@ package main;
 
 import floorplanner.FloorPlanner;
 import util.Point;
-import viewer.DummyGame;
-import viewer.GameEngine;
-import viewer.IGameLogic;
 
 /**
  *
@@ -263,7 +260,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
 
     private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
         designerPanel.Generate();
-
+        // Show 3D viewer
     }//GEN-LAST:event_buttonGenerateActionPerformed
 
     private void radioTavernActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTavernActionPerformed
@@ -301,7 +298,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-
+         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
