@@ -5,53 +5,38 @@
  */
 package designer;
 
-import java.util.ArrayList;
-import shapes.Shape;
+import java.awt.Color;
+import java.awt.Graphics;
 import util.Point;
-import util.CoordSystemHelper;
 
-public class GridCursor extends Shape {
+public class GridCursor implements IDesignerComponent {
     
-    ArrayList<Point> points;   
-    private Point cursorPostion = new Point(0,0);    
-    private float[] colourData = {
-        245f/255f, 250f/255f, 90f/255f,
-        245f/255f, 250f/255f, 90f/255f,
-        245f/255f, 250f/255f, 90f/255f,
-        245f/255f, 250f/255f, 90f/255f
-    };
-    
-    public GridCursor()
-    {
-        initPositionData();
-    }
-    
-    @Override
-    public float[] getPositionData() {
-        return CoordSystemHelper.deviceToOpenGLf(points);
-    }
-
-    @Override
-    public float[] getColourData() {
-        return this.colourData;    
-    }
+    private Point position = new Point(0,0);
+    boolean enabled = true;
    
-    public int numbervertices() {
-        return points.size();
-    }
-    
     public void cursorPosition(Point point) {
-        cursorPostion = point;
-        initPositionData();
+        position = point;
     }
     
-    private void initPositionData() {
+    @Override
+    public void paint(Graphics g) {
+        
+        if (!enabled) return;
+        
+        g.setColor(Color.YELLOW);    // set the drawing color
+        g.drawLine(position.x-5, position.y, position.x+5, position.y);
+        g.drawLine(position.x, position.y-5, position.x, position.y+5);            
+        
+    }
+    
+    @Override
+    public boolean getEnabled() {
+        return this.enabled;
+    }
 
-        points = new ArrayList<>();
-        points.add(new Point(cursorPostion.x-5, cursorPostion.y));
-        points.add(new Point(cursorPostion.x+5, cursorPostion.y));
-        points.add(new Point(cursorPostion.x, cursorPostion.y-5));
-        points.add(new Point(cursorPostion.x, cursorPostion.y+5)); 
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
 

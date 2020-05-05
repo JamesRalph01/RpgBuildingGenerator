@@ -5,34 +5,131 @@
  */
 package designer;
 
+import building.Room;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JPanel;
+import main.Controller;
+import util.Point;
 
 /**
  *
  * @author chrisralph
  */
-public class DesignerPanel extends JPanel {
+public class DesignerPanel extends JPanel implements MouseListener, MouseMotionListener {
 
+    private HashMap<String, IDesignerComponent> designComponents;
+    private Controller controller;
+    private Point nearestGridPoint;
+    
+    public DesignerPanel() {
+        designComponents = new HashMap<>();
+        designComponents.put("Grid", new Grid());
+        designComponents.put("GridCursor", new GridCursor()); 
+        designComponents.put("EditCursorLine", new EditCursorLine()); 
+        
+        // Add listeners
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+    }
+    
+    public void setController(Controller controller) {
+        this.controller = controller;
+        designComponents.put("BuildingOutline", controller.getBuildingOutLine());   
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
-       super.paintComponent(g);     // paint parent's background
-       setBackground(Color.BLACK);  // set background color for this JPanel
+        super.paintComponent(g);     // paint parent's background
+        setBackground(Color.BLACK);  // set background color for this JPanel
 
-       // Your custom painting codes. For example,
-       // Drawing primitive shapes
-       g.setColor(Color.YELLOW);    // set the drawing color
-       g.drawLine(30, 40, 100, 200);
-       g.drawOval(150, 180, 10, 10);
-       g.drawRect(200, 210, 20, 30);
-       g.setColor(Color.RED);       // change the drawing color
-       g.fillOval(300, 310, 30, 50);
-       g.fillRect(400, 350, 60, 50);
-       // Printing texts
-       g.setColor(Color.WHITE);
-       g.setFont(new Font("Monospaced", Font.PLAIN, 12));
-       g.drawString("Testing custom drawing ...", 10, 20);
+        Set set = designComponents.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            IDesignerComponent component = (IDesignerComponent) mentry.getValue();
+            component.paint(g);
+        } 
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
+        
+        controller.getBuildingOutLine().addPoint(nearestGridPoint);
+        editCursorLine.fromPoint(nearestGridPoint);
+        
+        if (controller.getBuildingOutLine().isComplete) {
+            editCursorLine.enabled = false;
+        } else {
+            editCursorLine.enabled = true;         
+        }
+        this.repaint();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+     }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        IDesignerComponent gridCursor = designComponents.get("GridCursor");
+        EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
+        gridCursor.setEnabled(true);
+        if (controller.getBuildingOutLine().size() > 0 &&
+            controller.getBuildingOutLine().isComplete == false) {
+            editCursorLine.setEnabled(true);
+        } 
+        this.repaint();
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        IDesignerComponent gridCursor = designComponents.get("GridCursor");
+        EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
+        gridCursor.setEnabled(false);  
+        editCursorLine.setEnabled(false);
+        this.repaint();
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        
+        Point cursorPosition;
+        
+        Grid grid = (Grid) designComponents.get("Grid");
+        GridCursor gridCursor = (GridCursor) designComponents.get("GridCursor");
+        EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
+        
+        System.out.printf("Cursor x %d, y %d \n", e.getX(), e.getY());
+        cursorPosition = new Point(e.getX(), e.getY());
+        nearestGridPoint = grid.getNearestGridPoint(cursorPosition);
+        gridCursor.cursorPosition(nearestGridPoint);
+        
+        editCursorLine.ToPoint(nearestGridPoint);
+        
+        this.repaint();
+    }
+    
+    public void Clear() {
+        EditCursorLine editCursorLine = (EditCursorLine) designComponents.get("EditCursorLine");
+        controller.getBuildingOutLine().clear();
+        editCursorLine.enabled = false;
+        this.repaint();
     }
 }

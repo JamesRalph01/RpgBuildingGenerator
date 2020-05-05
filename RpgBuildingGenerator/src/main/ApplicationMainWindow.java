@@ -5,6 +5,10 @@
  */
 package main;
 
+import designer.BuildingOutline;
+import floorplanner.FloorPlanner;
+import util.Point;
+
 /**
  *
  * @author chrisralph
@@ -14,8 +18,13 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     /**
      * Creates new form NewApplicationMainWindow
      */
+    
+    private Controller controller;
+    
     public ApplicationMainWindow() {
+        controller = new Controller();
         initComponents();
+        designerPanel.setController(controller);
     }
 
     /**
@@ -39,7 +48,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         buttonTest = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         labelDesigner = new javax.swing.JLabel();
-        designerPanel1 = new designer.DesignerPanel();
+        designerPanel = new designer.DesignerPanel();
         menuMain = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuitemExit = new javax.swing.JMenuItem();
@@ -68,6 +77,11 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         buttonGenerate.setText("Generate");
 
         buttonClear.setText("Clear");
+        buttonClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonClearActionPerformed(evt);
+            }
+        });
 
         buttonTest.setText("Test");
 
@@ -118,14 +132,14 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         labelDesigner.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelDesigner.setText("Designer");
 
-        javax.swing.GroupLayout designerPanel1Layout = new javax.swing.GroupLayout(designerPanel1);
-        designerPanel1.setLayout(designerPanel1Layout);
-        designerPanel1Layout.setHorizontalGroup(
-            designerPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout designerPanelLayout = new javax.swing.GroupLayout(designerPanel);
+        designerPanel.setLayout(designerPanelLayout);
+        designerPanelLayout.setHorizontalGroup(
+            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 464, Short.MAX_VALUE)
         );
-        designerPanel1Layout.setVerticalGroup(
-            designerPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        designerPanelLayout.setVerticalGroup(
+            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 391, Short.MAX_VALUE)
         );
 
@@ -135,24 +149,21 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelDesigner)
-                .addContainerGap(403, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(designerPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(labelDesigner)
+                        .addGap(0, 397, Short.MAX_VALUE))
+                    .addComponent(designerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelDesigner, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                    .addGap(33, 33, 33)
-                    .addComponent(designerPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(designerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(11, 11, 11))
         );
 
         menuFile.setText("File");
@@ -203,6 +214,40 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_radioChurchActionPerformed
 
+    private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
+        String action;
+        BuildingOutline buildingOutline;
+
+        buildingOutline = controller.getBuildingOutLine();
+        
+        action = evt.getActionCommand();
+        
+        switch (action) {
+//            case "GENERATE":
+//                controller.getFloorPlanner().generate(buildingOutline, w, h);
+//                break;
+//            case "TEST":
+//                controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TEST);
+//                controller.getBuildingOutLine().clear();
+//                controller.getBuildingOutLine().addPoint(new Point(50,200));
+//                controller.getBuildingOutLine().addPoint(new Point(150,100));
+//                controller.getBuildingOutLine().addPoint(new Point(250,50));
+//                controller.getBuildingOutLine().addPoint(new Point(350,50));
+//                controller.getBuildingOutLine().addPoint(new Point(450,150));
+//                controller.getBuildingOutLine().addPoint(new Point(450,350));
+//                controller.getBuildingOutLine().addPoint(new Point(300,400));
+//                controller.getBuildingOutLine().addPoint(new Point(130,400));
+//       
+//                // finish outline by finishing on same point
+//                controller.getBuildingOutLine().addPoint(new Point(50,200));
+//                controller.getFloorPlanner().generate(buildingOutline, w, h);
+//                break;               
+            case "Clear":
+                designerPanel.Clear();
+                break;   
+        }   
+    }//GEN-LAST:event_buttonClearActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -244,7 +289,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JButton buttonGenerate;
     private javax.swing.JButton buttonTest;
     private javax.swing.ButtonGroup buttongroupType;
-    private designer.DesignerPanel designerPanel1;
+    private designer.DesignerPanel designerPanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelDesigner;
     private javax.swing.JLabel labelOptionsTitle;
