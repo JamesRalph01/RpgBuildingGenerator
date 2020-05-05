@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package menu;
+package building.furniture;
 
 /**
  *
- * @author James
+ * @author chrisralph
  */
-public class gridPoint {
+public class Bed {
     
 }

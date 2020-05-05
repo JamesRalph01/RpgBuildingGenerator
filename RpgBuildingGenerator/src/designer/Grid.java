@@ -3,39 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shapes;
+package designer;
 
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import util.Point;
-import util.CoordSystemHelper;
 
 /**
  *
  * @author chrisralph
  */
-public class Grid extends Shape {
+public class Grid implements IDesignerComponent {
     
     static int MAX_GRID_ELEMENTS = 40;
-    static int GRID_SPACING = 20;
-    
+    static int GRID_SPACING = 20;  
     ArrayList<Point> points = new ArrayList<>();
-    private float[] colourData;
+    private boolean enabled = true;
     
     public Grid()
     {
         initPositionData();
-        initColourData();
-    }
-    
-    @Override
-    public float[] getPositionData() {
-        return CoordSystemHelper.deviceToOpenGLf(points);
-    }
-
-    @Override
-    public float[] getColourData() {
-        return this.colourData;    
     }
     
     public Point getNearestGridPoint(Point pointToTest) {
@@ -52,10 +41,6 @@ public class Grid extends Shape {
         return nearestGridPoint;
     }
     
-    public int numbervertices() {
-        return points.size();
-    }
-    
     private void initPositionData() {
         for (int x=0; x<MAX_GRID_ELEMENTS; x++) {
             for (int y=0; y<MAX_GRID_ELEMENTS; y++){
@@ -63,17 +48,28 @@ public class Grid extends Shape {
             }
         }
     }
-   
-    private void initColourData() {
-         int i = 0;
-         
-         // Green 50, 168, 82
-         colourData = new float[points.size() * 3];   
-         for (Point point : points) {
-             colourData[i++] = 1.0f; //R
-             colourData[i++] = 1.0f; //G
-             colourData[i++] = 1.0f; //B
-         }
+
+
+    @Override
+    public void paint(Graphics g) {
+        
+        if (!enabled) return;
+        
+        g.setColor(Color.WHITE);    // set the drawing color
+
+        for (Point point : this.points) {
+            g.drawLine(point.x, point.y, point.x, point.y);
+        }  
+    }
+
+    @Override
+    public boolean getEnabled() {
+        return this.enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
     
 }

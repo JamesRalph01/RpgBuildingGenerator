@@ -6,7 +6,7 @@
 package floorplanner;
 
 import java.util.ArrayList;
-import shapes.Room;
+import building.Room;
 import util.Edge;
 import util.Point;
 

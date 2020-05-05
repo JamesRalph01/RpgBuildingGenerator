@@ -3,16 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package shapes;
+package designer;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
-import org.joml.Rectangled;
 import util.Point;
-import util.CoordSystemHelper;
 
-public class BuildingOutline extends Shape {
+public class BuildingOutline implements IDesignerComponent {
     
     ArrayList<Point> points = new ArrayList<>();
     boolean isComplete = false;
+    boolean enabled = true;
     
     public void addPoint(Point point) {
          // Don't allow further points to be added if outline is a closed polygon
@@ -40,40 +41,6 @@ public class BuildingOutline extends Shape {
      public boolean isComplete() {
          return this.isComplete;
      }
-     
-     @Override
-     public float[] getPositionData() {
-         return CoordSystemHelper.deviceToOpenGLf(points);
-     }
-
-     @Override
-     public float[] getColourData() {
-
-         float colourData[];
-         int i = 0;
-         
-         colourData = new float[points.size() * 3];   
-
-         for (Point point : points) {
-             if (this.isComplete) {
-                colourData[i++] = 140f/255f; //R
-                colourData[i++] = 140f/255f; //G
-                colourData[i++] = 140f/255f; //B               
-             } else
-             {
-                //White 255,255,255
-                colourData[i++] = 1.0f; //R
-                colourData[i++] = 1.0f; //G
-                colourData[i++] = 1.0f; //B
-             }
-
-         }
-         return colourData;
-     }
-
-     public int numbervertices() {
-        return points.size();
-     }
 
      private void checkIsComplete(Point point) {
          
@@ -87,4 +54,39 @@ public class BuildingOutline extends Shape {
          }         
          System.out.println("Building outline complete=" + this.isComplete);      
      }  
+
+    @Override
+    public boolean getEnabled() {
+        return this.enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        int xPoints[], yPoints[];
+        
+        if (!enabled || points.isEmpty()) return;
+        
+        xPoints = new int[points.size()];
+        yPoints = new int[points.size()];
+     
+        int i=0;
+        for (Point point : points) {
+            xPoints[i] = point.x;
+            yPoints[i] = point.y;
+            i++;
+        }
+        if (this.isComplete) {
+            g.setColor(new Color(140,140,140));
+            g.drawPolygon(xPoints, yPoints, points.size());
+        } else {
+            g.setColor(Color.WHITE);    
+            g.drawPolyline(xPoints, yPoints, points.size());
+        }
+         
+    }
 }
