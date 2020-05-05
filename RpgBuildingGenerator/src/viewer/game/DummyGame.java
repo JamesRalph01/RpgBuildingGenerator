@@ -71,7 +71,7 @@ public class DummyGame implements IGameLogic {
         setupLights();
 
         // Create HUD
-        hud = new Hud("DEMO");
+        //hud = new Hud("DEMO");
 
         camera.getPosition().x = 0.0f;
         camera.getPosition().y = 5.0f;
@@ -164,7 +164,7 @@ public class DummyGame implements IGameLogic {
 
     @Override
     public void render(Window window) {
-        hud.updateSize(window);
+        //hud.updateSize(window);
         renderer.render(window, camera, scene, hud);
     }
 
@@ -172,7 +172,7 @@ public class DummyGame implements IGameLogic {
     public void cleanup() {
         renderer.cleanup();
         scene.cleanup();
-        hud.cleanup();
+        //hud.cleanup();
     }
 
 }

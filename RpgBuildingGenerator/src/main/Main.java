@@ -1,7 +1,8 @@
-package viewer.game;
+package main;
 
 import viewer.engine.GameEngine;
 import viewer.engine.IGameLogic;
+import viewer.game.DummyGame;
  
 public class Main {
  
