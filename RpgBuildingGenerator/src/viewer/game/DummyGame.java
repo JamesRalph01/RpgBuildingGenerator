@@ -64,6 +64,20 @@ public class DummyGame implements IGameLogic {
         } else if (window.isKeyPressed(GLFW_KEY_X)) {
             cameraInc.y = 1;
         }
+        // Add object rotation
+        if (window.isKeyPressed(GLFW_KEY_UP)) {
+            Vector3f rotation = gameItems[0].getRotation();
+            gameItems[0].setRotation(rotation.x+=5, rotation.y, rotation.z);
+        } else if (window.isKeyPressed(GLFW_KEY_DOWN)) {
+            Vector3f rotation = gameItems[0].getRotation();
+            gameItems[0].setRotation(rotation.x-=5, rotation.y, rotation.z);
+        } else if (window.isKeyPressed(GLFW_KEY_LEFT)) {
+            Vector3f rotation = gameItems[0].getRotation();
+            gameItems[0].setRotation(rotation.x, rotation.y+5, rotation.z);
+        } else if (window.isKeyPressed(GLFW_KEY_RIGHT)) {
+            Vector3f rotation = gameItems[0].getRotation();
+            gameItems[0].setRotation(rotation.x, rotation.y-5, rotation.z);
+        }
     }
 
     @Override
