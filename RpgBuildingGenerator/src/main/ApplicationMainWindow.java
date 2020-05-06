@@ -28,7 +28,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         controller = new Controller();
         initComponents();
         designerPanel.setController(controller);
-        tabMain.setSelectedComponent(designerPanel);
+        tabPane.setSelectedComponent(designerPanel);
     }
     
     public ApplicationMainWindow(FPSAnimator animator) {
@@ -62,9 +62,9 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         buttongroupType = new javax.swing.ButtonGroup();
-        tabMain = new javax.swing.JTabbedPane();
+        tabPane = new javax.swing.JTabbedPane();
         designerPanel = new designer.DesignerPanel();
-        viewerPanel = new viewer.engine.viewerPanel();
+        viewerPanel = new javax.swing.JTabbedPane();
         panelOptions = new javax.swing.JPanel();
         labelOptionsTitle = new javax.swing.JLabel();
         labelType = new javax.swing.JLabel();
@@ -92,20 +92,8 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        tabMain.addTab("Designer", designerPanel);
-
-        javax.swing.GroupLayout viewerPanelLayout = new javax.swing.GroupLayout(viewerPanel);
-        viewerPanel.setLayout(viewerPanelLayout);
-        viewerPanelLayout.setHorizontalGroup(
-            viewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 459, Short.MAX_VALUE)
-        );
-        viewerPanelLayout.setVerticalGroup(
-            viewerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 378, Short.MAX_VALUE)
-        );
-
-        tabMain.addTab("Viewer", viewerPanel);
+        tabPane.addTab("Designer", designerPanel);
+        tabPane.addTab("Viewer", viewerPanel);
 
         labelOptionsTitle.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelOptionsTitle.setText("Building criteria");
@@ -223,7 +211,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabMain, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                .addComponent(tabPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -232,7 +220,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             .addComponent(panelOptions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tabMain)
+                .addComponent(tabPane)
                 .addContainerGap())
         );
 
@@ -251,7 +239,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
 
     private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
         designerPanel.Clear();
-        tabMain.setSelectedComponent(designerPanel);
+        tabPane.setSelectedComponent(designerPanel);
     }//GEN-LAST:event_buttonClearActionPerformed
 
     private void buttonTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestActionPerformed
@@ -345,7 +333,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JRadioButton radioChurch;
     private javax.swing.JRadioButton radioHouse;
     private javax.swing.JRadioButton radioTavern;
-    private javax.swing.JTabbedPane tabMain;
-    private viewer.engine.viewerPanel viewerPanel;
+    private javax.swing.JTabbedPane tabPane;
+    private javax.swing.JTabbedPane viewerPanel;
     // End of variables declaration//GEN-END:variables
 }
