@@ -60,8 +60,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
            
             // Create Shader Objects
-            int vertexShader = ShaderHandler.createShader("/shaders/vertex_shader.glsl", GL4.GL_VERTEX_SHADER, gl);
-            int fragmentShader = ShaderHandler.createShader("/shaders/fragment_shader.glsl", GL4.GL_FRAGMENT_SHADER, gl);
+            int vertexShader = ShaderHandler.createShader("src/shaders/vertex_shader.glsl", GL4.GL_VERTEX_SHADER, gl);
+            int fragmentShader = ShaderHandler.createShader("src/shaders/fragment_shader.glsl", GL4.GL_FRAGMENT_SHADER, gl);
 
             int shaderList[] = {vertexShader,fragmentShader};
 

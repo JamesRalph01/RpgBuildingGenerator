@@ -8,6 +8,7 @@ package main;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import util.Point;
@@ -49,7 +50,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     }
     
     public void setGLCanvas(GLCanvas canvas, String pos) {
-        viewerPanel.add(canvas, pos, 0);
+        tabPane.addTab("Viewer", canvas); 
     }
 
     /**
@@ -64,7 +65,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         buttongroupType = new javax.swing.ButtonGroup();
         tabPane = new javax.swing.JTabbedPane();
         designerPanel = new designer.DesignerPanel();
-        viewerPanel = new javax.swing.JTabbedPane();
         panelOptions = new javax.swing.JPanel();
         labelOptionsTitle = new javax.swing.JLabel();
         labelType = new javax.swing.JLabel();
@@ -93,7 +93,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         );
 
         tabPane.addTab("Designer", designerPanel);
-        tabPane.addTab("Viewer", viewerPanel);
 
         labelOptionsTitle.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelOptionsTitle.setText("Building criteria");
@@ -334,6 +333,5 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JRadioButton radioHouse;
     private javax.swing.JRadioButton radioTavern;
     private javax.swing.JTabbedPane tabPane;
-    private javax.swing.JTabbedPane viewerPanel;
     // End of variables declaration//GEN-END:variables
 }
