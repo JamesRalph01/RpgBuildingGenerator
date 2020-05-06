@@ -14,10 +14,6 @@ public class GameEngine implements Runnable {
 
     private final MouseInput mouseInput;
 
-    public GameEngine(String windowTitle, boolean vSync, IGameLogic gameLogic) throws Exception {
-        this(windowTitle, 0, 0, vSync, gameLogic);
-    }
-
     public GameEngine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic) throws Exception {
         window = new Window(windowTitle, width, height, vSync);
         mouseInput = new MouseInput();

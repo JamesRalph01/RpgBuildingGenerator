@@ -1,11 +1,11 @@
-package viewer.engine.items;
+package viewer.engine;
 
 import org.joml.Vector3f;
 import viewer.engine.graph.Mesh;
 
 public class GameItem {
 
-    private Mesh mesh;
+    private final Mesh mesh;
     
     private final Vector3f position;
     
@@ -13,15 +13,11 @@ public class GameItem {
 
     private final Vector3f rotation;
 
-    public GameItem() {
+    public GameItem(Mesh mesh) {
+        this.mesh = mesh;
         position = new Vector3f();
         scale = 1;
         rotation = new Vector3f();
-    }
-    
-    public GameItem(Mesh mesh) {
-        this();
-        this.mesh = mesh;
     }
 
     public Vector3f getPosition() {
@@ -54,9 +50,5 @@ public class GameItem {
     
     public Mesh getMesh() {
         return mesh;
-    }
-    
-    public void setMesh(Mesh mesh) {
-        this.mesh = mesh;
     }
 }

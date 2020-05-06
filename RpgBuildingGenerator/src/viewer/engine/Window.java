@@ -29,6 +29,7 @@ public class Window {
         this.resized = false;
     }
 
+
     public void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -46,16 +47,6 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-        boolean maximized = false;
-        // If no size has been specified set it to maximized state
-        if (width == 0 || height == 0) {
-            // Set up a fixed width and height so window initialization does not fail
-            width = 100;
-            height = 100;
-            glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-            maximized = true;
-        }
 
         // Create the window
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -77,18 +68,14 @@ public class Window {
             }
         });
 
-        if (maximized) {
-            glfwMaximizeWindow(windowHandle);
-        } else {
-            // Get the resolution of the primary monitor
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            // Center our window
-            glfwSetWindowPos(
-                    windowHandle,
-                    (vidmode.width() - width) / 2,
-                    (vidmode.height() - height) / 2
-            );
-        }
+        // Get the resolution of the primary monitor
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        // Center our window
+        glfwSetWindowPos(
+                windowHandle,
+                (vidmode.width() - width) / 2,
+                (vidmode.height() - height) / 2
+        );
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowHandle);
@@ -107,13 +94,6 @@ public class Window {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-        // Support for transparencies
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
     }
 
     public long getWindowHandle() {
