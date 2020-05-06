@@ -5,8 +5,12 @@
  */
 package main;
 
-import designer.BuildingOutline;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
+import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import util.Point;
 
 /**
@@ -25,6 +29,28 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         controller = new Controller();
         initComponents();
         designerPanel.setController(controller);
+        tabPane.setSelectedComponent(designerPanel);
+    }
+    
+    public ApplicationMainWindow(FPSAnimator animator) {
+        this();
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (animator.isStarted()) {
+                    System.out.println("Stopping FPSAnimator...");
+                    animator.stop();
+                    System.out.println("FPSAnimator stopped...");
+                }
+                System.out.println("Closing Window...");
+                System.exit(0);
+            }
+        });
+                
+    }
+    
+    public void setGLCanvas(GLCanvas canvas, String pos) {
+        tabPane.addTab("Viewer", canvas); 
     }
 
     /**
@@ -37,6 +63,8 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         buttongroupType = new javax.swing.ButtonGroup();
+        tabPane = new javax.swing.JTabbedPane();
+        designerPanel = new designer.DesignerPanel();
         panelOptions = new javax.swing.JPanel();
         labelOptionsTitle = new javax.swing.JLabel();
         labelType = new javax.swing.JLabel();
@@ -46,16 +74,25 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         buttonGenerate = new javax.swing.JButton();
         buttonClear = new javax.swing.JButton();
         buttonTest = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        labelDesigner = new javax.swing.JLabel();
-        designerPanel = new designer.DesignerPanel();
         menuMain = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuitemExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RPG Building Generator");
-        setPreferredSize(new java.awt.Dimension(640, 480));
+
+        javax.swing.GroupLayout designerPanelLayout = new javax.swing.GroupLayout(designerPanel);
+        designerPanel.setLayout(designerPanelLayout);
+        designerPanelLayout.setHorizontalGroup(
+            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        designerPanelLayout.setVerticalGroup(
+            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        tabPane.addTab("Designer", designerPanel);
 
         labelOptionsTitle.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
         labelOptionsTitle.setText("Building criteria");
@@ -123,7 +160,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                             .addComponent(radioTavern)
                             .addComponent(radioChurch)
                             .addComponent(radioHouse))
-                        .addContainerGap(44, Short.MAX_VALUE))
+                        .addContainerGap(34, Short.MAX_VALUE))
                     .addGroup(panelOptionsLayout.createSequentialGroup()
                         .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(buttonTest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -150,44 +187,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                 .addComponent(buttonClear)
                 .addGap(51, 51, 51)
                 .addComponent(buttonTest)
-                .addContainerGap(44, Short.MAX_VALUE))
-        );
-
-        labelDesigner.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
-        labelDesigner.setText("Designer");
-
-        javax.swing.GroupLayout designerPanelLayout = new javax.swing.GroupLayout(designerPanel);
-        designerPanel.setLayout(designerPanelLayout);
-        designerPanelLayout.setHorizontalGroup(
-            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 464, Short.MAX_VALUE)
-        );
-        designerPanelLayout.setVerticalGroup(
-            designerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 391, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(labelDesigner)
-                        .addGap(0, 397, Short.MAX_VALUE))
-                    .addComponent(designerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelDesigner, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(designerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(11, 11, 11))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         menuFile.setText("File");
@@ -210,18 +210,16 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(tabPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelOptions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 58, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(tabPane)
                 .addContainerGap())
         );
 
@@ -240,6 +238,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
 
     private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
         designerPanel.Clear();
+        tabPane.setSelectedComponent(designerPanel);
     }//GEN-LAST:event_buttonClearActionPerformed
 
     private void buttonTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestActionPerformed
@@ -260,7 +259,17 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonTestActionPerformed
 
     private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
-        designerPanel.Generate();
+        
+        // TODO: need to only allow generation if a building outline has been defined
+        // maybe put up a message box
+        
+        if (controller.getBuildingOutLine().isComplete()) {
+            designerPanel.Generate();
+
+            // Show 3D viewer <- not sure if this is desirable.  nice to show 2D view first?
+            //tabMain.setSelectedComponent(viewerPanel);
+        }
+        
     }//GEN-LAST:event_buttonGenerateActionPerformed
 
     private void radioTavernActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTavernActionPerformed
@@ -298,13 +307,14 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
-
+                 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ApplicationMainWindow().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -313,8 +323,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JButton buttonTest;
     private javax.swing.ButtonGroup buttongroupType;
     private designer.DesignerPanel designerPanel;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel labelDesigner;
     private javax.swing.JLabel labelOptionsTitle;
     private javax.swing.JLabel labelType;
     private javax.swing.JMenu menuFile;
@@ -324,5 +332,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JRadioButton radioChurch;
     private javax.swing.JRadioButton radioHouse;
     private javax.swing.JRadioButton radioTavern;
+    private javax.swing.JTabbedPane tabPane;
     // End of variables declaration//GEN-END:variables
 }

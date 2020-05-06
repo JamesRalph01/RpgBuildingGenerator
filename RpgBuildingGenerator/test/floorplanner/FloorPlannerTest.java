@@ -62,9 +62,7 @@ public class FloorPlannerTest {
         System.out.println("Generate");
         FloorPlanner instance = new FloorPlanner();
         instance.setBuildingType(FloorPlanner.BuildingType.TEST);
-        instance.generate(outline, 50, 50);
-        
-        
+        instance.generate(outline);
     }
     
 //    
