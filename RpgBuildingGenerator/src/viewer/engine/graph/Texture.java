@@ -1,19 +1,19 @@
 package viewer.engine.graph;
 
+import com.jogamp.opengl.GL4;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
 
     private final int id;
 
-    public Texture(String fileName) throws Exception {
-        this(loadTexture(fileName));
+    public Texture(GL4 gl, String fileName) throws Exception {
+        this(loadTexture(gl, fileName));
     }
 
     public Texture(int id) {
@@ -28,7 +28,7 @@ public class Texture {
         return id;
     }
 
-    private static int loadTexture(String fileName) throws Exception {
+    private static int loadTexture(GL4 gl, String fileName) throws Exception {
         int width;
         int height;
         ByteBuffer buf;
@@ -48,28 +48,50 @@ public class Texture {
         }
 
         // Create a new OpenGL texture
-        int textureId = glGenTextures();
+        int[] textureIds = new int[1];
+        gl.glGenTextures(1, IntBuffer.wrap(textureIds));
+        int textureId = textureIds[0];
+
         // Bind the texture
-        glBindTexture(GL_TEXTURE_2D, textureId);
+        gl.glBindTexture(GL_TEXTURE_2D, textureId);
+    
+        // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
+        gl.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        
+       // Upload the texture data
+        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        
+        // Generate Mip Map
+        gl.glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(buf);
+        
+        //int textureId = glGenTextures();
+
+        // Bind the texture
+        //glBindTexture(GL_TEXTURE_2D, textureId);
 
         // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         // Upload the texture data
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+        //        GL_RGBA, GL_UNSIGNED_BYTE, buf);
         // Generate Mip Map
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);
 
-        stbi_image_free(buf);
+        //stbi_image_free(buf);
 
         return textureId;
     }
 
-    public void cleanup() {
-        glDeleteTextures(id);
+    public void cleanup(GL4 gl) {
+        int[] textIds = new int[1];
+        textIds[0] = id;
+        gl.glDeleteTextures(1, IntBuffer.wrap(textIds));
     }
 }
