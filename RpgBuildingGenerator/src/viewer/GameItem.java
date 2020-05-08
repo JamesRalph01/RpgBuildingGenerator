@@ -1,7 +1,6 @@
-package viewer.engine;
+package viewer;
 
 import org.joml.Vector3f;
-import viewer.engine.graph.Mesh;
 
 public class GameItem {
 

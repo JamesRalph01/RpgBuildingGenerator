@@ -1,11 +1,11 @@
-package viewer.engine.graph;
+package viewer;
 
 import com.jogamp.opengl.GL4;
 import java.util.ArrayList;
 import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import viewer.engine.Utils;
+import viewer.Utils;
 
 public class OBJLoader {
 

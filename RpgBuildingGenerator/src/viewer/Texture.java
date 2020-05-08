@@ -1,4 +1,4 @@
-package viewer.engine.graph;
+package viewer;
 
 import com.jogamp.opengl.GL4;
 import java.nio.ByteBuffer;
@@ -30,6 +30,8 @@ public class Texture {
     private static int loadTexture(GL4 gl, String fileName) throws Exception {
         int width;
         int height;
+        
+        
         ByteBuffer buf;
         // Load Texture file
         try (MemoryStack stack = MemoryStack.stackPush()) {

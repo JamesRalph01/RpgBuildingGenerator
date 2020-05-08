@@ -1,4 +1,4 @@
-package viewer.engine.graph;
+package viewer;
 
 import com.jogamp.opengl.GL4;
 import java.nio.FloatBuffer;

@@ -7,16 +7,14 @@ package building;
 
 import java.util.ArrayList;
 import org.joml.Rectangled;
-import shapes.Shape;
 import util.Point;
-import util.CoordSystemHelper;
 import util.Edge;
 import util.PolygonHelper;
 /**
  *
  * @author chrisralph
  */
-public class Room extends Shape {
+public class Room {
 
     private ArrayList<Edge> edges;
     private float[] colourData;
@@ -44,15 +42,6 @@ public class Room extends Shape {
         return polygon.boundingRect();
     }
     
-    @Override
-    public float[] getPositionData() {
-        return CoordSystemHelper.deviceToOpenGLf(this.points());
-    }
-
-    @Override
-    public float[] getColourData() {
-        return this.colourData;   
-    }
     
     public int numbervertices() {
         return this.points().size();

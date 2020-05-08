@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.joml.Intersectiond;
-import shapes.Shape;
 import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
