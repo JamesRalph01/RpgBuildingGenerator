@@ -1,6 +1,5 @@
 package viewer;
 
-import viewer.Camera;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -66,8 +65,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
-            shaderProgram.createVertexShader(gl, Utils.loadResource("/shaders/vertex.vs"));
-            shaderProgram.createFragmentShader(gl, Utils.loadResource("/shaders/fragment.fs"));
+            shaderProgram.createVertexShader(gl, Utils.loadResource("/shaders/vertex_shader.glsl"));
+            shaderProgram.createFragmentShader(gl, Utils.loadResource("/shaders/fragment_shader.glsl"));
             shaderProgram.link(gl);
             
             // Create uniforms for modelView and projection matrices and texture

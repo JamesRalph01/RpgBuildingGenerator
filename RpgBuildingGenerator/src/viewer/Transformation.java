@@ -1,9 +1,7 @@
 package viewer;
 
-import viewer.Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import viewer.GameItem;
 
 public class Transformation {
 
