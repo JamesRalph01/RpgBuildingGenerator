@@ -1,4 +1,4 @@
-package viewer.engine.graph;
+package viewer;
 
 import org.joml.Vector3f;
 

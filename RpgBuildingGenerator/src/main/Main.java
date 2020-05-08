@@ -10,7 +10,7 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import java.awt.BorderLayout;
-import viewer.engine.Renderer;
+import viewer.Renderer;
 
 public class Main {
     
@@ -35,6 +35,7 @@ public class Main {
         canvas.addGLEventListener(renderer);
         canvas.addMouseListener(renderer);
         canvas.addMouseMotionListener(renderer);
+        canvas.addKeyListener(renderer);
         
         window.setGLCanvas(canvas, BorderLayout.CENTER);
         

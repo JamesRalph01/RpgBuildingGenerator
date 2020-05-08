@@ -1,8 +1,7 @@
-package viewer.engine.graph;
+package viewer;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import viewer.engine.GameItem;
 
 public class Transformation {
 
