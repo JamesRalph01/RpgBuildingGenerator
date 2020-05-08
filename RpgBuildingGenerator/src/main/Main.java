@@ -35,6 +35,7 @@ public class Main {
         canvas.addGLEventListener(renderer);
         canvas.addMouseListener(renderer);
         canvas.addMouseMotionListener(renderer);
+        canvas.addKeyListener(renderer);
         
         window.setGLCanvas(canvas, BorderLayout.CENTER);
         

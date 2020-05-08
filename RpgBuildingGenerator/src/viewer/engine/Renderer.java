@@ -3,6 +3,18 @@ package viewer.engine;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_A;
+import static java.awt.event.KeyEvent.VK_D;
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_RIGHT;
+import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_W;
+import static java.awt.event.KeyEvent.VK_X;
+import static java.awt.event.KeyEvent.VK_Z;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -17,7 +29,7 @@ import viewer.engine.graph.Camera;
 import viewer.engine.graph.Texture;
 import viewer.engine.graph.OBJLoader;
 
-public class Renderer implements GLEventListener, MouseListener, MouseMotionListener {
+public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener {
 
     private final Vector3f cameraInc;
     private final Camera camera;
@@ -52,26 +64,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
             // Output OpenGL version
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
-           
-            // Create Shader Objects
-//            int vertexShader = ShaderHandler.createShader("src/shaders/vertex_shader.glsl", GL4.GL_VERTEX_SHADER, gl);
-//            int fragmentShader = ShaderHandler.createShader("src/shaders/fragment_shader.glsl", GL4.GL_FRAGMENT_SHADER, gl);
-//
-//            int shaderList[] = {vertexShader,fragmentShader};
-//
-//            int programHandle = ShaderHandler.createProgram(shaderList, gl);
-//
-//            final int VERTEX_POSITION_INDEX = 0;
-//            final int VERTEX_COLOUR_INDEX = 1;
-//
-//            Triangle triangle = new Triangle();
-//            Circle circle = new Circle(-0.5f,0.5f,0.02f,40);
-//            BufferHandler.setupBuffers(triangleVaoHandle, triangle.getPositionData(), 
-//                    triangle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-//            BufferHandler.setupBuffers(circleVaoHandle, circle.getPositionData(), 
-//                    circle.getColourData(), VERTEX_POSITION_INDEX, VERTEX_COLOUR_INDEX, gl);
-//            ShaderHandler.linkProgram(programHandle, gl);
-//            gl.glUseProgram(programHandle);
             
             Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
             Texture texture = new Texture(gl, "textures/grassblock.png");
@@ -98,10 +90,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-//    
-//    public void clear() {
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    }
+    
+    public void clear(GL4 gl) {
+        gl.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+    }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
@@ -117,6 +109,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void display(GLAutoDrawable drawable) {
         final GL4 gl = drawable.getGL().getGL4();
+        
+        this.clear(gl);
         
         shaderProgram.bind(gl);
         
@@ -141,42 +135,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         }
 
         shaderProgram.unbind(gl);    
-        
-//        gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
-//        
-//        gl.glBindVertexArray(triangleVaoHandle[0]);
-//        gl.glDrawArrays(GL4.GL_TRIANGLES, 0, 3);
-//        
-//        gl.glBindVertexArray(circleVaoHandle[0]);
-//        gl.glDrawArrays(GL4.GL_TRIANGLE_FAN, 0, 40);
-//        
-//        gl.glFlush();
-//
-//        clear();
-//
-//        shaderProgram.bind();
-//        
-//        // Update projection Matrix
-//        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, w, h, Z_NEAR, Z_FAR);
-//        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
-//
-//        // Update view Matrix
-//        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
-//        
-//        shaderProgram.setUniform("texture_sampler", 0);
-//        // Render each gameItem
-//        for (GameItem gameItem : gameItems) {
-//            Mesh mesh = gameItem.getMesh();
-//            // Set model view matrix for this item
-//            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
-//            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-//            // Render the mesh for this game item
-//            shaderProgram.setUniform("colour", mesh.getColour());
-//            shaderProgram.setUniform("useColour", mesh.isTextured() ? 0 : 1);
-//            mesh.render();
-//        }
-//
-//        shaderProgram.unbind();     
+         
     }
 
     @Override
@@ -213,6 +172,58 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseMoved(MouseEvent e) {   
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key;
+        Vector3f rotation = gameItems[0].getRotation();
+        
+        cameraInc.set(0, 0, 0);
+        
+        key = e.getKeyCode();
+        switch (key) {
+            case VK_W: 
+                cameraInc.z = -1;
+                break;
+            case VK_S: 
+                cameraInc.z = 1;
+                break;  
+            case VK_A: 
+                cameraInc.x = -1;
+                break;
+            case VK_D: 
+                cameraInc.x = 1;
+                break;
+            case VK_Z: 
+                cameraInc.y = -1;
+                break;
+            case VK_X: 
+                cameraInc.y = 1;
+                break;
+            case VK_UP: 
+                gameItems[0].setRotation(rotation.x+=5, rotation.y, rotation.z);
+                break;    
+            case VK_DOWN: 
+                gameItems[0].setRotation(rotation.x-=5, rotation.y, rotation.z);
+                break;
+            case VK_LEFT: 
+                gameItems[0].setRotation(rotation.x, rotation.y+5, rotation.z);
+                break;                   
+            case VK_RIGHT: 
+                gameItems[0].setRotation(rotation.x, rotation.y-5, rotation.z);
+                break;    
+        
+        }
+        e.consume();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
     }
 }
 

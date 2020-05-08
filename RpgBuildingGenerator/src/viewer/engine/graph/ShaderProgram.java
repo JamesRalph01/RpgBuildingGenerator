@@ -1,6 +1,5 @@
 package viewer.engine.graph;
 
-import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -8,7 +7,6 @@ import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.system.MemoryStack;
 
 public class ShaderProgram {
@@ -109,15 +107,15 @@ public class ShaderProgram {
             gl.glDetachShader(programId, fragmentShaderId);
         }
 
+        int[] infoLogLength = {0};
         gl.glValidateProgram(programId);
-        gl.glGetProgramiv(programId, GL4.GL_VALIDATE_STATUS, status, 0);  
-//        if (status[0] == GL4.GL_FALSE) {
-//            int logLength[] = new int[1];
-//            byte[] log = new byte[logLength[0]];
-//            gl.glGetProgramInfoLog(programId, logLength[0], (int[])null, 0, log, 0);
-//            System.out.println("Program Log: " + new String(log));
-//            System.err.println("Warning validating Shader code: ");
-//        }
+        gl.glGetProgramiv(programId, GL4.GL_VALIDATE_STATUS, infoLogLength, 0);
+        if (infoLogLength[0] > 0) {
+            byte[] buffer = new byte[infoLogLength[0]];
+            gl.glGetProgramInfoLog(programId, infoLogLength[0], null, 0, buffer, 0);
+            System.out.println("Program Log: " + new String(buffer));
+            System.err.println("Warning validating Shader code: ");
+        }
     }
 
     public void bind(GL4 gl) {

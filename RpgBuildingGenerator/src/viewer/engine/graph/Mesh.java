@@ -66,6 +66,7 @@ public class Mesh {
             
             // Position VBO
             gl.glGenBuffers(1, IntBuffer.wrap(vboIds));
+            
             vboIdList.add(vboIds[0]);          
             posBuffer = MemoryUtil.memAllocFloat(positions.length);
             posBuffer.put(positions).flip();                  

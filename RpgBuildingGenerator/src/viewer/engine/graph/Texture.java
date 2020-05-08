@@ -20,8 +20,8 @@ public class Texture {
         this.id = id;
     }
 
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
+    public void bind(GL4 gl) {
+        gl.glBindTexture(GL_TEXTURE_2D, id);
     }
 
     public int getId() {
