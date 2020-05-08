@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
@@ -21,7 +20,7 @@ public class Texture {
     }
 
     public void bind(GL4 gl) {
-        gl.glBindTexture(GL_TEXTURE_2D, id);
+        gl.glBindTexture(GL4.GL_TEXTURE_2D, id);
     }
 
     public int getId() {
@@ -53,17 +52,17 @@ public class Texture {
         int textureId = textureIds[0];
 
         // Bind the texture
-        gl.glBindTexture(GL_TEXTURE_2D, textureId);
+        gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
     
         // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
-        gl.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        gl.glPixelStorei(GL4.GL_UNPACK_ALIGNMENT, 1);
         
        // Upload the texture data
-        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        gl.glTexImage2D(GL4.GL_TEXTURE_2D, 0, GL4.GL_RGBA, width, height, 0,
+                GL4.GL_RGBA, GL4.GL_UNSIGNED_BYTE, buf);
         
         // Generate Mip Map
-        gl.glGenerateMipmap(GL_TEXTURE_2D);
+        gl.glGenerateMipmap(GL4.GL_TEXTURE_2D);
 
         stbi_image_free(buf);
         

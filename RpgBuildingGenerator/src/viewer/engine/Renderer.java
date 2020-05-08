@@ -220,12 +220,27 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         }
         e.consume();
+        update();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
     }
+
+    public void update() {
+        // Update camera position
+        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+
+        // Update camera based on mouse            
+//        if (mouseInput.isRightButtonPressed()) {
+//            Vector2f rotVec = mouseInput.getDisplVec();
+//            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+//        }
+    }
+
+
 }
+
 
 
  /**
