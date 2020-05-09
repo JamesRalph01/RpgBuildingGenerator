@@ -18,16 +18,18 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joml.Matrix4f;
+import org.joml.Spheref;
 import org.joml.Vector3f;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener {
 
     private final Vector3f cameraInc;
     private final Camera camera;
-    private GameItem[] gameItems;
+    private ArrayList<BuildingItem> buildingItems;
 
     private static final float CAMERA_POS_STEP = 0.05f;
     
@@ -51,17 +53,23 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         try {
 
             final GL4 gl = drawable.getGL().getGL4();
+            BuildingItem buildingItem;
 
             // Output OpenGL version
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
             
-            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-            Texture texture = new Texture(gl, "textures/grassblock.png");
-            mesh.setTexture(texture);
-            GameItem gameItem = new GameItem(mesh);
-            gameItem.setScale(0.5f);
-            gameItem.setPosition(0, 0, -2);
-            gameItems = new GameItem[]{gameItem};
+            buildingItems = new ArrayList<>();
+            
+            initFloor(gl);
+            
+//            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
+//            Texture texture = new Texture(gl, "textures/Stone_wall.png");
+//            mesh.setTexture(texture);
+//          
+//            buildingItem = new BuildingItem(mesh);
+//            buildingItem.setScale(0.5f);
+//            buildingItem.setPosition(0.5f, 0, -2);
+//            buildingItems.add(buildingItem);            
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -93,8 +101,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (shaderProgram != null) {
             shaderProgram.cleanup(gl);
         }
-        for (GameItem gameItem : gameItems) {
-            gameItem.getMesh().cleanUp(gl);
+        for (BuildingItem buildingItem : buildingItems) {
+            buildingItem.getMesh().cleanUp(gl);
         }
     }
 
@@ -114,11 +122,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         
         shaderProgram.setUniform(gl, "texture_sampler", 0);
-        // Render each gameItem
-        for (GameItem gameItem : gameItems) {
-            Mesh mesh = gameItem.getMesh();
+        // Render each buildingItem
+        for (BuildingItem buildingItem : buildingItems) {
+            Mesh mesh = buildingItem.getMesh();
             // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
             shaderProgram.setUniform(gl, "colour", mesh.getColour());
@@ -173,7 +181,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void keyPressed(KeyEvent e) {
         int key;
-        Vector3f rotation = gameItems[0].getRotation();
+        Vector3f rotation = buildingItems.get(0).getRotation();
         
         cameraInc.set(0, 0, 0);
         
@@ -198,16 +206,20 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 cameraInc.y = 1;
                 break;
             case VK_UP: 
-                gameItems[0].setRotation(rotation.x+=5, rotation.y, rotation.z);
+                //camera.moveRotation(5, 0, 0);
+                rotation.set(rotation.x+=5,rotation.y, rotation.z);
                 break;    
             case VK_DOWN: 
-                gameItems[0].setRotation(rotation.x-=5, rotation.y, rotation.z);
+                //camera.moveRotation(-5, 0, 0);
+                rotation.set(rotation.x-=5,rotation.y, rotation.z);
                 break;
             case VK_LEFT: 
-                gameItems[0].setRotation(rotation.x, rotation.y+5, rotation.z);
+                //camera.moveRotation(0, 5, 0);
+                rotation.set(rotation.x,rotation.y+=5, rotation.z);
                 break;                   
             case VK_RIGHT: 
-                gameItems[0].setRotation(rotation.x, rotation.y-5, rotation.z);
+                //camera.moveRotation(0, -5, 0);
+                rotation.set(rotation.x,rotation.y-=5, rotation.z);
                 break;    
         
         }
@@ -230,5 +242,37 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 //        }
     }
 
+    private void initFloor(GL4 gl) throws Exception {
+                // Create the Mesh
+        float[] positions = new float[] {
+            // V0
+            -1.0f, 1.0f, 0.0f,
+            // V1
+            -1.0f, -1.0f, 0.0f,
+            // V2
+            1.0f, -1.0f, 0.0f,
+            // V3
+            1.0f, 1.0f, 0.0f            
 
+        };
+        float[] textCoords = new float[]{
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            
+        };
+        int[] indices = new int[]{
+            // Front face
+            0, 1, 3, 3, 1, 2};
+
+        
+        Texture texture = new Texture(gl, "textures/Wooden_planks.png");
+        texture.enableWrap(gl);
+        Mesh mesh = new Mesh(gl, positions, textCoords, indices, texture);
+        BuildingItem buildingItem = new BuildingItem(mesh);
+        buildingItem.setScale(0.5f);
+        buildingItem.setPosition(0, 0, -2);
+        buildingItems.add(buildingItem);  
+    }
 }

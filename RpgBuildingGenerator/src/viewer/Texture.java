@@ -68,25 +68,6 @@ public class Texture {
 
         stbi_image_free(buf);
         
-        //int textureId = glGenTextures();
-
-        // Bind the texture
-        //glBindTexture(GL_TEXTURE_2D, textureId);
-
-        // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
-        //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        // Upload the texture data
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-        //        GL_RGBA, GL_UNSIGNED_BYTE, buf);
-        // Generate Mip Map
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        //stbi_image_free(buf);
-
         return textureId;
     }
 
@@ -94,5 +75,10 @@ public class Texture {
         int[] textIds = new int[1];
         textIds[0] = id;
         gl.glDeleteTextures(1, IntBuffer.wrap(textIds));
+    }
+    
+    public void enableWrap(GL4 gl) {
+        gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+        gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
     }
 }
