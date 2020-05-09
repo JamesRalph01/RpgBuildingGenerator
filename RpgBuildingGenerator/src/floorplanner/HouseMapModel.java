@@ -63,45 +63,43 @@ public class HouseMapModel implements MapModel {
             int n = (int)(totalArea-30000)/10000;
             char[] availableRooms = {'T','U','U','S','S','S','D','D','D'};
             for (int i=0; i<n; i++) {
-                // Add additional Rooms
-                int randValue = rand.nextInt(availableRooms.length);
-                char room = availableRooms[randValue];
-                switch (room) {
-                    case 'T':
-                        // Toilet
-                        privateRatio.add(20);
-                        this.roomRatio[2] += 10;
-                        privateLabels.add("To");
-                        break;
-                    case 'U':
-                        // Utility Room
-                        serviceRatio.add(20);
-                        this.roomRatio[1] += 10;
-                        serviceLabels.add("Ut");
-                        break;
-                    case 'S':
-                        // Spare Room
-                        privateRatio.add(40);
-                        this.roomRatio[2] += 30;
-                        privateLabels.add("Sr");
-                        break;
-                    case 'D':
-                        // Dining Room
-                        socialRatio.add(40);
-                        this.roomRatio[0] += 20;
-                        socialLabels.add("Dr");
-                        break;
+                if (i<=3) {
+                    // Add additional Rooms
+                    int randValue = rand.nextInt(availableRooms.length);
+                    char room = availableRooms[randValue];
+                    switch (room) {
+                        case 'T':
+                            // Toilet
+                            privateRatio.add(20);
+                            this.roomRatio[2] += 10;
+                            privateLabels.add("To");
+                            break;
+                        case 'U':
+                            // Utility Room
+                            serviceRatio.add(20);
+                            this.roomRatio[1] += 10;
+                            serviceLabels.add("Ut");
+                            break;
+                        case 'S':
+                            // Spare Room
+                            privateRatio.add(40);
+                            this.roomRatio[2] += 30;
+                            privateLabels.add("Sr");
+                            break;
+                        case 'D':
+                            // Dining Room
+                            socialRatio.add(40);
+                            this.roomRatio[0] += 20;
+                            socialLabels.add("Dr");
+                            break;
+                    }
+                    availableRooms = removeElements(availableRooms,room);
                 }
-                
-                availableRooms = removeElements(availableRooms,room);
-            }
-            if (n>4){
-                // Add extra bedrooms
-                for (int j=4; j<n; j++) {
+                if (i>3){
+                    // Add extra bedrooms
                     privateRatio.add(40);
                     this.roomRatio[2] += 30;
                     privateLabels.add("Sr");
-                    
                 }
             }
         }      
