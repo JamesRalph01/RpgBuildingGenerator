@@ -246,26 +246,33 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 // Create the Mesh
         float[] positions = new float[] {
             // V0
-            -1.0f, 1.0f, 0.0f,
+            -1.0f, -0.5f, 0.0f,
             // V1
-            -1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f,
             // V2
-            1.0f, -1.0f, 0.0f,
+            1.0f, -0.5f, 0.0f,
             // V3
-            1.0f, 1.0f, 0.0f            
+            -1.0f, -1.0f, 0.0f,
+            // V3
+            1.0f, -1.0f, 0.0f 
 
         };
         float[] textCoords = new float[]{
             0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
+            2.0f, 0.0f,
+            2.0f, 2.0f,
+            2.0f, 0.0f
             
         };
         int[] indices = new int[]{
             // Front face
-            0, 1, 3, 3, 1, 2};
-
+            1, 0, 2, 
+            0, 3, 2,
+            2, 3, 4};
+        
+        // calc texture coords
+        //textCoords = calcTextCoords(face)
+        
         
         Texture texture = new Texture(gl, "textures/Wooden_planks.png");
         texture.enableWrap(gl);
