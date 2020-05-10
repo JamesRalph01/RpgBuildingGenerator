@@ -246,22 +246,29 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 // Create the Mesh
         float[] positions = new float[] {
             // V0
-            -1.0f, -0.5f, 0.0f,
+            -1.0f, -0.0f, 0.0f,
             // V1
             1.0f, 1.0f, 0.0f,
             // V2
-            1.0f, -0.5f, 0.0f,
+            1.0f, -0.0f, 0.0f,
             // V3
             -1.0f, -1.0f, 0.0f,
             // V3
-            1.0f, -1.0f, 0.0f 
+            1.0f, -1.0f, 0.0f,
 
         };
         float[] textCoords = new float[]{
+            1.0f, 1.0f,
             0.0f, 0.0f,
-            2.0f, 0.0f,
-            2.0f, 2.0f,
-            2.0f, 0.0f
+            1.0f, 0.0f,
+            
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 1.0f,
+            
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f
             
         };
         int[] indices = new int[]{
@@ -270,16 +277,54 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             0, 3, 2,
             2, 3, 4};
         
-        // calc texture coords
-        //textCoords = calcTextCoords(face)
-        
-        
-        Texture texture = new Texture(gl, "textures/Wooden_planks.png");
+
+               
+        Texture texture = new Texture(gl, "textures/stone_wall.png");
         texture.enableWrap(gl);
+        
+        // calc texture coords
+        //float[] textCoords;
+
+        //textCoords = calcTextureCoords(positions, 0.02f, 0.02f);
+        
         Mesh mesh = new Mesh(gl, positions, textCoords, indices, texture);
         BuildingItem buildingItem = new BuildingItem(mesh);
         buildingItem.setScale(0.5f);
         buildingItem.setPosition(0, 0, -2);
         buildingItems.add(buildingItem);  
+    }
+    
+    private float[] calcTextureCoords(float[] positions, float widthTexture, float heightTexture) {
+        float minX = 2.0f;
+        float minY = 2.0f;
+        float maxX = -2.0f;
+        float maxY = -2.0f;
+        float width, height;
+        
+        for (int i=0; i < positions.length; i+=3) {
+            minX = Math.min(minX, positions[i]);
+            maxX = Math.max(minX, positions[i]);
+            
+            minY = Math.min(minY, positions[i+1]);        
+            maxY = Math.max(maxY, positions[i+1]);
+        }
+        width = Math.abs(maxX - minX);
+        height = Math.abs(maxY - minY);
+        
+        float[] textures = new float[positions.length * 2];
+        int t = 0;
+        for (int i=0; i < positions.length; i+=3) {
+            float vX = positions[i] + 1.0f;
+            float tX = vX % widthTexture;
+            
+            float vY = positions[i+1] + 1.0f;
+            float tY = vY % heightTexture;
+            
+            // Convert world coord to texture coord
+            textures[t++] = tX / 2.0f;
+            textures[t++] = tY/ 2.0f;
+            
+        }
+        return textures;
     }
 }

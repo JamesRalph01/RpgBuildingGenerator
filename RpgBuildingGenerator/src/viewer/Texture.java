@@ -9,28 +9,31 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
 
-    private final int id;
+    private int textureId;
+    private int width, height;
 
     public Texture(GL4 gl, String fileName) throws Exception {
-        this(loadTexture(gl, fileName));
+        this.loadTexture(gl, fileName);
     }
 
-    public Texture(int id) {
-        this.id = id;
-    }
 
     public void bind(GL4 gl) {
-        gl.glBindTexture(GL4.GL_TEXTURE_2D, id);
+        gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
     }
 
     public int getId() {
-        return id;
+        return textureId;
+    }
+    
+    public int getWidth() {
+        return this.width;
+    }
+    
+    public int getHeight() {
+        return this.height;
     }
 
-    private static int loadTexture(GL4 gl, String fileName) throws Exception {
-        int width;
-        int height;
-        
+    private void loadTexture(GL4 gl, String fileName) throws Exception {        
         
         ByteBuffer buf;
         // Load Texture file
@@ -44,14 +47,14 @@ public class Texture {
                 throw new Exception("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
             }
 
-            width = w.get();
-            height = h.get();
+            this.width = w.get();
+            this.height = h.get();
         }
 
         // Create a new OpenGL texture
         int[] textureIds = new int[1];
         gl.glGenTextures(1, IntBuffer.wrap(textureIds));
-        int textureId = textureIds[0];
+        this.textureId = textureIds[0];
 
         // Bind the texture
         gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
@@ -68,12 +71,11 @@ public class Texture {
 
         stbi_image_free(buf);
         
-        return textureId;
     }
 
     public void cleanup(GL4 gl) {
         int[] textIds = new int[1];
-        textIds[0] = id;
+        textIds[0] = textureId;
         gl.glDeleteTextures(1, IntBuffer.wrap(textIds));
     }
     

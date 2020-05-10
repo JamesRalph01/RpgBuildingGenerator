@@ -51,6 +51,8 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     
     public void setGLCanvas(GLCanvas canvas, String pos) {
         tabPane.addTab("Viewer", canvas); 
+        
+        
     }
 
     /**
