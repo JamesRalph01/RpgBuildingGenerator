@@ -13,12 +13,19 @@ import java.util.ArrayList;
  */
 public class Building {
 
+    public enum WealthIndicatorType {
+        POOR,
+        WEATHLY
+    }
+    
     private ArrayList<Wall> externalWalls;
     private ArrayList<Room> rooms;
+    private WealthIndicatorType wealthIndicator;
     
     public Building() {
         externalWalls = new ArrayList<>();
         rooms = new ArrayList<>();
+        wealthIndicator = WealthIndicatorType.WEATHLY;
     }
     
     public ArrayList getExternalWalls() {
@@ -27,5 +34,17 @@ public class Building {
     
     public ArrayList getRooms() {
         return rooms;
+    }
+    
+    public void addRoom(Room room) {
+        rooms.add(room);
+    }
+    
+    public void addExternalWall(Wall wall) {
+        externalWalls.add(wall);
+    }
+    
+    public void setSocialEco(WealthIndicatorType value) {
+        wealthIndicator = value;  
     }
 }

@@ -2,7 +2,7 @@ package viewer;
 
 import org.joml.Vector3f;
 
-public class BuildingItem {
+public class ViewerItem {
 
     private final Mesh mesh;
     
@@ -12,7 +12,7 @@ public class BuildingItem {
 
     private final Vector3f rotation;
 
-    public BuildingItem(Mesh mesh) {
+    public ViewerItem(Mesh mesh) {
         this.mesh = mesh;
         position = new Vector3f();
         scale = 1;

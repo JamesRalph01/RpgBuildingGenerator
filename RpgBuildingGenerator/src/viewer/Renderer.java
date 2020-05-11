@@ -29,7 +29,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     private final Vector3f cameraInc;
     private final Camera camera;
-    private ArrayList<BuildingItem> buildingItems;
+    private ArrayList<ViewerItem> buildingItems;
 
     private static final float CAMERA_POS_STEP = 0.05f;
     
@@ -39,7 +39,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private final Transformation transformation;
     private ShaderProgram shaderProgram;
     
-    Vector3f rotation = new Vector3f(0,0,0);
+    Vector3f sceneRotation = new Vector3f(0,0,0);
     Vector2d mouseDown = null;
     
     int w, h;
@@ -55,7 +55,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         try {
 
             final GL4 gl = drawable.getGL().getGL4();
-            BuildingItem buildingItem;
+            ViewerItem buildingItem;
 
             // Output OpenGL version
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
@@ -68,7 +68,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Texture texture = new Texture(gl, "textures/stone_wall.png");
             mesh.setTexture(texture);
           
-            buildingItem = new BuildingItem(mesh);
+            buildingItem = new ViewerItem(mesh);
             buildingItem.setScale(0.25f);
             buildingItem.setPosition(-0.5f, 0.0f, 0.0f);
             buildingItems.add(buildingItem);            
@@ -77,8 +77,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Texture texture2 = new Texture(gl, "textures/old_wooden_wall.png");
             mesh2.setTexture(texture2);
 
-            
-            buildingItem = new BuildingItem(mesh2);
+            buildingItem = new ViewerItem(mesh2);
             buildingItem.setScale(0.25f);
             buildingItem.setPosition(0.5f, 0, 0.0f);
             buildingItems.add(buildingItem);  
@@ -116,7 +115,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (shaderProgram != null) {
             shaderProgram.cleanup(gl);
         }
-        for (BuildingItem buildingItem : buildingItems) {
+        for (ViewerItem buildingItem : buildingItems) {
             buildingItem.getMesh().cleanUp(gl);
         }
     }
@@ -138,10 +137,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         shaderProgram.setUniform(gl, "texture_sampler", 0);
         // Render each buildingItem
-        for (BuildingItem buildingItem : buildingItems) {
+        for (ViewerItem buildingItem : buildingItems) {
             Mesh mesh = buildingItem.getMesh();
             // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix, rotation);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix, sceneRotation);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
             shaderProgram.setUniform(gl, "colour", mesh.getColour());
@@ -189,7 +188,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         double dX = (double) e.getX() - mouseDown.x;
         double dY = (double) e.getY() - mouseDown.y;
 
-        rotation.set(rotation.x+=dY,rotation.y+=dX, rotation.z);
+        sceneRotation.set(sceneRotation.x+=dY,sceneRotation.y+=dX, sceneRotation.z);
         mouseDown = new Vector2d(e.getX(), e.getY());
         update();    
     }
@@ -255,7 +254,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     public void update() {
         //Rotate all models
-//        for (BuildingItem item: buildingItems) {
+//        for (ViewerItem item: buildingItems) {
 //            item.setRotation(rotation.x, rotation.y, rotation.z);
 //        }
 
@@ -299,7 +298,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         textCoords = calcTextureCoords(positions);
         
         Mesh mesh = new Mesh(gl, positions, textCoords, indices, texture);
-        BuildingItem buildingItem = new BuildingItem(mesh);
+        ViewerItem buildingItem = new ViewerItem(mesh);
         buildingItem.setScale(0.5f);
         buildingItem.setPosition(0, 0, -2);
         buildingItems.add(buildingItem);  

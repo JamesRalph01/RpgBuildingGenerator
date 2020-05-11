@@ -9,6 +9,6 @@ package building;
  *
  * @author chrisralph
  */
-public class Window {
+public class Window extends BuildingItem {
     
 }
