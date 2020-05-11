@@ -7,7 +7,9 @@ package designer;
 
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import util.Point;
 
@@ -17,7 +19,6 @@ import util.Point;
  */
 public class Grid implements IDesignerComponent {
     
-    static int MAX_GRID_ELEMENTS = 40;
     static int GRID_SPACING = 20;  
     ArrayList<Point> points = new ArrayList<>();
     private boolean enabled = true;
@@ -42,8 +43,9 @@ public class Grid implements IDesignerComponent {
     }
     
     private void initPositionData() {
-        for (int x=0; x<MAX_GRID_ELEMENTS; x++) {
-            for (int y=0; y<MAX_GRID_ELEMENTS; y++){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        for (int x=0; x < screenSize.width / GRID_SPACING; x++) {
+            for (int y=0; y< screenSize.height / GRID_SPACING; y++){
                 points.add(new Point(GRID_SPACING+x*GRID_SPACING,GRID_SPACING+y*GRID_SPACING));
             }
         }

@@ -10,5 +10,7 @@ package building;
  * @author chrisralph
  */
 public class Wall {
+
+    //public ArrayList
     
 }

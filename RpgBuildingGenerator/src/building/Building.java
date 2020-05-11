@@ -5,10 +5,27 @@
  */
 package building;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author chrisralph
  */
 public class Building {
+
+    private ArrayList<Wall> externalWalls;
+    private ArrayList<Room> rooms;
     
+    public Building() {
+        externalWalls = new ArrayList<>();
+        rooms = new ArrayList<>();
+    }
+    
+    public ArrayList getExternalWalls() {
+        return externalWalls;
+    }
+    
+    public ArrayList getRooms() {
+        return rooms;
+    }
 }
