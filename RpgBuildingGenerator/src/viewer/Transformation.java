@@ -34,9 +34,14 @@ public class Transformation {
         return viewMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(BuildingItem gameItem, Matrix4f viewMatrix) {
+    public Matrix4f getModelViewMatrix(BuildingItem gameItem, Matrix4f viewMatrix, Vector3f sceneRotation) {
         Vector3f rotation = gameItem.getRotation();
-        modelViewMatrix.identity().translate(gameItem.getPosition()).
+        
+        modelViewMatrix.identity().
+                rotateX((float)Math.toRadians(-sceneRotation.x)).
+                rotateY((float)Math.toRadians(-sceneRotation.y)).
+                rotateZ((float)Math.toRadians(-sceneRotation.z)).
+                translate(gameItem.getPosition()).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).

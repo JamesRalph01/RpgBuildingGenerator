@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joml.Matrix4f;
-import org.joml.Spheref;
+import org.joml.Vector2d;
 import org.joml.Vector3f;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener {
@@ -39,6 +39,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private final Transformation transformation;
     private ShaderProgram shaderProgram;
     
+    Vector3f rotation = new Vector3f(0,0,0);
+    Vector2d mouseDown = null;
     
     int w, h;
     
@@ -60,16 +62,29 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             buildingItems = new ArrayList<>();
             
-            initFloor(gl);
+            //initFloor(gl);
             
-//            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-//            Texture texture = new Texture(gl, "textures/Stone_wall.png");
-//            mesh.setTexture(texture);
-//          
-//            buildingItem = new BuildingItem(mesh);
-//            buildingItem.setScale(0.5f);
-//            buildingItem.setPosition(0.5f, 0, -2);
-//            buildingItems.add(buildingItem);            
+            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
+            Texture texture = new Texture(gl, "textures/stone_wall.png");
+            mesh.setTexture(texture);
+          
+            buildingItem = new BuildingItem(mesh);
+            buildingItem.setScale(0.25f);
+            buildingItem.setPosition(-0.5f, 0.0f, 0.0f);
+            buildingItems.add(buildingItem);            
+
+            Mesh mesh2 = OBJLoader.loadMesh(gl, "/models/cube.obj");
+            Texture texture2 = new Texture(gl, "textures/old_wooden_wall.png");
+            mesh2.setTexture(texture2);
+
+            
+            buildingItem = new BuildingItem(mesh2);
+            buildingItem.setScale(0.25f);
+            buildingItem.setPosition(0.5f, 0, 0.0f);
+            buildingItems.add(buildingItem);  
+            
+            camera.setPosition(0, 0, 2);
+            //camera.setRotation(35, 0, 0);
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -126,7 +141,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         for (BuildingItem buildingItem : buildingItems) {
             Mesh mesh = buildingItem.getMesh();
             // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix, rotation);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
             shaderProgram.setUniform(gl, "colour", mesh.getColour());
@@ -148,10 +163,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        //mouseDown = new Vector2d(e.getX(), e.getY());
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+         mouseDown = new Vector2d(e.getX(), e.getY());
     }
 
     @Override
@@ -168,6 +185,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        // Update camera based on mouse 
+        double dX = (double) e.getX() - mouseDown.x;
+        double dY = (double) e.getY() - mouseDown.y;
+
+        rotation.set(rotation.x+=dY,rotation.y+=dX, rotation.z);
+        mouseDown = new Vector2d(e.getX(), e.getY());
+        update();    
     }
 
     @Override
@@ -181,7 +205,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void keyPressed(KeyEvent e) {
         int key;
-        Vector3f rotation = buildingItems.get(0).getRotation();
         
         cameraInc.set(0, 0, 0);
         
@@ -206,20 +229,19 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 cameraInc.y = 1;
                 break;
             case VK_UP: 
-                //camera.moveRotation(5, 0, 0);
-                rotation.set(rotation.x+=5,rotation.y, rotation.z);
+                //rotation.set(rotation.x+=5,rotation.y, rotation.z);
                 break;    
             case VK_DOWN: 
                 //camera.moveRotation(-5, 0, 0);
-                rotation.set(rotation.x-=5,rotation.y, rotation.z);
+                //rotation.set(rotation.x-=5,rotation.y, rotation.z);
                 break;
             case VK_LEFT: 
                 //camera.moveRotation(0, 5, 0);
-                rotation.set(rotation.x,rotation.y+=5, rotation.z);
+                //rotation.set(rotation.x,rotation.y+=5, rotation.z);
                 break;                   
             case VK_RIGHT: 
                 //camera.moveRotation(0, -5, 0);
-                rotation.set(rotation.x,rotation.y-=5, rotation.z);
+                //rotation.set(rotation.x,rotation.y-=5, rotation.z);
                 break;    
         
         }
@@ -232,8 +254,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     }
 
     public void update() {
+        //Rotate all models
+//        for (BuildingItem item: buildingItems) {
+//            item.setRotation(rotation.x, rotation.y, rotation.z);
+//        }
+
         // Update camera position
-        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+//        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
 
         // Update camera based on mouse            
 //        if (mouseInput.isRightButtonPressed()) {
