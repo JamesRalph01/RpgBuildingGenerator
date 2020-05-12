@@ -19,6 +19,7 @@ import org.joml.Vector2d;
 import building.Room;
 import building.Wall;
 import designer.FloorPlan;
+import org.joml.Vector2f;
 import util.Edge;
 import util.PolygonHelper;
 import util.Point;
@@ -304,12 +305,17 @@ public class FloorPlanner {
     
     private void generate3DBuilding() {
         
+        Vector2f origin = new Vector2f((float)this.polygonHelper.boundingRect().lengthX() / 2.0f, 
+                                       (float)this.polygonHelper.boundingRect().lengthY() / 2.0f);
+        origin.x += this.polygonHelper.boundingRect().minX;
+        origin.y += this.polygonHelper.boundingRect().minY;
+        
         this.building = new Building();
         this.building.setWealthIndicator(Building.WealthIndicatorType.POOR);
         
         //External walls
         for (Edge edge : polygonHelper.edges()) {
-            Wall wall = new Wall(edge, 5, 50);
+            Wall wall = new Wall(edge, 10, 50, origin);
             this.building.addExternalWall(wall);
         }
     }

@@ -29,7 +29,9 @@ import java.util.logging.Logger;
 import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
+import util.Point;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener, ComponentListener {
 
@@ -84,7 +86,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             mesh.setTexture(texture);
           
             buildingItem = new ViewerItem(mesh);
-            buildingItem.setScale(0.15f);
+            buildingItem.setScale(0.05f);
             buildingItem.setPosition(0.0f, 0.0f, 0.0f);
             buildingItems.add(buildingItem);            
             
@@ -253,11 +255,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Building building = this.controller.getFloorPlanner().get3DBuilding();
         // Create dynamic objects, starting with external walls
         for (Wall wall : building.getExternalWalls()) {
-            // Wall wall = building.getExternalWalls().get(0);
+            //Wall wall = building.getExternalWalls().get(0);
             Mesh mesh = buildWallMesh(gl, building, wall);          
             ViewerItem buildingItem = new ViewerItem(mesh);
-            buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), toNY(wall.getLocation().z));
-            buildingItem.setRotation(wall.getRotation().x, wall.getRotation().y, wall.getRotation().z);
+            //buildingItem.setScale(0.5f);
+            buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
+            //buildingItem.setRotation(0, wall.getRotation().y, 0);
             buildingItems.add(buildingItem);  
             
         }
@@ -290,7 +293,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             for (int i=0; i < wall.positions.length; i+=3) {
                 positions[i] = toNX(wall.positions[i]);
                 positions[i+1] = toNY(wall.positions[i+1]);
-                positions[i+2] = toNY(wall.positions[i+2]);
+                positions[i+2] = toNX(wall.positions[i+2]);
             }
 
             mesh = new Mesh(gl, positions, wall.textCoords, wall.indices, texture);
@@ -374,13 +377,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     }
     
     private float toNX(float screenX) {
-        return (2 * screenX / w) - 1;
+        return (2.0f / (float) w)  * screenX;
     }
     
-    private float toNY(float screenY) {
-        return 1 - (2 * screenY / h);
+    private float toNY(float screenY) { 
+        return -1 * (2.0f / (float) h)  * screenY;
     }
-
+    
     @Override
     public void componentResized(ComponentEvent e) {
         h = e.getComponent().getHeight();
@@ -398,4 +401,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void componentHidden(ComponentEvent e) {
     }
+
+
 }

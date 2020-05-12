@@ -51,4 +51,5 @@ public class Building {
     public WealthIndicatorType getWealthIndicator() {
         return wealthIndicator;  
     }
+    
 }
