@@ -80,7 +80,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             initBuilding(gl);
             
             Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-            Texture texture = new Texture(gl, "textures/stone_wall.png");
+            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
             mesh.setTexture(texture);
           
             buildingItem = new ViewerItem(mesh);
@@ -217,8 +217,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 break;
             case VK_A: 
                 cameraInc.z = 1;
-                break;   
-        
+                break; 
+            case VK_LEFT:
+                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.z += 5);
+                break;
+            case VK_RIGHT:     
+                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.z -= 5);
+                break;
         }
         e.consume();
         update();
