@@ -1,13 +1,18 @@
 package viewer;
 
+import building.Building;
+import building.Wall;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_A;
 import static java.awt.event.KeyEvent.VK_D;
 import static java.awt.event.KeyEvent.VK_DOWN;
 import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_Q;
 import static java.awt.event.KeyEvent.VK_RIGHT;
 import static java.awt.event.KeyEvent.VK_UP;
 import static java.awt.event.KeyEvent.VK_S;
@@ -21,12 +26,15 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
 
-public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener {
+public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener, ComponentListener {
 
+    public Controller controller;
+    
     private final Vector3f cameraInc;
     private final Camera camera;
     private ArrayList<ViewerItem> buildingItems;
@@ -49,12 +57,18 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         camera = new Camera();
         cameraInc = new Vector3f();
     }
+    
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
             
     @Override
     public void init(GLAutoDrawable drawable) {
         try {
 
             final GL4 gl = drawable.getGL().getGL4();
+
+            
             ViewerItem buildingItem;
 
             // Output OpenGL version
@@ -62,6 +76,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             buildingItems = new ArrayList<>();
             
+            initBuilding(gl);
             //initFloor(gl);
             
             Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
@@ -69,21 +84,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             mesh.setTexture(texture);
           
             buildingItem = new ViewerItem(mesh);
-            buildingItem.setScale(0.25f);
-            buildingItem.setPosition(-0.5f, 0.0f, 0.0f);
+            buildingItem.setScale(0.15f);
+            buildingItem.setPosition(0.0f, 0.0f, 0.0f);
             buildingItems.add(buildingItem);            
-
-            Mesh mesh2 = OBJLoader.loadMesh(gl, "/models/cube.obj");
-            Texture texture2 = new Texture(gl, "textures/old_wooden_wall.png");
-            mesh2.setTexture(texture2);
-
-            buildingItem = new ViewerItem(mesh2);
-            buildingItem.setScale(0.25f);
-            buildingItem.setPosition(0.5f, 0, 0.0f);
-            buildingItems.add(buildingItem);  
             
             camera.setPosition(0, 0, 2);
-            //camera.setRotation(35, 0, 0);
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -205,43 +210,14 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void keyPressed(KeyEvent e) {
         int key;
         
-        cameraInc.set(0, 0, 0);
-        
         key = e.getKeyCode();
         switch (key) {
-            case VK_W: 
+            case VK_Q: 
                 cameraInc.z = -1;
                 break;
-            case VK_S: 
-                cameraInc.z = 1;
-                break;  
             case VK_A: 
-                cameraInc.x = -1;
-                break;
-            case VK_D: 
-                cameraInc.x = 1;
-                break;
-            case VK_Z: 
-                cameraInc.y = -1;
-                break;
-            case VK_X: 
-                cameraInc.y = 1;
-                break;
-            case VK_UP: 
-                //rotation.set(rotation.x+=5,rotation.y, rotation.z);
-                break;    
-            case VK_DOWN: 
-                //camera.moveRotation(-5, 0, 0);
-                //rotation.set(rotation.x-=5,rotation.y, rotation.z);
-                break;
-            case VK_LEFT: 
-                //camera.moveRotation(0, 5, 0);
-                //rotation.set(rotation.x,rotation.y+=5, rotation.z);
-                break;                   
-            case VK_RIGHT: 
-                //camera.moveRotation(0, -5, 0);
-                //rotation.set(rotation.x,rotation.y-=5, rotation.z);
-                break;    
+                cameraInc.z = 1;
+                break;   
         
         }
         e.consume();
@@ -259,14 +235,73 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 //        }
 
         // Update camera position
-//        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
-
+        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+        cameraInc.set(0, 0, 0);
+        
         // Update camera based on mouse            
 //        if (mouseInput.isRightButtonPressed()) {
 //            Vector2f rotVec = mouseInput.getDisplVec();
 //            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
 //        }
     }
+    
+    private void initBuilding(GL4 gl) {
+    
+        if (this.controller == null) return;
+        if (this.controller.getFloorPlanner().hasActiveFloorplan() == false) return;
+        
+        Building building = this.controller.getFloorPlanner().get3DBuilding();
+        // Create dynamic objects, starting with external walls
+        for (Wall wall : building.getExternalWalls()) {
+            // Wall wall = building.getExternalWalls().get(0);
+            Mesh mesh = buildWallMesh(gl, building, wall);          
+            ViewerItem buildingItem = new ViewerItem(mesh);
+            buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), toNY(wall.getLocation().z));
+            buildingItem.setRotation(wall.getRotation().x, wall.getRotation().y, wall.getRotation().z);
+            buildingItems.add(buildingItem);  
+            
+        }
+    }
+    
+    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
+    
+        Mesh mesh = null;
+        String textureFile;
+      
+        switch (building.getWealthIndicator()) {
+            case POOR:
+                textureFile = "textures/stone_wall.png";
+                break;
+            case WEATHLY:
+                textureFile = "textures/old_wooden_wall.png";
+                break;
+            default:
+                textureFile = "textures/old_wooden_wall.png";
+                break;    
+        }
+        
+        Texture texture;
+        
+        try {
+            texture = new Texture(gl, textureFile);
+            texture.enableWrap(gl);
+            // normalise positions
+            float[] positions = new float[wall.positions.length];
+            for (int i=0; i < wall.positions.length; i+=3) {
+                positions[i] = toNX(wall.positions[i]);
+                positions[i+1] = toNY(wall.positions[i+1]);
+                positions[i+2] = toNY(wall.positions[i+2]);
+            }
+
+            mesh = new Mesh(gl, positions, wall.textCoords, wall.indices, texture);
+            
+        } catch (Exception ex) {
+            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return mesh;
+    }
+    
 
     private void initFloor(GL4 gl) throws Exception {
                 // Create the Mesh
@@ -336,5 +371,31 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         }
                        
         return textures;
+    }
+    
+    private float toNX(float screenX) {
+        return (2 * screenX / w) - 1;
+    }
+    
+    private float toNY(float screenY) {
+        return 1 - (2 * screenY / h);
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        h = e.getComponent().getHeight();
+        w = e.getComponent().getWidth();
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
     }
 }

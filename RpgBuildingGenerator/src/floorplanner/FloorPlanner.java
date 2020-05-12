@@ -94,7 +94,7 @@ public class FloorPlanner {
         activeFloorPlan = true;
     }
     
-    public boolean getActiveFloorplan() {
+    public boolean hasActiveFloorplan() {
         return activeFloorPlan;
     }
     
@@ -105,6 +105,11 @@ public class FloorPlanner {
     public FloorPlan get2DFloorplan()
     {
         return this.floorplan;
+    }
+    
+    public Building get3DBuilding()
+    {
+        return this.building;
     }
         
     private Color getRoomColour(String roomType) {
@@ -298,11 +303,14 @@ public class FloorPlanner {
     } 
     
     private void generate3DBuilding() {
-        this.building = new Building();
         
+        this.building = new Building();
+        this.building.setWealthIndicator(Building.WealthIndicatorType.POOR);
+        
+        //External walls
         for (Edge edge : polygonHelper.edges()) {
-            Wall wall = new Wall(edge, 20, 20);
-            
+            Wall wall = new Wall(edge, 5, 50);
+            this.building.addExternalWall(wall);
         }
     }
 

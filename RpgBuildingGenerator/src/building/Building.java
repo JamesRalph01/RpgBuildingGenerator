@@ -28,11 +28,11 @@ public class Building {
         wealthIndicator = WealthIndicatorType.WEATHLY;
     }
     
-    public ArrayList getExternalWalls() {
+    public ArrayList<Wall> getExternalWalls() {
         return externalWalls;
     }
     
-    public ArrayList getRooms() {
+    public ArrayList<Room> getRooms() {
         return rooms;
     }
     
@@ -44,7 +44,11 @@ public class Building {
         externalWalls.add(wall);
     }
     
-    public void setSocialEco(WealthIndicatorType value) {
+    public void setWealthIndicator(WealthIndicatorType value) {
         wealthIndicator = value;  
+    }
+    
+    public WealthIndicatorType getWealthIndicator() {
+        return wealthIndicator;  
     }
 }

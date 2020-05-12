@@ -14,8 +14,6 @@ import viewer.Renderer;
 
 public class Main {
     
-    private static final int HEIGHT = 640;
-    private static final int WIDTH = 480;
     private static final int FPS = 60;
     
     public static void main(String[] args) {
@@ -31,12 +29,15 @@ public class Main {
                 
         ApplicationMainWindow window = new ApplicationMainWindow(animator);
         Renderer renderer = new Renderer();
+        renderer.setController(controller);
         
         canvas.addGLEventListener(renderer);
         canvas.addMouseListener(renderer);
         canvas.addMouseMotionListener(renderer);
         canvas.addKeyListener(renderer);
+        canvas.addComponentListener(renderer);
         
+        window.setController(controller);
         window.setGLCanvas(canvas, BorderLayout.CENTER);
         
         animator.start();

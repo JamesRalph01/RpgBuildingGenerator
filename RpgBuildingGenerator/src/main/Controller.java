@@ -13,9 +13,12 @@ import floorplanner.FloorPlanner;
  * @author chrisralph
  */
 public class Controller {
+   
+    public int width3DCanvas;
+    public int height3DCanvas;
     
     private final BuildingOutline buildingOutline = new BuildingOutline();
-    private final FloorPlanner floorPlanner = new FloorPlanner();
+    private final FloorPlanner floorPlanner = new FloorPlanner(); 
     
     public boolean showOutline = true;
     

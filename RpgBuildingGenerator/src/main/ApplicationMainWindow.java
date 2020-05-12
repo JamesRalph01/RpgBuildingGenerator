@@ -27,7 +27,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     public ApplicationMainWindow() {
         controller = new Controller();
         initComponents();
-        designerPanel.setController(controller);
+        setController(controller);
         tabPane.setSelectedComponent(designerPanel);
     }
     
@@ -50,8 +50,11 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     
     public void setGLCanvas(GLCanvas canvas, String pos) {
         tabPane.addTab("Viewer", canvas); 
-        
-        
+    }
+    
+    public void setController(Controller controller) {
+        this.controller = controller;
+        designerPanel.setController(controller);
     }
 
     /**
