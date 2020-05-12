@@ -70,7 +70,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
             final GL4 gl = drawable.getGL().getGL4();
 
-            
             ViewerItem buildingItem;
 
             // Output OpenGL version
@@ -79,7 +78,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             buildingItems = new ArrayList<>();
             
             initBuilding(gl);
-            //initFloor(gl);
             
             Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
             Texture texture = new Texture(gl, "textures/stone_wall.png");
@@ -90,7 +88,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             buildingItem.setPosition(0.0f, 0.0f, 0.0f);
             buildingItems.add(buildingItem);            
             
-            camera.setPosition(0, 0, 2);
+            camera.setPosition(0, 0, 1);
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -231,11 +229,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     }
 
     public void update() {
-        //Rotate all models
-//        for (ViewerItem item: buildingItems) {
-//            item.setRotation(rotation.x, rotation.y, rotation.z);
-//        }
-
         // Update camera position
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
         cameraInc.set(0, 0, 0);
@@ -253,16 +246,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (this.controller.getFloorPlanner().hasActiveFloorplan() == false) return;
         
         Building building = this.controller.getFloorPlanner().get3DBuilding();
+        
         // Create dynamic objects, starting with external walls
         for (Wall wall : building.getExternalWalls()) {
-            //Wall wall = building.getExternalWalls().get(0);
             Mesh mesh = buildWallMesh(gl, building, wall);          
             ViewerItem buildingItem = new ViewerItem(mesh);
-            //buildingItem.setScale(0.5f);
             buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
-            //buildingItem.setRotation(0, wall.getRotation().y, 0);
             buildingItems.add(buildingItem);  
-            
         }
     }
     
@@ -304,44 +294,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
         return mesh;
     }
-    
-
-    private void initFloor(GL4 gl) throws Exception {
-                // Create the Mesh
-        float[] positions = new float[] {
-            // V0
-            -1.0f, -0.0f, 0.0f,
-            // V1
-            1.0f, 1.0f, 0.0f,
-            // V2
-            1.0f, -0.0f, 0.0f,
-            // V3
-            -1.0f, -1.0f, 0.0f,
-            // V3
-            1.0f, -1.0f, 0.0f,
-
-        };
-
-        int[] indices = new int[]{
-            // Front face
-            1, 0, 2, 
-            0, 3, 2,
-            2, 3, 4};
-                
-        Texture texture = new Texture(gl, "textures/stone_wall.png");
-        texture.enableWrap(gl);
-        
-        // calc texture coords
-        float[] textCoords;
-        textCoords = calcTextureCoords(positions);
-        
-        Mesh mesh = new Mesh(gl, positions, textCoords, indices, texture);
-        ViewerItem buildingItem = new ViewerItem(mesh);
-        buildingItem.setScale(0.5f);
-        buildingItem.setPosition(0, 0, -2);
-        buildingItems.add(buildingItem);  
-    }
-    
+   
     private float[] calcTextureCoords(float[] positions) {
         float minX = 2.0f;
         float minY = 2.0f;

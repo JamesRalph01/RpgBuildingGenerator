@@ -315,9 +315,15 @@ public class FloorPlanner {
         
         //External walls
         for (Edge edge : polygonHelper.edges()) {
-            Wall wall = new Wall(edge, 10, 50, origin);
+            Wall wall = new Wall(edge, origin);
             this.building.addExternalWall(wall);
         }
+        
+//        //Internal walls
+//        for (Edge edge : polygonHelper.edges()) {
+//            Wall wall = new Wall(edge, origin);
+//            this.building.add(wall);
+//        }
     }
 
         
