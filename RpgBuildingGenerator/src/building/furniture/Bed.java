@@ -5,10 +5,12 @@
  */
 package building.furniture;
 
+import building.BuildingItem;
+
 /**
  *
  * @author chrisralph
  */
-public class Bed {
+public class Bed extends BuildingItem{
     
 }

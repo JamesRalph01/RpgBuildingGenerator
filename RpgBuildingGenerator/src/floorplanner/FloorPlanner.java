@@ -17,14 +17,9 @@ import org.joml.Intersectiond;
 import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
+import building.Wall;
 import designer.FloorPlan;
-import floorplanner.ChurchMapModel;
-import floorplanner.HouseMapModel;
-import floorplanner.MapModel;
-import floorplanner.Mappable;
-import floorplanner.TavernMapModel;
-import floorplanner.TestMapModel;
-import floorplanner.TreemapLayout;
+import org.joml.Vector2f;
 import util.Edge;
 import util.PolygonHelper;
 import util.Point;
@@ -95,12 +90,12 @@ public class FloorPlanner {
         
         generateRooms(bounds);
         generate2DFloorplan(); // for display in designer view
-        //generate3DBuilding(); // for 3D rendering view
+        generate3DBuilding(); // for 3D rendering view
         
         activeFloorPlan = true;
     }
     
-    public boolean getActiveFloorplan() {
+    public boolean hasActiveFloorplan() {
         return activeFloorPlan;
     }
     
@@ -112,34 +107,44 @@ public class FloorPlanner {
     {
         return this.floorplan;
     }
+    
+    public Building get3DBuilding()
+    {
+        return this.building;
+    }
         
     private Color getRoomColour(String roomType) {
         int R,G,B;
         
         if (!roomType.equals("NA")) {
-           // Social
-           if (roomType == "Li" || roomType == "Dr") {
-              R = 255;
-              G = 20;
-              B = 20;  
-           }
-           // Service
-           else if (roomType == "Ki" || roomType == "Ut") {
-               R = 255;
-               G = 255;
-               B = 20;     
-           }
-           // Private
-           else if (roomType == "Mb" || roomType == "Sr" || roomType == "To" || roomType == "Br") {
-               R = 20;
-               G = 20;
-               B = 255; 
-           }
-           else {
-               R = 255;
-               G = 255;
-               B = 255; 
-           } 
+            // Social
+            switch (roomType) {
+                case "Li":
+                case "Dr":
+                    R = 255;
+                    G = 20;
+                    B = 20;
+                    break;
+                case "Ki":
+                case "Ut":
+                    R = 255;
+                    G = 255;
+                    B = 20;
+                    break;
+                case "Mb":
+                case "Sr":
+                case "To":
+                case "Br":
+                    R = 20;
+                    G = 20;
+                    B = 255;
+                    break;
+                default: 
+                    R = 255;
+                    G = 255;
+                    B = 255;
+                    break;
+            }
         }
         else {
             R = 102;
@@ -299,7 +304,26 @@ public class FloorPlanner {
     } 
     
     private void generate3DBuilding() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        Vector2f origin = new Vector2f((float)this.polygonHelper.boundingRect().lengthX() / 2.0f, 
+                                       (float)this.polygonHelper.boundingRect().lengthY() / 2.0f);
+        origin.x += this.polygonHelper.boundingRect().minX;
+        origin.y += this.polygonHelper.boundingRect().minY;
+        
+        this.building = new Building();
+        this.building.setWealthIndicator(Building.WealthIndicatorType.POOR);
+        
+        //External walls
+        for (Edge edge : polygonHelper.edges()) {
+            Wall wall = new Wall(edge, origin);
+            this.building.addExternalWall(wall);
+        }
+        
+//        //Internal walls
+//        for (Edge edge : polygonHelper.edges()) {
+//            Wall wall = new Wall(edge, origin);
+//            this.building.add(wall);
+//        }
     }
 
         

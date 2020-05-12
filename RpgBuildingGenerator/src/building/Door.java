@@ -9,6 +9,7 @@ package building;
  *
  * @author chrisralph
  */
-public class Door {
+public class Door extends BuildingItem {
+    
     
 }
