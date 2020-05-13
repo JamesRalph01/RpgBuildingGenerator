@@ -29,7 +29,12 @@ public class Wall extends BuildingItem {
     public Wall(Edge edge) {
         super();
         this.edge = edge;
-        this.width = 5;
+        if (edge.isInternal()) {
+            this.width = 2;
+        } else {
+            this.width = 6; // Chunky external walls            
+        }
+
         this.height = 30;
     }
 
@@ -147,32 +152,67 @@ public class Wall extends BuildingItem {
     
     
     private void calcWall2DPoints() {
-         float Dx, Dy, D;
-         float xMin, xMax, yMin, yMax, zMin, zMax;
+        float Dx, Dy, D;
+        float xMin, xMax, yMin, yMax, zMin, zMax;
 
-         Dx = edge.x2() - edge.x1();
-         Dy = edge.y2() - edge.y1();
-
-         D = (float) Math.sqrt(Dx * Dx + Dy * Dy);
-
-         Dx = (float) 0.5 * width * Dx / D;
-         Dy = (float) 0.5 * width * Dy / D;
-
-         xMin = Math.min(edge.x1(), edge.x2()) - Math.abs(Dy);
-         xMax = Math.max(edge.x1(), edge.x2()) + Math.abs(Dy);
-
-         yMin = Math.min(edge.y1(), edge.y2()) - Math.abs(Dx);
-         yMax = Math.max(edge.y1(), edge.y2()) + Math.abs(Dx);
+       // Move internal walls apart a little so they don't overlap
+        if (edge.isInternal()) {
+            boolean moved = false;
+            for (Edge connectedEdge : edge.connectedEdges()) {
+                if (moved == false) {
+                    if (edge.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+                        if (edge.y1() < connectedEdge.y1()) {
+                            // this edge is above the connected edge
+                            edge.point1().y-=this.width/2;
+                            edge.point2().y-=this.width/2;
+                            moved = true;
+                        } else {
+                            // this edge is below the connected edge 
+                            edge.point1().y+=this.width/2;
+                            edge.point2().y+=this.width/2;
+                            moved = true;
+                        }
+                    } else {
+                        if (edge.y2() < connectedEdge.y2()) {
+                           // this edge is left of the connected edge
+                            edge.point1().x-=this.width/2;
+                            edge.point2().x-=this.width/2;
+                            moved = true;
+                        } else {
+                           // this edge is right of the connected edge 
+                            edge.point1().x+=this.width/2;
+                            edge.point2().x+=this.width/2;
+                            moved = true;
+                        }                   
+                    }
+                }
+            }
+        }
          
-         
-         p0 = new Vector2f(edge.x1() - Dy, edge.y1() + Dx);
-         p1 = new Vector2f(edge.x1() + Dy, edge.y1() - Dx);
-         
-         p2 = new Vector2f(edge.x2() - Dy, edge.y2() + Dx);
-         p3 = new Vector2f(edge.x2() + Dy, edge.y2() - Dx);
-         
-        
-         //this.setBounds(xMin, yMin, zMin, xMax, yMax, zMax);
+
+        Dx = edge.x2() - edge.x1();
+        Dy = edge.y2() - edge.y1();
+
+        D = (float) Math.sqrt(Dx * Dx + Dy * Dy);
+
+        Dx = (float) 0.5 * width * Dx / D;
+        Dy = (float) 0.5 * width * Dy / D;
+
+        xMin = Math.min(edge.x1(), edge.x2()) - Math.abs(Dy);
+        xMax = Math.max(edge.x1(), edge.x2()) + Math.abs(Dy);
+
+        yMin = Math.min(edge.y1(), edge.y2()) - Math.abs(Dx);
+        yMax = Math.max(edge.y1(), edge.y2()) + Math.abs(Dx);
+
+
+        p0 = new Vector2f(edge.x1() - Dy, edge.y1() + Dx);
+        p1 = new Vector2f(edge.x1() + Dy, edge.y1() - Dx);
+
+        p2 = new Vector2f(edge.x2() - Dy, edge.y2() + Dx);
+        p3 = new Vector2f(edge.x2() + Dy, edge.y2() - Dx);
+
+
+        //this.setBounds(xMin, yMin, zMin, xMax, yMax, zMax);
            
     }
    
