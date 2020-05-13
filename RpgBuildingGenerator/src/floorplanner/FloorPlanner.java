@@ -305,25 +305,29 @@ public class FloorPlanner {
     
     private void generate3DBuilding() {
         
+        // Calculate offset from centre of building to 0,0
+        // Used to display building with origin in the centre of the building
         Vector2f origin = new Vector2f((float)this.polygonHelper.boundingRect().lengthX() / 2.0f, 
                                        (float)this.polygonHelper.boundingRect().lengthY() / 2.0f);
         origin.x += this.polygonHelper.boundingRect().minX;
         origin.y += this.polygonHelper.boundingRect().minY;
         
         this.building = new Building();
-        this.building.setWealthIndicator(Building.WealthIndicatorType.POOR);
+        this.building.setLocation(origin.x, origin.y, 0);
+        this.building.setWealthIndicator(Building.WealthIndicatorType.WEATHLY);
         
-        //External walls
+        // Add External walls
         for (Edge edge : polygonHelper.edges()) {
-            Wall wall = new Wall(edge, origin);
+            Wall wall = new Wall(edge);
+            wall.isInternal = false;
             this.building.addExternalWall(wall);
         }
-        
-//        //Internal walls
-//        for (Edge edge : polygonHelper.edges()) {
-//            Wall wall = new Wall(edge, origin);
-//            this.building.add(wall);
-//        }
+        // Add Rooms
+        for (Room room : this.rooms) {
+            this.building.addRoom(room);
+        }
+        // Generate 3D position data for our building (in device coords)
+        this.building.Generate3DPositions(); 
     }
 
         

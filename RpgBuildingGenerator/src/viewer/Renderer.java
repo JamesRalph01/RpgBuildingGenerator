@@ -1,6 +1,7 @@
 package viewer;
 
 import building.Building;
+import building.Room;
 import building.Wall;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -84,7 +85,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             mesh.setTexture(texture);
           
             buildingItem = new ViewerItem(mesh);
-            buildingItem.setScale(0.05f);
+            buildingItem.setScale(0.01f);
             buildingItem.setPosition(0.0f, 0.0f, 0.0f);
             buildingItems.add(buildingItem);            
             
@@ -259,6 +260,18 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
             buildingItems.add(buildingItem);  
         }
+        
+        // Now internal walls in each room
+        for (Room room : building.getRooms()) {
+            for (Wall wall : room.getInternalWalls()) {
+                Mesh mesh = buildWallMesh(gl, building, wall);          
+                ViewerItem buildingItem = new ViewerItem(mesh);
+                buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
+                buildingItems.add(buildingItem);                  
+            }
+
+        }
+        
     }
     
     private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
@@ -266,23 +279,52 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Mesh mesh = null;
         String textureFile;
       
-        switch (building.getWealthIndicator()) {
-            case POOR:
-                textureFile = "textures/stone_wall.png";
-                break;
-            case WEATHLY:
-                textureFile = "textures/old_wooden_wall.png";
-                break;
-            default:
-                textureFile = "textures/old_wooden_wall.png";
-                break;    
+        if (wall.isInternal == false) {
+            switch (building.getWealthIndicator()) {
+                case POOR:
+                    textureFile = "textures/stone_wall.png";
+                    break;
+                case WEATHLY:
+                    textureFile = "textures/old_wooden_wall.png";
+                    break;
+                default:
+                    textureFile = "textures/old_wooden_wall.png";
+                    break;      
+            }
+        } else {
+            switch (building.getWealthIndicator()) {
+                case POOR:
+                    if (Math.random() < 0.5) {
+                        textureFile = "textures/brown_rock.png";                        
+                    } else {
+                        textureFile = "textures/brown_rock.png";     
+                    }
+
+                    break;
+                case WEATHLY:
+                    double r;
+                    r = Math.random();
+                    if (r < 0.33) {
+                        textureFile = "textures/blue_tiles.png";                        
+                    } else if (r < 0.66) {
+                        textureFile = "textures/Marble_tiles.png";     
+                    } else {
+                        textureFile = "textures/Pattern.png";     
+                    }
+                    break;
+                default:
+                    textureFile = "textures/old_wooden_wall.png";
+                    break;        
+            }
         }
+
         
         Texture texture;
         
         try {
             texture = new Texture(gl, textureFile);
             texture.enableWrap(gl);
+            
             // normalise positions
             float[] positions = new float[wall.positions.length];
             for (int i=0; i < wall.positions.length; i+=3) {
