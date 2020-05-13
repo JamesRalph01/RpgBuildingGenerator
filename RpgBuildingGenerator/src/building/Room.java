@@ -7,6 +7,7 @@ package building;
 
 import java.util.ArrayList;
 import org.joml.Rectangled;
+import org.joml.Vector3f;
 import util.Point;
 import util.Edge;
 import util.PolygonHelper;
@@ -14,12 +15,14 @@ import util.PolygonHelper;
  *
  * @author chrisralph
  */
-public class Room {
+public class Room extends BuildingItem {
 
     private ArrayList<Edge> edges;
     private float[] colourData;
+    private ArrayList<Wall> internalWalls = new ArrayList<>();
     
     public Room(ArrayList<Edge> edges) {
+        super();
         this.edges = edges;
     }
     
@@ -95,6 +98,29 @@ public class Room {
         }          
     }
 
+    public ArrayList<Wall> getInternalWalls() {
+        return this.internalWalls;
+    } 
+    
+    public void Generate3DPositions(Vector3f screenOrigin) {
+        calcLocation(screenOrigin);
+        calcInternalWalls(screenOrigin);
+    }
    
+    private void calcLocation(Vector3f screenOrigin) {
+        this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
+    }
+    
+    private void calcInternalWalls(Vector3f screenOrigin) {
+        internalWalls.clear();
+        for (Edge edge : this.edges) {
+            if (edge.isInternal()) {
+                Wall wall = new Wall(edge);
+                wall.isInternal = true;
+                wall.Generate3DPositions(screenOrigin);
+                this.internalWalls.add(wall);
+            }
+        }
+    }
     
 }

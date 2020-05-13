@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author chrisralph
  */
-public class Building {
+public class Building extends BuildingItem {
 
     public enum WealthIndicatorType {
         POOR,
@@ -23,6 +23,7 @@ public class Building {
     private WealthIndicatorType wealthIndicator;
     
     public Building() {
+        super();
         externalWalls = new ArrayList<>();
         rooms = new ArrayList<>();
         wealthIndicator = WealthIndicatorType.WEATHLY;
@@ -50,6 +51,19 @@ public class Building {
     
     public WealthIndicatorType getWealthIndicator() {
         return wealthIndicator;  
+    }
+    
+    public void Generate3DPositions() {
+    
+        // External walls
+        this.externalWalls.forEach((wall) -> {
+            wall.Generate3DPositions(this.getLocation());
+        });
+        
+        // Rooms
+        this.rooms.forEach((room) -> {
+            room.Generate3DPositions(this.getLocation());
+        });
     }
     
 }

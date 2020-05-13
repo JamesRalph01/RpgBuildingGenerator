@@ -6,6 +6,7 @@
 package building;
 
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import util.Edge;
 
 /**
@@ -17,6 +18,7 @@ public class Wall extends BuildingItem {
     public float[] positions;
     public float[] textCoords;
     public int[] indices;
+    public boolean isInternal = false;
     
     private Edge edge;
     private final float width;
@@ -24,19 +26,21 @@ public class Wall extends BuildingItem {
     private Vector2f p0, p1, p2, p3;
     
     
-    public Wall(Edge edge, Vector2f screenOrigin) {
+    public Wall(Edge edge) {
         super();
         this.edge = edge;
         this.width = 5;
-        this.height = 20;
-        calcWall2DPoints();
-        generatePositions();
-        calcLocation(screenOrigin);
-
+        this.height = 30;
     }
 
-    private void calcLocation(Vector2f screenOrigin) {
-        this.setLocation(-screenOrigin.x, -screenOrigin.y, 0);        
+    public void Generate3DPositions(Vector3f screenOrigin) {
+        calcWall2DPoints();
+        generatePositions();
+        calcLocation(screenOrigin);    
+    }
+    
+    private void calcLocation(Vector3f screenOrigin) {
+        this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     
 
