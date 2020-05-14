@@ -17,9 +17,24 @@ import util.PolygonHelper;
  */
 public class Room extends BuildingItem {
 
+    public enum RoomType {
+        MasterBedroom,
+        LivingRoom,
+        Kitchen,
+        Bathroom,
+        SpareRoom,
+        Toilet,
+        Utility,
+        DiningRoom
+    }
+   
+    public RoomType roomType; 
+            
     private ArrayList<Edge> edges;
     private float[] colourData;
     private ArrayList<Wall> internalWalls = new ArrayList<>();
+    private ArrayList<BuildingItem> furniture = new ArrayList();
+    
     
     public Room(ArrayList<Edge> edges) {
         super();
@@ -98,6 +113,10 @@ public class Room extends BuildingItem {
         }          
     }
 
+    public ArrayList<BuildingItem> getFurniture() {
+        return this.furniture;
+    }
+    
     public ArrayList<Wall> getInternalWalls() {
         return this.internalWalls;
     } 
