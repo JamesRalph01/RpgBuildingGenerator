@@ -195,7 +195,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         double dX = (double) e.getX() - mouseDown.x;
         double dY = (double) e.getY() - mouseDown.y;
 
-        sceneRotation.set(sceneRotation.x+=dY,sceneRotation.y+=dX, sceneRotation.z);
+        sceneRotation.set(sceneRotation.x+=dY, sceneRotation.y, sceneRotation.z+=dX);
         mouseDown = new Vector2d(e.getX(), e.getY());
         update();    
     }
