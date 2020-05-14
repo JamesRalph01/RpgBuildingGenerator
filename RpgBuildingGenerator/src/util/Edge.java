@@ -130,24 +130,33 @@ public class Edge {
         return result != Intersectiond.OUTSIDE;
     }
     
-    public boolean intersets(Edge edgeToCheck, int tolerance) {
+    public boolean sharesEdge(Edge edgeToCheck, int tolerance) {
         Rectangled rect;
         int result;
         
         rect = new Rectangled();
-        rect.minX = Math.min((double) edgeToCheck.x1(), (double) edgeToCheck.x2());
-        rect.maxX = Math.max((double) edgeToCheck.x1(), (double) edgeToCheck.x2());
-        rect.minY = Math.min((double) edgeToCheck.y1(), (double) edgeToCheck.y2());
-        rect.maxY = Math.max((double) edgeToCheck.y1(), (double) edgeToCheck.y2());
-        rect.minX -= tolerance;
-        rect.maxX -= tolerance;
-        rect.maxX += tolerance;
-        rect.maxY += tolerance;
+        rect.minX = Math.min((double) this.x1(), (double) this.x2());
+        rect.maxX = Math.max((double) this.x1(), (double) this.x2());
+        rect.minY = Math.min((double) this.y1(), (double) this.y2());
+        rect.maxY = Math.max((double) this.y1(), (double) this.y2());
+        
+        if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+            //rect.minX -= tolerance;
+            //rect.maxX -= tolerance;
+            rect.minY -= tolerance;
+            rect.maxY += tolerance;            
+        } else {
+            rect.minX -= tolerance;
+            rect.maxX += tolerance;
+            //rect.minY += tolerance;
+            //rect.maxY += tolerance;             
+        }
+
         
         Vector2d intersectionPoint = new Vector2d();
         
-        result = Intersectiond.intersectLineSegmentAar((double)this.x1(), (double)this.y1(),
-                                                      (double)this.x2(), (double)this.y2(),                      
+        result = Intersectiond.intersectLineSegmentAar((double)edgeToCheck.x1(), (double)edgeToCheck.y1(),
+                                                      (double)edgeToCheck.x2(), (double)edgeToCheck.y2(),                      
                                                       rect.minX, rect.minY,
                                                       rect.maxX, rect.maxY,
                                                       intersectionPoint);
