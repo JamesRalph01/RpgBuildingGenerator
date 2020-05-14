@@ -40,7 +40,7 @@ public class BuildingItem {
     public void setBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         minBounds.set(minX, minY, minZ);
         maxBounds.set(maxX, maxY, maxZ);
-        scaleFactor = 0.01f;
+        scaleFactor = 1.0f;
     }
     
     public float getWidth() {
@@ -48,11 +48,11 @@ public class BuildingItem {
     }
     
     public float getHeight() {
-        return maxBounds.z = minBounds.z;
+        return maxBounds.y = minBounds.y;
     }
     
     public float getDepth() {
-        return maxBounds.y = minBounds.y;    
+        return maxBounds.z = minBounds.z;    
     }
     
     public Vector3f getLocation() {
