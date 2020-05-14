@@ -19,6 +19,7 @@ import org.joml.Vector2d;
 import building.Room;
 import building.Wall;
 import designer.FloorPlan;
+import org.joml.Rectangled;
 import org.joml.Vector2f;
 import util.Edge;
 import util.PolygonHelper;
@@ -161,6 +162,11 @@ public class FloorPlanner {
         listPointAdjustments = new HashMap<>();
         Mappable[] items = mapModel.getItems();
         
+        overallBounds.x = Math.round(overallBounds.x + 2);
+        overallBounds.y = Math.round(overallBounds.y + 2);
+        overallBounds.w = Math.round(overallBounds.w - 4);
+        overallBounds.h = Math.round(overallBounds.h - 4);
+        
         System.out.printf("Treemap bounds x1: %f, y1: %f, x2: %f, y2: %f\n", 
                 overallBounds.x, overallBounds.y, 
                 overallBounds.x+overallBounds.w, overallBounds.y+overallBounds.h);
@@ -174,10 +180,14 @@ public class FloorPlanner {
             bounds = items[i].getBounds();
             
             ArrayList<Edge> edges = new ArrayList<>();
-           
+            
+            bounds.x = Math.round(bounds.x + 2);
+            bounds.y = Math.round(bounds.y + 2);
+            bounds.w = Math.round(bounds.w - 4);
+            bounds.h = Math.round(bounds.h - 4);
+            
             edges.add(new Edge(new Point(bounds.x,bounds.y),
                                new Point(bounds.x+bounds.w,bounds.y), overallBounds));
-            
             
             edges.add(new Edge(new Point(bounds.x+bounds.w,bounds.y),
                                new Point(bounds.x+bounds.w,bounds.y+bounds.h), overallBounds));
@@ -206,12 +216,12 @@ public class FloorPlanner {
                 // take a partial piece of the edge and check if intersects with another room
                 // partial to prevent overlaps where rooms touch
                 Edge partial = new Edge(edge);
-                partial.shrink(5);
+                partial.shrink(6);
 
                 for (Room roomToCheck: rooms) {    
                     if (roomToCheck != room) {
                         for (Edge edgeToCheck : roomToCheck.edges()) {
-                            if (partial.intersets(edgeToCheck,2)) {
+                            if (partial.sharesEdge(edgeToCheck,6)) {
                                 edge.connectedEdges().add(edgeToCheck);
                                 edge.isInternal(true);
                             }                          
@@ -221,7 +231,7 @@ public class FloorPlanner {
             }
         }
         printAllPoints(false); 
-
+        
         // Now extend internal edges that have externally facing end points to a point on the building outline
         System.out.println("Step 3: expand internal edges");
         for (Room room: rooms) {  

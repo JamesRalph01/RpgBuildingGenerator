@@ -254,8 +254,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Building building = this.controller.getFloorPlanner().get3DBuilding();
         
         // Create dynamic objects, starting with external walls
+        String roomTextureFile = chooseExternalWallTexture(building);
         for (Wall wall : building.getExternalWalls()) {
-            Mesh mesh = buildWallMesh(gl, building, wall);          
+            Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
             ViewerItem buildingItem = new ViewerItem(mesh);
             buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
             buildingItems.add(buildingItem);  
@@ -263,8 +264,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         // Now internal walls in each room
         for (Room room : building.getRooms()) {
+            roomTextureFile = chooseRoomWallTexture(building, room);
             for (Wall wall : room.getInternalWalls()) {
-                Mesh mesh = buildWallMesh(gl, building, wall);          
+                
+                Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
                 ViewerItem buildingItem = new ViewerItem(mesh);
                 buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
                 buildingItems.add(buildingItem);                  
@@ -274,51 +277,67 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
     }
     
-    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
-    
-        Mesh mesh = null;
+    private String chooseRoomWallTexture(Building building, Room room) {
         String textureFile;
-      
-        if (wall.isInternal == false) {
-            switch (building.getWealthIndicator()) {
-                case POOR:
-                    textureFile = "textures/stone_wall.png";
-                    break;
-                case WEATHLY:
-                    textureFile = "textures/old_wooden_wall.png";
-                    break;
-                default:
-                    textureFile = "textures/old_wooden_wall.png";
-                    break;      
-            }
-        } else {
-            switch (building.getWealthIndicator()) {
-                case POOR:
-                    if (Math.random() < 0.5) {
-                        textureFile = "textures/brown_rock.png";                        
-                    } else {
-                        textureFile = "textures/brown_rock.png";     
-                    }
 
-                    break;
-                case WEATHLY:
-                    double r;
-                    r = Math.random();
-                    if (r < 0.33) {
-                        textureFile = "textures/blue_tiles.png";                        
-                    } else if (r < 0.66) {
-                        textureFile = "textures/Marble_tiles.png";     
-                    } else {
-                        textureFile = "textures/Pattern.png";     
-                    }
-                    break;
-                default:
-                    textureFile = "textures/old_wooden_wall.png";
-                    break;        
-            }
+        switch (building.getWealthIndicator()) {
+            case POOR:
+                if (Math.random() < 0.5) {
+                    textureFile = "textures/brown_rock.png";                        
+                } else {
+                    textureFile = "textures/Sandy_gravel.png";     
+                }
+                break;
+            case WEATHLY:
+                double r;
+                r = Math.random();
+                if (r < 0.25) {
+                    textureFile = "textures/blue_tiles.png";                        
+                } else if (r < 0.5) {
+                    textureFile = "textures/Round_metal_tiles.png";     
+                } else if (r < 0.75) {
+                    textureFile = "textures/Bronze.png";     
+                } else {
+                    textureFile = "textures/Pattern.png";     
+                }
+                break;
+            default:
+                textureFile = "textures/old_wooden_wall.png";
+                break;        
         }
+        return textureFile;
+    }
+    
+    private String chooseExternalWallTexture(Building building) {
+        String textureFile;
 
-        
+        switch (building.getWealthIndicator()) {
+            case POOR:
+                if (Math.random() < 0.5) {
+                    textureFile = "textures/old_wooden_wall.png";                        
+                } else {
+                    textureFile = "textures/Stone_wall.png";     
+                }
+
+                break;
+            case WEATHLY:
+                double r;
+                r = Math.random();
+                if (Math.random() < 0.5) {
+                    textureFile = "textures/Brown_rock.png";                        
+                } else {
+                    textureFile = "textures/Stone_wall.png";     
+                }
+                break;
+            default:
+                textureFile = "textures/old_wooden_wall.png";
+                break;        
+        }
+        return textureFile;
+    }
+    
+    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall, String textureFile) {
+        Mesh mesh = null;
         Texture texture;
         
         try {
