@@ -17,7 +17,9 @@ import org.joml.Intersectiond;
 import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
+import building.Room.RoomType;
 import building.Wall;
+import building.furniture.Barrel;
 import designer.FloorPlan;
 import org.joml.Rectangled;
 import org.joml.Vector2f;
@@ -155,6 +157,45 @@ public class FloorPlanner {
         return new Color(R,G,B);
     }
     
+     private Room.RoomType getRoomType(String roomType) {
+        RoomType rt = null;
+        
+        if (!roomType.equals("NA")) {
+            // Social
+            switch (roomType) {
+                case "Li":
+                    rt =  RoomType.LivingRoom;
+                    break;
+                case "Dr":
+                    rt =  RoomType.DiningRoom;
+                    break;
+                case "Ki":
+                    rt =  RoomType.Kitchen;
+                    break;
+                case "Ut":
+                    rt =  RoomType.Utility;
+                    break;
+                case "Mb":
+                    rt =  RoomType.MasterBedroom;
+                    break;
+                case "Sr":
+                    rt =  RoomType.SpareRoom;
+                    break;
+                case "To":
+                    rt =  RoomType.Toilet;
+                    break;
+                case "Br":
+                    rt =  RoomType.Bathroom;
+                    break;
+                default: 
+                    rt = RoomType.LivingRoom;
+                    break;
+            }
+        }
+
+        return rt;
+    }
+    
     private void generateRooms(Rect overallBounds)
     {
         Rect bounds;
@@ -199,11 +240,12 @@ public class FloorPlanner {
                                new Point(bounds.x,bounds.y), overallBounds));
             // set room type
             Room room = new Room(edges);
+            room.roomType = getRoomType(items[i].getRoomType());
             for (Edge edge : edges) {
                 edge.point1().setColour(c);
                 edge.point2().setColour(c);
             }
-            rooms.add(new Room(edges));
+            rooms.add(room);
         }
         printAllPoints(false);
 
@@ -335,6 +377,15 @@ public class FloorPlanner {
         // Add Rooms
         for (Room room : this.rooms) {
             this.building.addRoom(room);
+            // Add Barrel to Living Room
+            if (room.roomType == RoomType.LivingRoom) {
+                Barrel barrel = new Barrel();
+                float x = (float) room.bounds().minX + barrel.getWidth();
+                float y = (float) room.bounds().minY + barrel.getDepth();
+                barrel.setLocation(x, y, barrel.getHeight() / 2.0f);
+                room.getFurniture().add(barrel);
+            }
+ 
         }
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
