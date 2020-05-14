@@ -81,14 +81,14 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             initBuilding(gl);
             
-            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
-            mesh.setTexture(texture);
-          
-            buildingItem = new ViewerItem(mesh);
-            buildingItem.setScale(0.01f);
-            buildingItem.setPosition(0.0f, 0.0f, 0.0f);
-            buildingItems.add(buildingItem);            
+//            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
+//            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
+//            mesh.setTexture(texture);
+//          
+//            buildingItem = new ViewerItem(mesh);
+//            buildingItem.setScale(0.05f);
+//            buildingItem.setPosition(0.0f, 0.0f, 0.0f);
+//            buildingItems.add(buildingItem);            
             
             camera.setPosition(0, 0, 1);
             
@@ -192,12 +192,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void mouseDragged(MouseEvent e) {
         // Update camera based on mouse 
-        double dX = (double) e.getX() - mouseDown.x;
-        double dY = (double) e.getY() - mouseDown.y;
+        double dY = (double) e.getX() - mouseDown.x;
+        double dX = ((double) e.getY() - mouseDown.y);
 
-        if (sceneRotation.x+dY >= 90 || sceneRotation.x+dY <= 0) {dY=0;}      
+        if (sceneRotation.x+dX <= -90 || sceneRotation.x+dX >= 0) {dX=0;}      
         
-        sceneRotation.set(sceneRotation.x+=dY, sceneRotation.y, sceneRotation.z+=dX);
+        sceneRotation.set(sceneRotation.x+=dX, sceneRotation.y+=dY, sceneRotation.z);
         mouseDown = new Vector2d(e.getX(), e.getY());
         update();    
     }
@@ -223,10 +223,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 cameraInc.z = 1;
                 break; 
             case VK_LEFT:
-                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.z += 5);
+                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.y += 5);
                 break;
             case VK_RIGHT:     
-                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.z -= 5);
+                sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.y -= 5);
                 break;
         }
         e.consume();
@@ -261,7 +261,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         for (Wall wall : building.getExternalWalls()) {
             Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
             ViewerItem buildingItem = new ViewerItem(mesh);
-            buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
+            buildingItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
             buildingItems.add(buildingItem);  
         }
         
@@ -272,14 +272,14 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             for (Wall wall : room.getInternalWalls()) {
                 Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
                 ViewerItem buildingItem = new ViewerItem(mesh);
-                buildingItem.setPosition(toNX(wall.getLocation().x), toNY(wall.getLocation().y), 0);
+                buildingItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
                 buildingItems.add(buildingItem);                  
             }
             //Furniture
             for (BuildingItem item : room.getFurniture()) {
                 Mesh mesh = buildFurnitureMesh(gl, item);          
                 ViewerItem buildingItem = new ViewerItem(mesh);
-                buildingItem.setPosition(toNX(item.getLocation().x), toNY(item.getLocation().y), toNY(item.getLocation().z));
+                buildingItem.setPosition(toNX(item.getLocation().x), 0.0f, toNY(item.getLocation().z));
                 buildingItem.setScale(item.scaleFactor);
                 buildingItems.add(buildingItem);                   
             }
@@ -372,8 +372,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             float[] positions = new float[wall.positions.length];
             for (int i=0; i < wall.positions.length; i+=3) {
                 positions[i] = toNX(wall.positions[i]);
-                positions[i+1] = toNY(wall.positions[i+1]);
-                positions[i+2] = toNX(wall.positions[i+2]);
+                positions[i+1] = toNX(wall.positions[i+1]);
+                positions[i+2] = toNY(wall.positions[i+2]);
             }
 
             mesh = new Mesh(gl, positions, wall.textCoords, wall.indices, texture);

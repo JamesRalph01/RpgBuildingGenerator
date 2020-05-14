@@ -365,7 +365,7 @@ public class FloorPlanner {
         origin.y += this.polygonHelper.boundingRect().minY;
         
         this.building = new Building();
-        this.building.setLocation(origin.x, origin.y, 0);
+        this.building.setLocation(origin.x, 0, origin.y);
         this.building.setWealthIndicator(Building.WealthIndicatorType.WEATHLY);
         
         // Add External walls
@@ -380,9 +380,9 @@ public class FloorPlanner {
             // Add Barrel to Living Room
             if (room.roomType == RoomType.LivingRoom) {
                 Barrel barrel = new Barrel();
-                float x = (float) room.bounds().minX + barrel.getWidth();
-                float y = (float) room.bounds().minY + barrel.getDepth();
-                barrel.setLocation(x, y, barrel.getHeight() / 2.0f);
+                float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
+                float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
+                barrel.setLocation(x, 0, z);
                 room.getFurniture().add(barrel);
             }
  

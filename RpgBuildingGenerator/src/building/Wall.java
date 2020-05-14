@@ -55,40 +55,40 @@ public class Wall extends BuildingItem {
         positions = new float[] {
             
             // FRONT FACE
-            p0.x, p0.y, this.height, // V0
-            p0.x, p0.y, 0,           // V1
-            p1.x, p1.y, 0,           // V2
-            p1.x, p1.y, this.height, // V3
+            p0.x, this.height, p0.y, // V0
+            p0.x, 0, p0.y,           // V1
+            p1.x, 0, p1.y,           // V2
+            p1.x, this.height, p1.y, // V3
             
             // TOP FACE
-            p2.x, p2.y, this.height, // V4
-            p0.x, p0.y, this.height, // V5
-            p1.x, p1.y, this.height, // V6
-            p3.x, p3.y, this.height, // V7
+            p2.x, this.height, p2.y, // V4
+            p0.x, this.height, p0.y, // V5
+            p1.x, this.height, p1.y, // V6
+            p3.x, this.height,p3.y,  // V7
             
             // RIGHT FACE
-            p1.x, p1.y, this.height, // V8
-            p1.x, p1.y, 0,           // V9
-            p3.x, p3.y, 0,           // V10
-            p3.x, p3.y, this.height, // V11
+            p1.x, this.height, p1.y, // V8
+            p1.x, 0, p1.y,           // V9
+            p3.x, 0, p3.y,           // V10
+            p3.x, this.height, p3.y, // V11
             
             // BACK FACE
-            p3.x, p3.y, this.height, // V12
-            p3.x, p3.y, 0,           // V13
-            p2.x, p2.y, 0,           // V14
-            p2.x, p2.y, this.height, // V15
+            p3.x, this.height,p3.y,  // V12
+            p3.x, 0, p3.y,           // V13
+            p2.x, 0, p2.y,           // V14
+            p2.x, this.height, p2.y, // V15
             
             // LEFT FACE
-            p2.x, p2.y, this.height, // V16
-            p2.x, p2.y, 0,           // V17
-            p0.x, p0.y, 0,           // V18
-            p0.x, p0.y, this.height, // V19
+            p2.x, this.height,p2.y,  // V16
+            p2.x, 0, p2.y,           // V17
+            p0.x, 0, p0.y,           // V18
+            p0.x, this.height, p0.y, // V19
             
             // BOTTOM FACE
-            p3.x, p3.y, 0,           // V20
-            p1.x, p1.y, 0,           // V21
-            p0.x, p0.y, 0,           // V22
-            p2.x, p2.y, 0,           // V23
+            p3.x, 0, p3.y,           // V20
+            p1.x, 0, p1.y,           // V21
+            p0.x, 0, p0.y,           // V22
+            p2.x, 0, p2.y,           // V23
         };
         
         float ratio = depth/height;
