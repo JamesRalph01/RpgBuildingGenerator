@@ -155,41 +155,6 @@ public class Wall extends BuildingItem {
         float Dx, Dy, D;
         float xMin, xMax, yMin, yMax, zMin, zMax;
 
-//       // Move internal walls apart a little so they don't overlap
-//        if (edge.isInternal()) {
-//            boolean moved = false;
-//            for (Edge connectedEdge : edge.connectedEdges()) {
-//                if (moved == false) {
-//                    if (edge.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
-//                        if (edge.y1() < connectedEdge.y1()) {
-//                            // this edge is above the connected edge
-//                            edge.point1().y-=this.width/2;
-//                            edge.point2().y-=this.width/2;
-//                            moved = true;
-//                        } else {
-//                            // this edge is below the connected edge 
-//                            edge.point1().y+=this.width/2;
-//                            edge.point2().y+=this.width/2;
-//                            moved = true;
-//                        }
-//                    } else {
-//                        if (edge.y2() < connectedEdge.y2()) {
-//                           // this edge is left of the connected edge
-//                            edge.point1().x-=this.width/2;
-//                            edge.point2().x-=this.width/2;
-//                            moved = true;
-//                        } else {
-//                           // this edge is right of the connected edge 
-//                            edge.point1().x+=this.width/2;
-//                            edge.point2().x+=this.width/2;
-//                            moved = true;
-//                        }                   
-//                    }
-//                }
-//            }
-//        }
-         
-
         Dx = edge.x2() - edge.x1();
         Dy = edge.y2() - edge.y1();
 
