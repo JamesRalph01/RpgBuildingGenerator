@@ -24,6 +24,7 @@ public class Wall extends BuildingItem {
     private final float width;
     private final float height;
     private Vector2f p0, p1, p2, p3;
+    private float depth;
     
     
     public Wall(Edge edge) {
@@ -52,102 +53,100 @@ public class Wall extends BuildingItem {
     private void generatePositions() {
                 
         positions = new float[] {
-
-            // V0
-            p0.x, p0.y, this.height,
-            // V1
-            p0.x, p0.y, 0,
-            // V2
-            p1.x, p1.y, 0,
-            // V3
-            p1.x, p1.y, this.height,
-            // V4
-            p2.x, p2.y, this.height,
-            // V5
-            p3.x, p3.y, this.height,
-            // V6
-            p3.x, p3.y, 0,
-            // V7
-            p2.x, p2.y, 0,
-
-            // For text coords in top face
-            // V8: V4 repeated
-            p2.x, p2.y, this.height,
-            // V9: V5 repeated
-            p3.x, p3.y, this.height,
-            // V10: V0 repeated
-            p0.x, p0.y, this.height,
-            // V11: V3 repeated
-            p1.x, p1.y, this.height,
-
-            // For text coords in right face
-            // V12: V3 repeated
-            p1.x, p1.y, this.height,
-            // V13: V2 repeated
-            p1.x, p1.y, 0,
-
-            // For text coords in left face
-            // V14: V0 repeated
-            p0.x, p0.y, this.height,
-            // V15: V1 repeated
-            p0.x, p0.y, 0,
-
-            // For text coords in bottom face
-            // V16: V6 repeated
-            p3.x, p3.y, 0,
-            // V17: V7 repeated
-            p2.x, p2.y, 0,
-            // V18: V1 repeated
-            p0.x, p0.y, 0,
-            // V19: V2 repeated
-            p1.x, p1.y, 0,
+            
+            // FRONT FACE
+            p0.x, p0.y, this.height, // V0
+            p0.x, p0.y, 0,           // V1
+            p1.x, p1.y, 0,           // V2
+            p1.x, p1.y, this.height, // V3
+            
+            // TOP FACE
+            p2.x, p2.y, this.height, // V4
+            p0.x, p0.y, this.height, // V5
+            p1.x, p1.y, this.height, // V6
+            p3.x, p3.y, this.height, // V7
+            
+            // RIGHT FACE
+            p1.x, p1.y, this.height, // V8
+            p1.x, p1.y, 0,           // V9
+            p3.x, p3.y, 0,           // V10
+            p3.x, p3.y, this.height, // V11
+            
+            // BACK FACE
+            p3.x, p3.y, this.height, // V12
+            p3.x, p3.y, 0,           // V13
+            p2.x, p2.y, 0,           // V14
+            p2.x, p2.y, this.height, // V15
+            
+            // LEFT FACE
+            p2.x, p2.y, this.height, // V16
+            p2.x, p2.y, 0,           // V17
+            p0.x, p0.y, 0,           // V18
+            p0.x, p0.y, this.height, // V19
+            
+            // BOTTOM FACE
+            p3.x, p3.y, 0,           // V20
+            p1.x, p1.y, 0,           // V21
+            p0.x, p0.y, 0,           // V22
+            p2.x, p2.y, 0,           // V23
         };
-                
+        
+        float ratio = depth/height;
+        System.out.println("RATIO >>>>>>> " + ratio);
         textCoords = new float[]{
+            // FRONT FACE
             0.0f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.5f, 0.0f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
             
+            // TOP FACE
             0.0f, 0.0f,
-            0.5f, 0.0f,
-            0.0f, 0.5f,
-            0.5f, 0.5f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
             
-            // For text coords in top face
-            0.0f, 0.5f,
-            0.5f, 0.5f,
-            0.0f, 1.0f,
-            0.5f, 1.0f,
-
-            // For text coords in right face
+            // RIGHT FACE
             0.0f, 0.0f,
-            0.0f, 0.5f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
+            
+            // BACK FACE
+            0.0f, 0.0f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
+            
+            // LEFT FACE
+            0.0f, 0.0f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
+            
+            // BOTTOM FACE
+            0.0f, 0.0f,
+            ratio, 0.0f,
+            ratio, height,
+            0.0f, height,
+            
 
-            // For text coords in left face
-            0.5f, 0.0f,
-            0.5f, 0.5f,
-
-            // For text coords in bottom face
-            0.5f, 0.0f,
-            1.0f, 0.0f,
-            0.5f, 0.5f,
-            1.0f, 0.5f,
         };
         
         indices = new int[] {
             // Front face
             0, 1, 3, 3, 1, 2,
             // Top Face
-            8, 10, 11, 9, 8, 11,
+            4, 5, 7, 7, 5, 6,
             // Right face
-            12, 13, 7, 5, 12, 7,
-            // Left face
-            14, 15, 6, 4, 14, 6,
+            8, 9, 11, 11, 9, 10,
             // Bottom face
-            16, 18, 19, 17, 16, 19,
+            12, 13, 15, 15, 13, 14,
+            // Left face
+            16, 17, 19, 19, 17, 18,
             // Back face
-            4, 6, 7, 5, 4, 7,};
+            20, 21, 23, 23, 21, 22,
+        };
     }
     
     
@@ -159,6 +158,7 @@ public class Wall extends BuildingItem {
         Dy = edge.y2() - edge.y1();
 
         D = (float) Math.sqrt(Dx * Dx + Dy * Dy);
+        this.depth = D;
 
         Dx = (float) 0.5 * width * Dx / D;
         Dy = (float) 0.5 * width * Dy / D;
