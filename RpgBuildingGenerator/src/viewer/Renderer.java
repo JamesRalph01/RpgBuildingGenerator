@@ -4,31 +4,33 @@ import building.Building;
 import building.BuildingItem;
 import building.Room;
 import building.Wall;
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_D;
-import static java.awt.event.KeyEvent.VK_DOWN;
 import static java.awt.event.KeyEvent.VK_LEFT;
 import static java.awt.event.KeyEvent.VK_Q;
 import static java.awt.event.KeyEvent.VK_RIGHT;
-import static java.awt.event.KeyEvent.VK_UP;
-import static java.awt.event.KeyEvent.VK_S;
-import static java.awt.event.KeyEvent.VK_W;
-import static java.awt.event.KeyEvent.VK_X;
-import static java.awt.event.KeyEvent.VK_Z;
+import java.awt.image.BufferedImage;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Timestamp;
+import java.util.Date;
+import javax.imageio.ImageIO;
 import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
@@ -55,7 +57,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     Vector3f sceneRotation = new Vector3f(0,0,0);
     Vector2d mouseDown = null;
     
-    int w, h;
+    int canvasWidth, canvasHeight;
     
     public Renderer() {
         transformation = new Transformation();
@@ -77,7 +79,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
             
             viewerItems = new ArrayList<>();
-            floorplanTimestamp = (Timestamp) controller.getFloorPlanner().timestamp.clone();
+            floorplanTimestamp = new Timestamp(new Date().getTime());
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -122,9 +124,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         this.clear(gl);
         
         if (floorplanTimestamp.before(controller.getFloorPlanner().timestamp)) {
-            
+            System.out.println("Change detected");
             // Clean up/reset
             for (ViewerItem viewerItem : viewerItems) {
+               System.out.println("Delete Mesh");
                viewerItem.getMesh().cleanUp(gl);
             }
             viewerItems.clear();
@@ -132,6 +135,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             // load new objects
             if (controller.getFloorPlanner().hasfloorPlanAvailable()) {
+                System.out.println("Loading objects");
                 loadObjects(gl);
                 camera.setPosition(0, 0, 1);
                 sceneRotation.set(-35.0f, 0, 0);
@@ -142,7 +146,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         shaderProgram.bind(gl);
         
         // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, w, h, Z_NEAR, Z_FAR);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, canvasWidth, canvasHeight, Z_NEAR, Z_FAR);
         shaderProgram.setUniform(gl, "projectionMatrix", projectionMatrix);
 
         // Update view Matrix
@@ -169,8 +173,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void reshape(GLAutoDrawable drawable, int x, int y, int w, int h) {
         final GL4 gl = drawable.getGL().getGL4();
         gl.glViewport(x, y, w, h);
-        this.w = w;
-        this.h = h;
+        this.canvasWidth = w;
+        this.canvasHeight = h;
     }
 
     @Override
@@ -437,18 +441,18 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         return textures;
     }
     
-    private float toNX(float screenX) {
-        return (2.0f / (float) w)  * screenX;
+    private float toNX(float deviceCoordX) {
+        return (2.0f / (float) canvasWidth)  * deviceCoordX;
     }
     
-    private float toNY(float screenY) { 
-        return -1 * (2.0f / (float) h)  * screenY;
+    private float toNY(float deviceCoordY) { 
+        return -1 * (2.0f / (float) canvasHeight)  * deviceCoordY;
     }
     
     @Override
     public void componentResized(ComponentEvent e) {
-        h = e.getComponent().getHeight();
-        w = e.getComponent().getWidth();
+        canvasHeight = e.getComponent().getHeight();
+        canvasWidth = e.getComponent().getWidth();
     }
 
     @Override
@@ -461,6 +465,37 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void componentHidden(ComponentEvent e) {
+    }
+    
+    protected void saveImage(GL4 gl) {
+
+        try {
+            BufferedImage screenshot = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics graphics = screenshot.getGraphics();
+
+            ByteBuffer buffer = Buffers.newDirectByteBuffer(canvasWidth * canvasHeight * 4);
+            
+            // be sure you are reading from the right fbo (here is supposed to be the default one)
+            // bind the right buffer to read from
+            gl.glReadBuffer(GL4.GL_BACK);
+            // if the width is not multiple of 4, set unpackPixel = 1
+            gl.glReadPixels(0, 0, canvasWidth, canvasHeight, GL4.GL_RGBA, GL4.GL_UNSIGNED_BYTE, buffer);
+
+            for (int h = 0; h < canvasHeight; h++) {
+                for (int w = 0; w < canvasWidth; w++) {
+                    // The color are the three consecutive bytes, it's like referencing
+                    // to the next consecutive array elements, so we got red, green, blue..
+                    // red, green, blue, and so on..+ ", "
+                    graphics.setColor(new Color((buffer.get() & 0xff), (buffer.get() & 0xff),
+                            (buffer.get() & 0xff)));
+                    buffer.get();   // consume alpha
+                    graphics.drawRect(w, canvasHeight - h, 1, 1); // height - h is for flipping the image
+                }
+            }
+            File outputfile = new File("D:\\Downloads\\texture.png");
+            ImageIO.write(screenshot, "png", outputfile);
+        } catch (IOException ex) {
+        }
     }
 
 
