@@ -18,8 +18,7 @@ public class Controller {
     public int height3DCanvas;
     
     private final BuildingOutline buildingOutline = new BuildingOutline();
-    private final FloorPlanner floorPlanner = new FloorPlanner(); 
-    
+    private final FloorPlanner floorPlanner = new FloorPlanner();  
     public boolean showOutline = true;
     
     public FloorPlanner getFloorPlanner() {

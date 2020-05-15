@@ -51,9 +51,9 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="tabPane" pref="480" max="32767" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="panelOptions" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -76,6 +76,9 @@
           <Dimension value="[20, 20]"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tabPaneStateChanged"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -119,15 +122,24 @@
                               <Component id="radioChurch" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="radioHouse" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="34" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="buttonTest" alignment="0" max="32767" attributes="0"/>
-                              <Component id="buttonClear" alignment="0" max="32767" attributes="0"/>
-                              <Component id="buttonGenerate" alignment="0" pref="131" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="labelEconimic" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="labelPoor" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="labelWealthy" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="buttonClear" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="buttonGenerate" alignment="0" pref="131" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="sliderEcon" alignment="0" min="-2" pref="123" max="-2" attributes="0"/>
+                              <Component id="buttonSave" alignment="0" min="-2" pref="131" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -146,13 +158,22 @@
                   <Component id="radioChurch" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="radioHouse" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Component id="labelEconimic" min="-2" pref="29" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="sliderEcon" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="labelPoor" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelWealthy" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="54" max="32767" attributes="0"/>
                   <Component id="buttonGenerate" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="buttonClear" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
-                  <Component id="buttonTest" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="108" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="buttonSave" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -224,12 +245,32 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonClearActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="buttonTest">
+        <Component class="javax.swing.JSlider" name="sliderEcon">
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelEconimic">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Test"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Lucida Grande" size="13" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Economic"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelPoor">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Poor"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelWealthy">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Wealthy"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="buttonSave">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Save"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonTestActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonSaveActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

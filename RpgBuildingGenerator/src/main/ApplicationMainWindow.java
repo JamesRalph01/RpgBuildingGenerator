@@ -23,6 +23,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
      */
     
     private Controller controller;
+    private GLCanvas viewerPanel;
     
     public ApplicationMainWindow() {
         controller = new Controller();
@@ -50,6 +51,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     
     public void setGLCanvas(GLCanvas canvas, String pos) {
         tabPane.addTab("Viewer", canvas); 
+        viewerPanel = canvas;
     }
     
     public void setController(Controller controller) {
@@ -77,7 +79,11 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         radioHouse = new javax.swing.JRadioButton();
         buttonGenerate = new javax.swing.JButton();
         buttonClear = new javax.swing.JButton();
-        buttonTest = new javax.swing.JButton();
+        sliderEcon = new javax.swing.JSlider();
+        labelEconimic = new javax.swing.JLabel();
+        labelPoor = new javax.swing.JLabel();
+        labelWealthy = new javax.swing.JLabel();
+        buttonSave = new javax.swing.JButton();
         menuMain = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuitemExit = new javax.swing.JMenuItem();
@@ -86,6 +92,11 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         setTitle("RPG Building Generator");
 
         tabPane.setMinimumSize(new java.awt.Dimension(20, 20));
+        tabPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tabPaneStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout designerPanelLayout = new javax.swing.GroupLayout(designerPanel);
         designerPanel.setLayout(designerPanelLayout);
@@ -145,10 +156,17 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             }
         });
 
-        buttonTest.setText("Test");
-        buttonTest.addActionListener(new java.awt.event.ActionListener() {
+        labelEconimic.setFont(new java.awt.Font("Lucida Grande", 1, 13)); // NOI18N
+        labelEconimic.setText("Economic");
+
+        labelPoor.setText("Poor");
+
+        labelWealthy.setText("Wealthy");
+
+        buttonSave.setText("Save");
+        buttonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonTestActionPerformed(evt);
+                buttonSaveActionPerformed(evt);
             }
         });
 
@@ -166,13 +184,20 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                             .addComponent(radioTavern)
                             .addComponent(radioChurch)
                             .addComponent(radioHouse))
-                        .addContainerGap(34, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panelOptionsLayout.createSequentialGroup()
-                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(buttonTest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonClear, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonGenerate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(labelEconimic)
+                            .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(panelOptionsLayout.createSequentialGroup()
+                                    .addComponent(labelPoor)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(labelWealthy))
+                                .addComponent(buttonClear, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonGenerate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))
+                            .addComponent(sliderEcon, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonSave, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 11, Short.MAX_VALUE))))
         );
         panelOptionsLayout.setVerticalGroup(
             panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,13 +212,21 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
                 .addComponent(radioChurch)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioHouse)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
+                .addComponent(labelEconimic, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sliderEcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelPoor)
+                    .addComponent(labelWealthy))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addComponent(buttonGenerate)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonClear)
-                .addGap(51, 51, 51)
-                .addComponent(buttonTest)
-                .addContainerGap(108, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonSave)
+                .addGap(22, 22, 22))
         );
 
         menuFile.setText("File");
@@ -247,23 +280,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         tabPane.setSelectedComponent(designerPanel);
     }//GEN-LAST:event_buttonClearActionPerformed
 
-    private void buttonTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestActionPerformed
-        designerPanel.Clear();
-        controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.TEST);
-        controller.getBuildingOutLine().addPoint(new Point(50,200));
-        controller.getBuildingOutLine().addPoint(new Point(150,100));
-        controller.getBuildingOutLine().addPoint(new Point(250,50));
-        controller.getBuildingOutLine().addPoint(new Point(350,50));
-        controller.getBuildingOutLine().addPoint(new Point(450,150));
-        controller.getBuildingOutLine().addPoint(new Point(450,350));
-        controller.getBuildingOutLine().addPoint(new Point(300,400));
-        controller.getBuildingOutLine().addPoint(new Point(130,400));
-
-        // finish outline by finishing on same point
-        controller.getBuildingOutLine().addPoint(new Point(50,200));
-        designerPanel.Generate();
-    }//GEN-LAST:event_buttonTestActionPerformed
-
     private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
         
         // TODO: need to only allow generation if a building outline has been defined
@@ -271,9 +287,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         
         if (controller.getBuildingOutLine().isComplete()) {
             designerPanel.Generate();
-
-            // Show 3D viewer <- not sure if this is desirable.  nice to show 2D view first?
-            //tabMain.setSelectedComponent(viewerPanel);
         }
         
     }//GEN-LAST:event_buttonGenerateActionPerformed
@@ -285,6 +298,33 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private void radioHouseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioHouseActionPerformed
         controller.getFloorPlanner().setBuildingType(FloorPlanner.BuildingType.HOUSE);
     }//GEN-LAST:event_radioHouseActionPerformed
+
+    private void tabPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabPaneStateChanged
+        if (tabPane.getSelectedComponent() == designerPanel) {
+            buttonGenerate.setEnabled(true);
+            buttonSave.setEnabled(false);
+            radioChurch.setEnabled(true);
+            radioTavern.setEnabled(true);
+            radioHouse.setEnabled(true);
+            sliderEcon.setEnabled(true);
+            labelPoor.setEnabled(true);
+            labelWealthy.setEnabled(true);
+            
+        } else {
+            buttonGenerate.setEnabled(false);
+            buttonSave.setEnabled(true);
+            radioChurch.setEnabled(false);
+            radioTavern.setEnabled(false);
+            radioHouse.setEnabled(false);
+            sliderEcon.setEnabled(false);
+            labelPoor.setEnabled(false);
+            labelWealthy.setEnabled(false);
+        }
+    }//GEN-LAST:event_tabPaneStateChanged
+
+    private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+        // Show file location dialog
+    }//GEN-LAST:event_buttonSaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -326,11 +366,14 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonClear;
     private javax.swing.JButton buttonGenerate;
-    private javax.swing.JButton buttonTest;
+    private javax.swing.JButton buttonSave;
     private javax.swing.ButtonGroup buttongroupType;
     private designer.DesignerPanel designerPanel;
+    private javax.swing.JLabel labelEconimic;
     private javax.swing.JLabel labelOptionsTitle;
+    private javax.swing.JLabel labelPoor;
     private javax.swing.JLabel labelType;
+    private javax.swing.JLabel labelWealthy;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuBar menuMain;
     private javax.swing.JMenuItem menuitemExit;
@@ -338,6 +381,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JRadioButton radioChurch;
     private javax.swing.JRadioButton radioHouse;
     private javax.swing.JRadioButton radioTavern;
+    private javax.swing.JSlider sliderEcon;
     private javax.swing.JTabbedPane tabPane;
     // End of variables declaration//GEN-END:variables
 }
