@@ -40,7 +40,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     public Controller controller;
     
-    private Timestamp floorplanTimestamp = null;
+    private Timestamp viewerTimestamp = null;
     
     private final Vector3f cameraInc;
     private final Camera camera;
@@ -63,6 +63,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         transformation = new Transformation();
         camera = new Camera();
         cameraInc = new Vector3f();
+        viewerTimestamp = new Timestamp(new Date().getTime());
     }
     
     public void setController(Controller controller) {
@@ -79,7 +80,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
             
             viewerItems = new ArrayList<>();
-            floorplanTimestamp = new Timestamp(new Date().getTime());
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -123,7 +123,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         this.clear(gl);
         
-        if (floorplanTimestamp.before(controller.getFloorPlanner().timestamp)) {
+        if (viewerTimestamp.before(controller.getFloorPlanner().timestamp)) {
             System.out.println("Change detected");
             // Clean up/reset
             for (ViewerItem viewerItem : viewerItems) {
@@ -131,7 +131,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                viewerItem.getMesh().cleanUp(gl);
             }
             viewerItems.clear();
-            floorplanTimestamp = (Timestamp) controller.getFloorPlanner().timestamp.clone();
+            viewerTimestamp = (Timestamp) controller.getFloorPlanner().timestamp.clone();
             
             // load new objects
             if (controller.getFloorPlanner().hasfloorPlanAvailable()) {
