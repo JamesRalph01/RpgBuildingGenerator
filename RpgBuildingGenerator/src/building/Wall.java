@@ -91,46 +91,54 @@ public class Wall extends BuildingItem {
             p2.x, 0, p2.y,           // V23
         };
         
-        float ratio = depth/height;
-        System.out.println("RATIO >>>>>>> " + ratio);
+        float heightRatio;
+        float depthRatio;
+        
+        if (isInternal) { //Internal Wall
+            heightRatio = 4;
+            depthRatio = depth/2/heightRatio;
+        }
+        else { // External Wall
+            heightRatio = 2;
+            depthRatio = depth/4/heightRatio;
+        }
+        System.out.println("RATIO >>>>>>> " + heightRatio + "   " + depthRatio);
         textCoords = new float[]{
             // FRONT FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
             
             // TOP FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
             
             // RIGHT FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
             
             // BACK FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
             
             // LEFT FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
             
             // BOTTOM FACE
+            0.0f, heightRatio,
             0.0f, 0.0f,
-            ratio, 0.0f,
-            ratio, height,
-            0.0f, height,
-            
-
+            depthRatio, 0.0f,
+            depthRatio, heightRatio,
         };
         
         indices = new int[] {
