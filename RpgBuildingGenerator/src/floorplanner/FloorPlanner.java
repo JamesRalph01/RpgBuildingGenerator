@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.sql.Timestamp;
 import org.joml.Intersectiond;
 import designer.BuildingOutline;
 import org.joml.Vector2d;
@@ -21,7 +22,7 @@ import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Barrel;
 import designer.FloorPlan;
-import org.joml.Rectangled;
+import java.util.Date;
 import org.joml.Vector2f;
 import util.Edge;
 import util.PolygonHelper;
@@ -35,6 +36,7 @@ import util.Point;
 public class FloorPlanner {
 
     private boolean DEBUG = false;
+    public Timestamp timestamp; // timestamp of last floorplan created
     
     public enum BuildingType {
         TAVERN, CHURCH, HOUSE, 
@@ -44,7 +46,8 @@ public class FloorPlanner {
     private TreemapLayout algorithm;
     private MapModel mapModel;
     private BuildingType buildingType;
-    private boolean activeFloorPlan = false;
+    
+    private boolean floorPlanAvailable = false;
     
     private Building building;
     private FloorPlan floorplan;
@@ -58,6 +61,7 @@ public class FloorPlanner {
     
     public FloorPlanner() {
         this.buildingType = BuildingType.TAVERN;
+        timestamp = new Timestamp(new Date().getTime());
     } 
     
     public void setBuildingType(BuildingType buildingType) {
@@ -95,15 +99,17 @@ public class FloorPlanner {
         generate2DFloorplan(); // for display in designer view
         generate3DBuilding(); // for 3D rendering view
         
-        activeFloorPlan = true;
+        floorPlanAvailable = true;
+        timestamp = new Timestamp(new Date().getTime());
     }
     
-    public boolean hasActiveFloorplan() {
-        return activeFloorPlan;
+    public boolean hasfloorPlanAvailable() {
+        return floorPlanAvailable;
     }
     
     public void clear() {
-        activeFloorPlan = false;
+        floorPlanAvailable = false;
+        timestamp = new Timestamp(new Date().getTime());
     }
     
     public FloorPlan get2DFloorplan()

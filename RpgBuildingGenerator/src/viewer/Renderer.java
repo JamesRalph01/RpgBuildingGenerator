@@ -28,20 +28,21 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.Timestamp;
 import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import util.Point;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener, ComponentListener {
 
     public Controller controller;
     
+    private Timestamp floorplanTimestamp = null;
+    
     private final Vector3f cameraInc;
     private final Camera camera;
-    private ArrayList<ViewerItem> buildingItems;
+    private ArrayList<ViewerItem> viewerItems;
 
     private static final float CAMERA_POS_STEP = 0.05f;
     
@@ -72,25 +73,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
             final GL4 gl = drawable.getGL().getGL4();
 
-            ViewerItem buildingItem;
-
             // Output OpenGL version
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
             
-            buildingItems = new ArrayList<>();
-            
-            initBuilding(gl);
-            
-//            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-//            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
-//            mesh.setTexture(texture);
-//          
-//            buildingItem = new ViewerItem(mesh);
-//            buildingItem.setScale(0.05f);
-//            buildingItem.setPosition(0.0f, 0.0f, 0.0f);
-//            buildingItems.add(buildingItem);            
-            
-            camera.setPosition(0, 0, 1);
+            viewerItems = new ArrayList<>();
+            floorplanTimestamp = (Timestamp) controller.getFloorPlanner().timestamp.clone();
             
             // Create shader
             shaderProgram = new ShaderProgram(gl);
@@ -107,6 +94,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             shaderProgram.createUniform(gl, "useColour");
             
             gl.glEnable(GL4.GL_DEPTH_TEST);
+            
         } catch (Exception ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -122,8 +110,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (shaderProgram != null) {
             shaderProgram.cleanup(gl);
         }
-        for (ViewerItem buildingItem : buildingItems) {
-            buildingItem.getMesh().cleanUp(gl);
+        for (ViewerItem viewerItem : viewerItems) {
+            viewerItem.getMesh().cleanUp(gl);
         }
     }
 
@@ -132,6 +120,24 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         final GL4 gl = drawable.getGL().getGL4();
         
         this.clear(gl);
+        
+        if (floorplanTimestamp.before(controller.getFloorPlanner().timestamp)) {
+            
+            // Clean up/reset
+            for (ViewerItem viewerItem : viewerItems) {
+               viewerItem.getMesh().cleanUp(gl);
+            }
+            viewerItems.clear();
+            floorplanTimestamp = (Timestamp) controller.getFloorPlanner().timestamp.clone();
+            
+            // load new objects
+            if (controller.getFloorPlanner().hasfloorPlanAvailable()) {
+                loadObjects(gl);
+                camera.setPosition(0, 0, 1);
+                sceneRotation.set(-35.0f, 0, 0);
+            }
+        }
+
         
         shaderProgram.bind(gl);
         
@@ -143,11 +149,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         
         shaderProgram.setUniform(gl, "texture_sampler", 0);
-        // Render each buildingItem
-        for (ViewerItem buildingItem : buildingItems) {
-            Mesh mesh = buildingItem.getMesh();
+        // Render each viewerItem
+        for (ViewerItem viewerItem : viewerItems) {
+            Mesh mesh = viewerItem.getMesh();
             // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(buildingItem, viewMatrix, sceneRotation);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
             shaderProgram.setUniform(gl, "colour", mesh.getColour());
@@ -169,7 +175,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //mouseDown = new Vector2d(e.getX(), e.getY());
     }
 
     @Override
@@ -241,18 +246,31 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         // Update camera position
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
         cameraInc.set(0, 0, 0);
-        
-        // Update camera based on mouse            
-//        if (mouseInput.isRightButtonPressed()) {
-//            Vector2f rotVec = mouseInput.getDisplVec();
-//            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-//        }
+    }
+    
+    private void loadObjects(GL4 gl) {
+                    
+        try {
+            initBuilding(gl);
+            
+            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
+            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
+            mesh.setTexture(texture);
+            
+            ViewerItem originCube = new ViewerItem(mesh);
+            originCube.setScale(0.05f);
+            originCube.setPosition(0.0f, 0.0f, 0.0f);            
+            viewerItems.add(originCube);
+        } catch (Exception ex) {
+            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
     }
     
     private void initBuilding(GL4 gl) {
     
         if (this.controller == null) return;
-        if (this.controller.getFloorPlanner().hasActiveFloorplan() == false) return;
+        if (this.controller.getFloorPlanner().hasfloorPlanAvailable() == false) return;
         
         Building building = this.controller.getFloorPlanner().get3DBuilding();
         
@@ -260,9 +278,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         String roomTextureFile = chooseExternalWallTexture(building);
         for (Wall wall : building.getExternalWalls()) {
             Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
-            ViewerItem buildingItem = new ViewerItem(mesh);
-            buildingItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
-            buildingItems.add(buildingItem);  
+            ViewerItem viewerItem = new ViewerItem(mesh);
+            viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
+            viewerItems.add(viewerItem);  
         }
         
         // Now room interior
@@ -271,17 +289,17 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             // Internal walls
             for (Wall wall : room.getInternalWalls()) {
                 Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
-                ViewerItem buildingItem = new ViewerItem(mesh);
-                buildingItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
-                buildingItems.add(buildingItem);                  
+                ViewerItem viewerItem = new ViewerItem(mesh);
+                viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
+                viewerItems.add(viewerItem);                  
             }
             //Furniture
             for (BuildingItem item : room.getFurniture()) {
                 Mesh mesh = buildFurnitureMesh(gl, item);          
-                ViewerItem buildingItem = new ViewerItem(mesh);
-                buildingItem.setPosition(toNX(item.getLocation().x), 0.0f, toNY(item.getLocation().z));
-                buildingItem.setScale(item.scaleFactor);
-                buildingItems.add(buildingItem);                   
+                ViewerItem viewerItem = new ViewerItem(mesh);
+                viewerItem.setPosition(toNX(item.getLocation().x), 0.0f, toNY(item.getLocation().z));
+                viewerItem.setScale(item.scaleFactor);
+                viewerItems.add(viewerItem);                   
             }
         }
     }
