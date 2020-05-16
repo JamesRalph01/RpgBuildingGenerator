@@ -35,6 +35,7 @@ import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener, ComponentListener {
 
@@ -53,6 +54,10 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private static final float Z_FAR = 1000.f;
     private final Transformation transformation;
     private ShaderProgram shaderProgram;
+    private float specularPower;
+    private Vector3f ambientLight;
+    private PointLight pointLight;
+    private float reflectance = 1f;    
     
     Vector3f sceneRotation = new Vector3f(0,0,0);
     Vector2d mouseDown = null;
@@ -61,6 +66,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     
     public Renderer() {
         transformation = new Transformation();
+        specularPower = 10f;
         camera = new Camera();
         cameraInc = new Vector3f();
         viewerTimestamp = new Timestamp(new Date().getTime());
@@ -79,6 +85,15 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             // Output OpenGL version
             System.out.println(" GL_VERSION: "+ gl.glGetString(GL4.GL_VERSION) );
             
+            // Lighting         
+            ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+            Vector3f lightColour = new Vector3f(1, 1, 1);
+            Vector3f lightPosition = new Vector3f(0, 0, 1);
+            float lightIntensity = 1.0f;
+            pointLight = new PointLight(lightColour, lightPosition, lightIntensity);
+            PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+            pointLight.setAttenuation(att);
+            
             viewerItems = new ArrayList<>();
             
             // Create shader
@@ -91,9 +106,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             shaderProgram.createUniform(gl, "projectionMatrix");
             shaderProgram.createUniform(gl, "modelViewMatrix");
             shaderProgram.createUniform(gl, "texture_sampler");
-            // Create uniform for default colour and the flag that controls it
-            shaderProgram.createUniform(gl, "colour");    
-            shaderProgram.createUniform(gl, "useColour");
+            // Create uniform for material
+            shaderProgram.createMaterialUniform(gl, "material");
+            // Create lighting related uniforms
+            shaderProgram.createUniform(gl, "specularPower");
+            shaderProgram.createUniform(gl, "ambientLight");
+            shaderProgram.createPointLightUniform(gl, "pointLight");
             
             gl.glEnable(GL4.GL_DEPTH_TEST);
             
@@ -119,6 +137,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
     @Override
     public void display(GLAutoDrawable drawable) {
+
         final GL4 gl = drawable.getGL().getGL4();
         
         this.clear(gl);
@@ -152,6 +171,19 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         
+                // Update Light Uniforms
+        shaderProgram.setUniform(gl, "ambientLight", ambientLight);
+        shaderProgram.setUniform(gl, "specularPower", specularPower);
+        // Get a copy of the light object and transform its position to view coordinates
+        PointLight currPointLight = new PointLight(pointLight);
+        Vector3f lightPos = currPointLight.getPosition();
+        Vector4f aux = new Vector4f(lightPos, 1);
+        aux.mul(viewMatrix);
+        lightPos.x = aux.x;
+        lightPos.y = aux.y;
+        lightPos.z = aux.z;
+        shaderProgram.setUniform(gl, "pointLight", currPointLight);        
+        
         shaderProgram.setUniform(gl, "texture_sampler", 0);
         // Render each viewerItem
         for (ViewerItem viewerItem : viewerItems) {
@@ -160,8 +192,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
-            shaderProgram.setUniform(gl, "colour", mesh.getColour());
-            shaderProgram.setUniform(gl, "useColour", mesh.isTextured() ? 0 : 1);
+            shaderProgram.setUniform(gl, "material", mesh.getMaterial());
             mesh.render(gl);
         }
 
@@ -259,7 +290,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
             Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
-            mesh.setTexture(texture);
+            Material material = new Material(texture, reflectance);
+            mesh.setMaterial(material);
             
             ViewerItem originCube = new ViewerItem(mesh);
             originCube.setScale(0.05f);
@@ -313,22 +345,25 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         try {
             mesh = OBJLoader.loadMesh(gl, "/models/" + furniture.obj);
             Texture texture = new Texture(gl, "textures/" + furniture.texture);
-            mesh.setTexture(texture);
+            Material material = new Material(texture, reflectance);
+            mesh.setMaterial(material);
         } catch (Exception ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return mesh;
     }
-
     
     private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
         Mesh mesh = null;
         Texture texture;
         
         try {
+            
             texture = new Texture(gl, "textures/" + wall.texture);
             texture.enableWrap(gl);
+            
+            Material material = new Material(texture, reflectance);
             
             // normalise positions
             float[] positions = new float[wall.positions.length];
@@ -338,7 +373,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 positions[i+2] = toNY(wall.positions[i+2]);
             }
 
-            mesh = new Mesh(gl, positions, wall.textCoords, wall.indices, texture);
+            mesh = new Mesh(gl, positions, wall.textCoords, wall.normals, wall.indices);
+            mesh.setMaterial(material);
             
         } catch (Exception ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);

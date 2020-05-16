@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
@@ -44,15 +45,58 @@ public class ShaderProgram {
             gl.glUniformMatrix4fv(uniforms.get(uniformName), 1, false, matrixBuffer);
         }
     }
+    
+     public void createPointLightUniform(GL4 gl, String uniformName) throws Exception {
+        createUniform(gl, uniformName + ".colour");
+        createUniform(gl, uniformName + ".position");
+        createUniform(gl, uniformName + ".intensity");
+        createUniform(gl, uniformName + ".att.constant");
+        createUniform(gl, uniformName + ".att.linear");
+        createUniform(gl, uniformName + ".att.exponent");
+    }
+
+    public void createMaterialUniform(GL4 gl, String uniformName) throws Exception {
+        createUniform(gl, uniformName + ".ambient");
+        createUniform(gl, uniformName + ".diffuse");
+        createUniform(gl, uniformName + ".specular");
+        createUniform(gl, uniformName + ".hasTexture");
+        createUniform(gl, uniformName + ".reflectance");
+    }
 
     public void setUniform(GL4 gl, String uniformName, int value) {
         gl.glUniform1i(uniforms.get(uniformName), value);
+    }
+    
+    public void setUniform(GL4 gl, String uniformName, float value) {
+        gl.glUniform1f(uniforms.get(uniformName), value);
     }
 
     public void setUniform(GL4 gl, String uniformName, Vector3f value) {
         gl.glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
     }
+    
+    public void setUniform(GL4 gl, String uniformName, Vector4f value) {
+        gl.glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
+    }
 
+    public void setUniform(GL4 gl, String uniformName, PointLight pointLight) {
+        setUniform(gl, uniformName + ".colour", pointLight.getColor());
+        setUniform(gl, uniformName + ".position", pointLight.getPosition());
+        setUniform(gl, uniformName + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAttenuation();
+        setUniform(gl, uniformName + ".att.constant", att.getConstant());
+        setUniform(gl, uniformName + ".att.linear", att.getLinear());
+        setUniform(gl, uniformName + ".att.exponent", att.getExponent());
+    }
+
+    public void setUniform(GL4 gl, String uniformName, Material material) {
+        setUniform(gl, uniformName + ".ambient", material.getAmbientColour());
+        setUniform(gl, uniformName + ".diffuse", material.getDiffuseColour());
+        setUniform(gl, uniformName + ".specular", material.getSpecularColour());
+        setUniform(gl, uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
+        setUniform(gl, uniformName + ".reflectance", material.getReflectance());
+    }
+    
     public void createVertexShader(GL4 gl, String shaderCode) throws Exception {
         vertexShaderId = createShader(gl, shaderCode, GL4.GL_VERTEX_SHADER);
     }
