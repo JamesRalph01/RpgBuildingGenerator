@@ -346,17 +346,17 @@ public class FloorPlanner {
     }
         
     private void printAllPoints(boolean includeadj) {
-        for (Room room: rooms) {
-            System.out.println("Room");
-            for (Edge edge: room.edges()) {
-                System.out.printf("Edge isInternal: %s\n", edge.isInternal());
-                System.out.printf("x1: %d, y1: %d, scope1: %s -> x2: %d, y2: %d, scope2: %s \n", 
-                        edge.point1().x, edge.point1().y, edge.point1().scope.toString(),
-                        edge.point2().x, edge.point2().y, edge.point2().scope.toString());
-            }
-
-            System.out.println("===========================");
-        }
+//        for (Room room: rooms) {
+//            System.out.println("Room");
+//            for (Edge edge: room.edges()) {
+//                System.out.printf("Edge isInternal: %s\n", edge.isInternal());
+//                System.out.printf("x1: %d, y1: %d, scope1: %s -> x2: %d, y2: %d, scope2: %s \n", 
+//                        edge.point1().x, edge.point1().y, edge.point1().scope.toString(),
+//                        edge.point2().x, edge.point2().y, edge.point2().scope.toString());
+//            }
+//
+//            System.out.println("===========================");
+//        }
 
     }
     
@@ -389,6 +389,9 @@ public class FloorPlanner {
         this.building = new Building();
         this.building.setLocation(origin.x, 0, origin.y);
         this.building.setWealthIndicator(this.wealthIndicator);
+        this.building.setBuildingTheme(this.buildingTheme);
+ 
+
         
         // Add External walls
         for (Edge edge : polygonHelper.edges()) {
