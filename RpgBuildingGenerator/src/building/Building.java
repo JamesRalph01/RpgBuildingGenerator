@@ -13,20 +13,16 @@ import java.util.ArrayList;
  */
 public class Building extends BuildingItem {
 
-    public enum WealthIndicatorType {
-        POOR,
-        WEATHLY
-    }
     
     private ArrayList<Wall> externalWalls;
     private ArrayList<Room> rooms;
-    private WealthIndicatorType wealthIndicator;
+    private int wealthIndicator;
     
     public Building() {
         super();
         externalWalls = new ArrayList<>();
         rooms = new ArrayList<>();
-        wealthIndicator = WealthIndicatorType.WEATHLY;
+        wealthIndicator = 50;
     }
     
     public ArrayList<Wall> getExternalWalls() {
@@ -45,25 +41,43 @@ public class Building extends BuildingItem {
         externalWalls.add(wall);
     }
     
-    public void setWealthIndicator(WealthIndicatorType value) {
-        wealthIndicator = value;  
+    public void setWealthIndicator(int wealthIndicator) {
+        this.wealthIndicator = wealthIndicator;  
     }
     
-    public WealthIndicatorType getWealthIndicator() {
+    public int getWealthIndicator() {
         return wealthIndicator;  
     }
     
     public void Generate3DPositions() {
     
-        // External walls
+        // External walls - One texture for all external walls
+        String externalWallTexture = chooseExternalWallTexture();
         this.externalWalls.forEach((wall) -> {
-            wall.Generate3DPositions(this.getLocation());
+            wall.Generate3DPositionsExternal(this.getLocation(), externalWallTexture);
         });
         
         // Rooms
         this.rooms.forEach((room) -> {
-            room.Generate3DPositions(this.getLocation());
+            room.Generate3DPositions(this.getLocation(), this.wealthIndicator);
         });
+    }
+    
+        
+    private String chooseExternalWallTexture() {
+        if (this.wealthIndicator <= 50) {
+            if (Math.random() < 0.5) {
+                return "stone_wall2.png";                        
+            } else {
+                return "stone_wall.png";     
+            }
+        } else {
+            if (Math.random() < 0.5) {
+                return "brick_wall.png";                        
+            } else {
+                return "brick_wall2.png";     
+            }
+        }
     }
     
 }

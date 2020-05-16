@@ -279,9 +279,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         Building building = this.controller.getFloorPlanner().get3DBuilding();
         
         // Create dynamic objects, starting with external walls
-        String roomTextureFile = chooseExternalWallTexture(building);
         for (Wall wall : building.getExternalWalls()) {
-            Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
+            Mesh mesh = buildWallMesh(gl, building, wall);          
             ViewerItem viewerItem = new ViewerItem(mesh);
             viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
             viewerItems.add(viewerItem);  
@@ -289,10 +288,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         // Now room interior
         for (Room room : building.getRooms()) {
-            roomTextureFile = chooseRoomWallTexture(building, room);
             // Internal walls
             for (Wall wall : room.getInternalWalls()) {
-                Mesh mesh = buildWallMesh(gl, building, wall, roomTextureFile);          
+                Mesh mesh = buildWallMesh(gl, building, wall);          
                 ViewerItem viewerItem = new ViewerItem(mesh);
                 viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
                 viewerItems.add(viewerItem);                  
@@ -308,64 +306,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         }
     }
     
-    private String chooseRoomWallTexture(Building building, Room room) {
-        String textureFile;
-
-        switch (building.getWealthIndicator()) {
-            case POOR:
-                if (Math.random() < 0.5) {
-                    textureFile = "textures/Red_stone_wall.png";                        
-                } else {
-                    textureFile = "textures/Grunge_wall.png";     
-                }
-                break;
-            case WEATHLY:
-                double r;
-                r = Math.random();
-                if (r < 0.25) {
-                    textureFile = "textures/blue_tiles.png";                        
-                } else if (r < 0.5) {
-                    textureFile = "textures/pattern.png";     
-                } else if (r < 0.75) {
-                    textureFile = "textures/Bronze.png";     
-                } else {
-                    textureFile = "textures/Marble_tiles.png";     
-                }
-                break;
-            default:
-                textureFile = "textures/old_wooden_wall.png";
-                break;        
-        }
-        return textureFile;
-    }
-    
-    private String chooseExternalWallTexture(Building building) {
-        String textureFile;
-
-        switch (building.getWealthIndicator()) {
-            case POOR:
-                if (Math.random() < 0.5) {
-                    textureFile = "textures/stone_wall2.png";                        
-                } else {
-                    textureFile = "textures/stone_wall.png";     
-                }
-
-                break;
-            case WEATHLY:
-                double r;
-                r = Math.random();
-                if (Math.random() < 0.5) {
-                    textureFile = "textures/brick_wall.png";                        
-                } else {
-                    textureFile = "textures/brick_wall2.png";     
-                }
-                break;
-            default:
-                textureFile = "textures/stone_wall2.png";
-                break;        
-        }
-        return textureFile;
-    }
 
     private Mesh buildFurnitureMesh(GL4 gl, BuildingItem furniture) {
         Mesh mesh = null;
@@ -382,12 +322,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     }
 
     
-    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall, String textureFile) {
+    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
         Mesh mesh = null;
         Texture texture;
         
         try {
-            texture = new Texture(gl, textureFile);
+            texture = new Texture(gl, "textures/" + wall.texture);
             texture.enableWrap(gl);
             
             // normalise positions

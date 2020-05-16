@@ -30,7 +30,9 @@ public class Wall extends BuildingItem {
     public Wall(Edge edge) {
         super();
         this.edge = edge;
-        if (edge.isInternal()) {
+        this.isInternal = edge.isInternal();
+               
+        if (this.isInternal) {
             this.width = 4;
         } else {
             this.width = 6; // Chunky external walls            
@@ -39,13 +41,22 @@ public class Wall extends BuildingItem {
         this.height = 30;
     }
 
-    public void Generate3DPositions(Vector3f screenOrigin) {
+    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType) {
         calcWall2DPoints();
         generatePositions();
-        calcLocation(screenOrigin);    
+        calcLocation(screenOrigin);
+        chooseRoomWallTexture(wealthInd, roomType);
+    }
+    
+     public void Generate3DPositionsExternal(Vector3f screenOrigin, String externalWallTexture) {
+        calcWall2DPoints();
+        generatePositions();
+        calcLocation(screenOrigin);
+        this.texture = externalWallTexture; // Same texture set for all external walls
     }
     
     private void calcLocation(Vector3f screenOrigin) {
+        // This looks wrong - should be negative
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     
@@ -188,5 +199,30 @@ public class Wall extends BuildingItem {
         //this.setBounds(xMin, yMin, zMin, xMax, yMax, zMax);
            
     }
+    
+    
+    private void chooseRoomWallTexture(int wealthInd, Room.RoomType roomType) {
+
+        if (wealthInd <= 50) {
+            if (Math.random() < 0.5) {
+                this.texture = "Red_stone_wall.png";                        
+            } else {
+                this.texture = "Grunge_wall.png";     
+            }
+        } else {
+            double r;
+            r = Math.random();
+            if (r < 0.25) {
+                this.texture = "blue_tiles.png";                        
+            } else if (r < 0.5) {
+                this.texture = "pattern.png";     
+            } else if (r < 0.75) {
+                this.texture = "Bronze.png";     
+            } else {
+                this.texture = "Marble_tiles.png";     
+            }
+        }
+    }
+
    
 }

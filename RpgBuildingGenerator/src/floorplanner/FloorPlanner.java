@@ -43,29 +43,45 @@ public class FloorPlanner {
         TEST // internal use only for repeatable results
     }
     
+    public enum BuildingTheme {
+        MEDIEVAL, MODERN, FUTURISTIC
+    }
+    
+    //Building Criteria (Inputs)
+    private BuildingType buildingType;
+    private BuildingTheme buildingTheme;
+    private int wealthIndicator; // In range 0 to 100
+    
+    //Used for floor plan generation
     private TreemapLayout algorithm;
     private MapModel mapModel;
-    private BuildingType buildingType;
-    
-    private boolean floorPlanAvailable = false;
-    
-    private Building building;
-    private FloorPlan floorplan;
-    
-    
     private ArrayList<Point> points = new ArrayList<>();
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
     private HashMap<Point, Point> listPointAdjustments;
-   
+    
+    //Outputs
+    private Building building;
+    private FloorPlan floorplan;
+    private boolean floorPlanAvailable = false;
     
     public FloorPlanner() {
         this.buildingType = BuildingType.TAVERN;
+        this.buildingTheme = BuildingTheme.MEDIEVAL;
+        this.wealthIndicator = 50;
         timestamp = new Timestamp(new Date().getTime());
     } 
+   
+     public void setBuildingTheme(BuildingTheme buildingTheme) {
+        this.buildingTheme = buildingTheme;
+    }
     
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
+    }
+    
+    public void setWealthIndicator(int wealthIndicator) {
+        this.wealthIndicator = wealthIndicator;
     }
    
     public void generate(BuildingOutline buildingOutline) {
@@ -372,7 +388,7 @@ public class FloorPlanner {
         
         this.building = new Building();
         this.building.setLocation(origin.x, 0, origin.y);
-        this.building.setWealthIndicator(Building.WealthIndicatorType.WEATHLY);
+        this.building.setWealthIndicator(this.wealthIndicator);
         
         // Add External walls
         for (Edge edge : polygonHelper.edges()) {

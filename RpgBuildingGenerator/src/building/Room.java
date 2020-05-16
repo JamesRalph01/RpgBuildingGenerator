@@ -33,7 +33,7 @@ public class Room extends BuildingItem {
     private ArrayList<Edge> edges;
     private float[] colourData;
     private ArrayList<Wall> internalWalls = new ArrayList<>();
-    private ArrayList<BuildingItem> furniture = new ArrayList();
+    private ArrayList<BuildingItem> furniture = new ArrayList<>();
     
     
     public Room(ArrayList<Edge> edges) {
@@ -121,22 +121,21 @@ public class Room extends BuildingItem {
         return this.internalWalls;
     } 
     
-    public void Generate3DPositions(Vector3f screenOrigin) {
+    public void Generate3DPositions(Vector3f screenOrigin, int wealthInd) {
         calcLocation(screenOrigin);
-        calcInternalWalls(screenOrigin);
+        calcInternalWalls(screenOrigin, wealthInd);
     }
    
     private void calcLocation(Vector3f screenOrigin) {
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     
-    private void calcInternalWalls(Vector3f screenOrigin) {
+    private void calcInternalWalls(Vector3f screenOrigin, int wealthInd) {
         internalWalls.clear();
         for (Edge edge : this.edges) {
             if (edge.isInternal()) {
                 Wall wall = new Wall(edge);
-                wall.isInternal = true;
-                wall.Generate3DPositions(screenOrigin);
+                wall.Generate3DPositionsInternal(screenOrigin, wealthInd, this.roomType);
                 this.internalWalls.add(wall);
             }
         }

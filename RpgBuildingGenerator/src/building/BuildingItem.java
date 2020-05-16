@@ -17,6 +17,7 @@ public class BuildingItem {
     private final Vector3f maxBounds;
     private final Vector3f location;
     private final Vector3f rotation;
+    
     public String texture;
     public String obj;
     public float scaleFactor;

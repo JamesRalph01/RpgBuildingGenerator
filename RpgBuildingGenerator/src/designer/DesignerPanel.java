@@ -125,8 +125,7 @@ public class DesignerPanel extends JPanel implements MouseListener, MouseMotionL
         this.repaint();
     }
     
-    public void Generate() {
-        controller.getFloorPlanner().generate(controller.getBuildingOutLine());
+    public void Update() {
         designComponents.put("Floorplan", controller.getFloorPlanner().get2DFloorplan()); 
         this.repaint();
     }
