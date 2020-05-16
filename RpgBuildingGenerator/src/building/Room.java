@@ -28,7 +28,7 @@ public class Room extends BuildingItem {
         DiningRoom
     }
    
-    public RoomType roomType; 
+    public RoomType roomType;
             
     private ArrayList<Edge> edges;
     private float[] colourData;
@@ -140,5 +140,4 @@ public class Room extends BuildingItem {
             }
         }
     }
-    
 }

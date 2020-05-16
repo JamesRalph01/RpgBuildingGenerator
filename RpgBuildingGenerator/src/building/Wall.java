@@ -113,8 +113,8 @@ public class Wall extends BuildingItem {
             depthRatio = depth/2/heightRatio;
         }
         else { // External Wall
-            heightRatio = 2;
-            depthRatio = depth/4/heightRatio;
+            heightRatio = 1;
+            depthRatio = depth/30/heightRatio;
         }
         System.out.println("RATIO >>>>>>> " + heightRatio + "   " + depthRatio);
         textCoords = new float[]{
@@ -207,25 +207,35 @@ public class Wall extends BuildingItem {
     
     
     private void chooseRoomWallTexture(int wealthInd, Room.RoomType roomType) {
-
-        if (wealthInd <= 50) {
-            if (Math.random() < 0.5) {
-                this.texture = "Red_stone_wall.png";                        
-            } else {
-                this.texture = "Grunge_wall.png";     
-            }
-        } else {
-            double r;
-            r = Math.random();
-            if (r < 0.25) {
-                this.texture = "blue_tiles.png";                        
-            } else if (r < 0.5) {
-                this.texture = "pattern.png";     
-            } else if (r < 0.75) {
-                this.texture = "Bronze.png";     
-            } else {
-                this.texture = "Marble_tiles.png";     
-            }
+        
+        switch (roomType) {
+            case MasterBedroom:
+                this.texture = "pattern.png"; 
+                break;
+            case LivingRoom:
+                this.texture = "Red_stone_wall.png"; 
+                break;
+            case Kitchen:
+                this.texture = "Marble_tiles.png"; 
+                break;
+            case Bathroom:
+                this.texture = "blue_tiles.png"; 
+                break;
+            case SpareRoom:
+                this.texture = "pattern.png"; 
+                break;
+            case Toilet:
+                this.texture = "blue_tiles.png"; 
+                break;
+            case Utility:
+                this.texture = "Bronze.png"; 
+                break;
+            case DiningRoom:
+                this.texture = "Red_stone_wall.png"; 
+                break;
+            default:
+                this.texture = "Grunge_wall.png";
+                break;
         }
     }
     
