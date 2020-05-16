@@ -391,8 +391,6 @@ public class FloorPlanner {
         this.building.setWealthIndicator(this.wealthIndicator);
         this.building.setBuildingTheme(this.buildingTheme);
  
-
-        
         // Add External walls
         for (Edge edge : polygonHelper.edges()) {
             Wall wall = new Wall(edge);

@@ -20,9 +20,9 @@ public class Mesh {
 
     private final int vertexCount;
 
-    private Texture texture;
-
     private Vector3f colour;
+    
+    private Material material;
     
     public Mesh(GL4 gl, float[] positions, float[] textCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
@@ -213,87 +213,14 @@ public class Mesh {
         }
     }
     
-    public Mesh(GL4 gl, float[] positions, float[] textCoords, int[] indices, Texture texture) {
-        FloatBuffer posBuffer = null;
-        FloatBuffer textCoordsBuffer = null;
-        FloatBuffer vecNormalsBuffer = null;
-        IntBuffer indicesBuffer = null;
-        try {
-            this.texture = texture;
-            
-            colour = Mesh.DEFAULT_COLOUR;
-            vertexCount = indices.length;
-            vboIdList = new ArrayList<>();
+    public Material getMaterial() {
+        return material;
+    }
 
-            int[] vaoIds = new int[1];
-            int[] vboIds = new int[1];
-            
-            gl.glGenVertexArrays(1, IntBuffer.wrap(vaoIds));
-            vaoId = vaoIds[0];
-            
-            gl.glBindVertexArray(vaoId);
-            
-            // Position VBO
-            gl.glGenBuffers(1, IntBuffer.wrap(vboIds));
-            
-            vboIdList.add(vboIds[0]);          
-            posBuffer = MemoryUtil.memAllocFloat(positions.length);
-            posBuffer.put(positions).flip();                  
-            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, vboIds[0]);
-            gl.glBufferData(GL4.GL_ARRAY_BUFFER, positions.length * 4, posBuffer, GL4.GL_STATIC_DRAW);
-            gl.glEnableVertexAttribArray(0);
-            gl.glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 0, 0);
-            
-            // Texture coordinates VBO
-            gl.glGenBuffers(1, IntBuffer.wrap(vboIds));
-            vboIdList.add(vboIds[0]);          
-            textCoordsBuffer = MemoryUtil.memAllocFloat(textCoords.length);
-            textCoordsBuffer.put(textCoords).flip();                 
-            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, vboIds[0]);
-            gl.glBufferData(GL4.GL_ARRAY_BUFFER, textCoords.length * 4, textCoordsBuffer, GL4.GL_STATIC_DRAW);
-            gl.glEnableVertexAttribArray(1);
-            gl.glVertexAttribPointer(1, 2, GL4.GL_FLOAT, false, 0, 0);
-                        
-            // Index VBO
-            gl.glGenBuffers(1, IntBuffer.wrap(vboIds));
-            vboIdList.add(vboIds[0]);          
-            indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-            indicesBuffer.put(indices).flip();         
-            gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, vboIds[0]);
-            gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, indices.length * 4, indicesBuffer, GL4.GL_STATIC_DRAW);
-            
-            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
-            gl.glBindVertexArray(0);
-            
-            
-        } finally {
-            if (posBuffer != null) {
-                MemoryUtil.memFree(posBuffer);
-            }
-            if (textCoordsBuffer != null) {
-                MemoryUtil.memFree(textCoordsBuffer);
-            }
-            if (vecNormalsBuffer != null) {
-                MemoryUtil.memFree(vecNormalsBuffer);
-            }
-            if (indicesBuffer != null) {
-                MemoryUtil.memFree(indicesBuffer);
-            }
-        }
+    public void setMaterial(Material material) {
+        this.material = material;
     }
     
-    public boolean isTextured() {
-        return this.texture != null;
-    }
-
-    public Texture getTexture() {
-        return this.texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
     public void setColour(Vector3f colour) {
         this.colour = colour;
     }
@@ -311,8 +238,9 @@ public class Mesh {
     }
 
     public void render(GL4 gl) {
+        Texture texture = material.getTexture();
         if (texture != null) {
-            // Activate firs texture bank
+            // Activate first texture bank
             gl.glActiveTexture(GL4.GL_TEXTURE0);
             // Bind the texture
             gl.glBindTexture(GL4.GL_TEXTURE_2D, texture.getId());
@@ -340,6 +268,7 @@ public class Mesh {
         }
 
         // Delete the texture
+        Texture texture = material.getTexture();
         if (texture != null) {
             texture.cleanup(gl);
         }
