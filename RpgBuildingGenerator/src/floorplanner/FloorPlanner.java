@@ -387,7 +387,7 @@ public class FloorPlanner {
         origin.y += this.polygonHelper.boundingRect().minY;
         
         this.building = new Building();
-        this.building.setLocation(origin.x, 0, origin.y);
+        this.building.setLocation(-origin.x, 0, -origin.y);
         this.building.setWealthIndicator(this.wealthIndicator);
         this.building.setBuildingTheme(this.buildingTheme);
  
@@ -397,6 +397,11 @@ public class FloorPlanner {
             wall.isInternal = false;
             this.building.addExternalWall(wall);
         }
+        
+        //Add Floor
+        this.building.getFloor().setExternalPoints(this.polygonHelper.points());
+        this.building.getFloor().setBoundingRect(this.polygonHelper.boundingRect());
+        
         // Add Rooms
         for (Room room : this.rooms) {
             this.building.addRoom(room);
