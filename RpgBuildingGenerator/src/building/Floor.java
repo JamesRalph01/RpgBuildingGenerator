@@ -6,16 +6,12 @@
 package building;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joml.GeometryUtils;
 import org.joml.Rectangled;
 import org.joml.Vector3f;
 import util.Point;
-import util.delaunay.DelaunayTriangulator;
-import util.delaunay.NotEnoughPointsException;
-import util.delaunay.Triangle2D;
-import util.delaunay.Vector2D;
+import util.Triangulate;
+
 
 /**
  *
@@ -30,7 +26,6 @@ public class Floor extends BuildingItem {
     
     private ArrayList<Point> points;
     private Rectangled boundingRect;
-    private DelaunayTriangulator delaunayTriangulator;
     
     public Floor() {
         super();
@@ -45,62 +40,35 @@ public class Floor extends BuildingItem {
     }
     
     public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd) {
-        TessellateFloor();
         generatePositions();
         calcLocation(screenOrigin);
         calcTextureCoords();
         calcNormals();
         chooseTexture(wealthInd);
     }
-    
-    private void TessellateFloor() {
-        ArrayList<Vector2D> pointSet = new ArrayList<>();
-        for (Point point : this.points) {
-            pointSet.add(new Vector2D(point.x, point.y));
-        }
         
-        delaunayTriangulator = new DelaunayTriangulator(pointSet);
-        try {
-            delaunayTriangulator.triangulate();
-        } catch (NotEnoughPointsException ex) {
-            Logger.getLogger(Floor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-  
-    }
-    
     private void calcLocation(Vector3f screenOrigin) {
         // This looks wrong - should be negative
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     
     private void generatePositions() {
-        
-        positions = new float[delaunayTriangulator.getTriangles().size() * 3 * 3];
-        indices = new int[delaunayTriangulator.getTriangles().size() * 3];
-        
+        ArrayList<Point> triangles;        
+        triangles = Triangulate.computeTriangles(points);
+
+        positions = new float[triangles.size() * 3];
+        indices = new int[triangles.size()];
         
         int p = 0;
         int ind = 0;
-        for (int i = 0; i < delaunayTriangulator.getTriangles().size(); i++) {
-            Triangle2D triangle = delaunayTriangulator.getTriangles().get(i);
+        for (Point point : triangles) {
             // V1
-            indices[ind++] = i * 3;
-            positions[p++] = (float) triangle.a.x;
+            indices[ind++] = triangles.indexOf(point);
+            positions[p++] = (float) point.x;
             positions[p++] = 0.0f;
-            positions[p++] = (float) triangle.a.y; // Z!
-            
-            // V2
-            indices[ind++] = i * 3 + 1;
-            positions[p++] = (float) triangle.b.x;
-            positions[p++] = 0.0f;
-            positions[p++] = (float) triangle.b.y; // Z!
+            positions[p++] = (float) point.y; // Z!            
+        }
 
-            // V3
-            indices[ind++] = i * 3 + 2;
-            positions[p++] = (float) triangle.c.x;
-            positions[p++] = 0.0f;
-            positions[p++] = (float) triangle.c.y; // Z!
-        }  
         
     }
     

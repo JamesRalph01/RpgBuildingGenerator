@@ -5,25 +5,25 @@
  */
 package util;
 
-import java.util.*;
+import java.util.ArrayList;
 
-class triangulate
+public class Triangulate
 {
 	static final int MAXPOLY = 200;
 	static final double EPSILON	= 0.000001;
-	static class Point
+	static class TPoint
 	{
 		double x,y;
 	}
 	
 	static class Polygon
 	{
-		Point p[] = new Point[MAXPOLY];
+		TPoint p[] = new TPoint[MAXPOLY];
 		int n;
 		Polygon()
 		{
 			for(int i=0;i<MAXPOLY;i++)
-				p[i] = new Point();
+				p[i] = new TPoint();
 		}
 	}
 	
@@ -33,9 +33,9 @@ class triangulate
 		int t[][] = new int[MAXPOLY][3];
 	}
 	
-	static Point copy_point(Point p)
+	static TPoint copy_point(TPoint p)
 	{
-		Point ret = new Point();
+		TPoint ret = new TPoint();
 		ret.x = p.x;
 		ret.y = p.y;
 		return ret;
@@ -43,20 +43,21 @@ class triangulate
 	
 	static class Triangle
 	{
-		Point a, b, c;
+            TPoint a;
+            TPoint b, c;
 	}
 	
-	static double signed_triangle_area(Point a, Point b, Point c)
+	static double signed_triangle_area(TPoint a, TPoint b, TPoint c)
 	{
 		return ((a.x*b.y-a.y*b.x+a.y*c.x-a.x*c.y+b.x*c.y-c.x*b.y)/2.0);
 	}
 
-	static boolean cw(Point a, Point b, Point c)
+	static boolean cw(TPoint a, TPoint b, TPoint c)
 	{
 		return signed_triangle_area(a,b,c) < -EPSILON;
 	}
 	
-	static boolean point_in_triangle(Point p, Triangle t)
+	static boolean point_in_triangle(TPoint p, Triangle t)
 	{
 		if(cw(t.a,t.b,p)) return false;
 		if(cw(t.b,t.c,p)) return false;
@@ -109,7 +110,7 @@ class triangulate
 		return t;
 	}
 	
-	static double triangle_area(Point a, Point b, Point c)
+	static double triangle_area(TPoint a, TPoint b, TPoint c)
 	{
 		return Math.abs(signed_triangle_area(a,b,c));
 	}
@@ -133,6 +134,27 @@ class triangulate
 			total += (p.p[i].x*p.p[j].y) - (p.p[j].x*p.p[i].y);
 		}
 		return total / 2;
+	}
+        
+        public static ArrayList<Point> computeTriangles(ArrayList<Point> polygonPoints)
+	{
+            Polygon p = new Polygon();
+            Triangulation t = new Triangulation();
+            
+            p.n = polygonPoints.size();
+            for(int i=0; i < p.n; i++) {
+                p.p[i].x = polygonPoints.get(i).x;
+                p.p[i].y = polygonPoints.get(i).y;
+            }
+            
+            t = Triangulate(p);
+            ArrayList<Point> triangles = new ArrayList<>();
+            for(int i=0; i < t.n; i++) {
+                triangles.add(new Point(p.p[t.t[i][0]].x, p.p[t.t[i][0]].y));
+                triangles.add(new Point(p.p[t.t[i][1]].x, p.p[t.t[i][1]].y));
+                triangles.add(new Point(p.p[t.t[i][2]].x, p.p[t.t[i][2]].y));
+            }
+            return triangles;
 	}
 
 }
