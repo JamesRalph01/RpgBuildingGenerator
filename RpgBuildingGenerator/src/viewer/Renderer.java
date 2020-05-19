@@ -2,6 +2,7 @@ package viewer;
 
 import building.Building;
 import building.BuildingItem;
+import building.Floor;
 import building.Room;
 import building.Wall;
 import com.jogamp.common.nio.Buffers;
@@ -14,7 +15,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_A;
+import static java.awt.event.KeyEvent.VK_D;
 import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_M;
+import static java.awt.event.KeyEvent.VK_N;
 import static java.awt.event.KeyEvent.VK_Q;
 import static java.awt.event.KeyEvent.VK_RIGHT;
 import java.awt.image.BufferedImage;
@@ -59,7 +63,11 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     private PointLight pointLight;
     private float reflectance = 1f;    
     
+    private enum DisplayMode {WIREFRAME, SOLID};
+    private DisplayMode displayMode = DisplayMode.SOLID;
+    
     Vector3f sceneRotation = new Vector3f(0,0,0);
+    Vector3f sceneTranslation = new Vector3f(0,0,0);
     Vector2d mouseDown = null;
     
     int canvasWidth, canvasHeight;
@@ -158,9 +166,19 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 loadObjects(gl);
                 camera.setPosition(0, 0, 1);
                 sceneRotation.set(-35.0f, 0, 0);
+                sceneTranslation.x = toNX(controller.getFloorPlanner().get3DBuilding().getLocation().x);
+                sceneTranslation.y = 0;
+                sceneTranslation.z = toNY(controller.getFloorPlanner().get3DBuilding().getLocation().z);
+                
             }
         }
 
+        //Display mode
+        if (displayMode == DisplayMode.SOLID) {
+            gl.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_FILL);
+        } else {
+            gl.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_LINE);
+        }
         
         shaderProgram.bind(gl);
         
@@ -189,7 +207,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         for (ViewerItem viewerItem : viewerItems) {
             Mesh mesh = viewerItem.getMesh();
             // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation, sceneTranslation);
             shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
             // Render the mesh for this game item
             shaderProgram.setUniform(gl, "material", mesh.getMaterial());
@@ -254,6 +272,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     public void keyPressed(KeyEvent e) {
         int key;
         
+        float lightPos = pointLight.getPosition().z;
         key = e.getKeyCode();
         switch (key) {
             case VK_Q: 
@@ -262,6 +281,18 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             case VK_A: 
                 cameraInc.z = 1;
                 break; 
+            case VK_N:
+                this.pointLight.getPosition().z = lightPos + 0.1f;
+                break;
+            case VK_M:
+                this.pointLight.getPosition().z = lightPos - 0.1f;
+                break;
+            case VK_D:
+                if (this.displayMode == DisplayMode.SOLID) {
+                    this.displayMode = DisplayMode.WIREFRAME;    
+                } else {
+                    this.displayMode = DisplayMode.SOLID;
+                }
             case VK_LEFT:
                 sceneRotation.set(sceneRotation.x, sceneRotation.y, sceneRotation.y += 5);
                 break;
@@ -287,16 +318,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                     
         try {
             initBuilding(gl);
-            
-            Mesh mesh = OBJLoader.loadMesh(gl, "/models/cube.obj");
-            Texture texture = new Texture(gl, "textures/Mossy_driveway.png");
-            Material material = new Material(texture, reflectance);
-            mesh.setMaterial(material);
-            
-            ViewerItem originCube = new ViewerItem(mesh);
-            originCube.setScale(0.05f);
-            originCube.setPosition(0.0f, 0.0f, 0.0f);            
-            viewerItems.add(originCube);
         } catch (Exception ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -314,9 +335,19 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         for (Wall wall : building.getExternalWalls()) {
             Mesh mesh = buildWallMesh(gl, building, wall);          
             ViewerItem viewerItem = new ViewerItem(mesh);
-            viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
             viewerItems.add(viewerItem);  
         }
+        
+        //Floor
+        try {
+            Floor floor = building.getFloor();
+            Mesh mesh = buildFloorMesh(gl, floor);         
+            ViewerItem viewerItem = new ViewerItem(mesh);
+            viewerItems.add(viewerItem);      
+        } catch (Exception ex) {
+            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
         
         // Now room interior
         for (Room room : building.getRooms()) {
@@ -324,7 +355,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             for (Wall wall : room.getInternalWalls()) {
                 Mesh mesh = buildWallMesh(gl, building, wall);          
                 ViewerItem viewerItem = new ViewerItem(mesh);
-                viewerItem.setPosition(toNX(wall.getLocation().x), 0.0f, toNX(wall.getLocation().z));
                 viewerItems.add(viewerItem);                  
             }
             //Furniture
@@ -354,6 +384,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         return mesh;
     }
     
+   
     private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
         Mesh mesh = null;
         Texture texture;
@@ -382,40 +413,37 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
 
         return mesh;
     }
-   
-    private float[] calcTextureCoords(float[] positions) {
-        float minX = 2.0f;
-        float minY = 2.0f;
-        float maxX = -2.0f;
-        float maxY = -2.0f;
+    
+     private Mesh buildFloorMesh(GL4 gl, Floor floor) {
+        Mesh mesh = null;
+        Texture texture;
         
-        for (int i=0; i < positions.length; i+=3) {
-            minX = Math.min(minX, positions[i]);
-            maxX = Math.max(minX, positions[i]);
+        try {
             
-            minY = Math.min(minY, positions[i+1]);        
-            maxY = Math.max(maxY, positions[i+1]);
-        }
-        
-        float[] textures = new float[positions.length * 2];
-        int t = 0;
-        for (int i=0; i < positions.length; i+=3) {
-            float offsetX = 0 - minX;
-            float offsetY = 0 - minY;
-            float rangeX = maxX - minX;
-            float rangeY = maxY - minY;
+            texture = new Texture(gl, "textures/" + floor.texture);
+            texture.enableWrap(gl);
             
-            float vX = positions[i];
-            float vY = positions[i+1];
+            Material material = new Material(texture, reflectance);
+            
+            // normalise positions
+            float[] positions = new float[floor.positions.length];
+            for (int i=0; i < floor.positions.length; i+=3) {
+                positions[i] = toNX(floor.positions[i]);
+                positions[i+1] = toNX(floor.positions[i+1]);
+                positions[i+2] = toNY(floor.positions[i+2]);
+            }
 
-            // Convert world coord to texture coord
-            textures[t++] = (vX + offsetX) / rangeX;
-            textures[t++] = (vY + offsetY) / rangeY;
+            mesh = new Mesh(gl, positions, floor.textCoords, floor.normals, floor.indices);
+            mesh.setMaterial(material);
             
+        } catch (Exception ex) {
+            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
-                       
-        return textures;
+
+        return mesh;
     }
+   
+    
     
     private float toNX(float deviceCoordX) {
         return (2.0f / (float) canvasWidth)  * deviceCoordX;
