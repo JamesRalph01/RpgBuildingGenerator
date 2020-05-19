@@ -6,6 +6,7 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import org.joml.Intersectiond;
 import org.joml.PolygonsIntersection;
 import org.joml.Rectangled;
@@ -25,6 +26,12 @@ public class PolygonHelper {
     public PolygonHelper(ArrayList<Point> points) {
         
         polygon = points;
+        
+        // Were the points defined in CW order?
+        if (isCCW() == false) {
+            // No, reverse our points
+           Collections.reverse(points);
+        }
 
         //convert to float array
         float[] vertices = new float[points.size() * 2]; // for x and y values
@@ -39,6 +46,28 @@ public class PolygonHelper {
         
         calcEdges();
         ppi = new PolygonsIntersection(vertices, nPolygons, nVertices);
+    }
+    
+    private boolean isCCW() {
+        int signedArea = 0;
+        int x1,x2,y1,y2;
+                
+        for (int i=0; i < this.points().size(); i++) {
+            x1 = this.points().get(i).x;
+            y1 = this.points().get(i).y;
+            
+            if (i == this.points().size() -1) {
+                x2 = this.points().get(0).x;
+                y2 = this.points().get(0).y;
+            } else
+            {
+                x2 = this.points().get(i+1).x;
+                y2 = this.points().get(i+1).y;
+            }
+            signedArea += (x1 * y2 - x2 * y1);    
+            
+        }
+        return signedArea >= 0;
     }
     
     public ArrayList<Edge> edges() {
