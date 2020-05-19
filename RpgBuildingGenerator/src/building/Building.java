@@ -74,60 +74,62 @@ public class Building extends BuildingItem {
         
     private String chooseExternalWallTexture() {
         
+        String folder = "external_walls/";
+        
         switch (this.buildingTheme) {
             case MEDIEVAL:
                 System.out.println(this.buildingTheme + "  :  "+this.wealthIndicator);
                 if (this.wealthIndicator <= 15) {                                   // STRAW
-                    return "Straw_wall1.jpg"; 
+                    return folder + "Straw_wall1.jpg"; 
                 }
                 else if (this.wealthIndicator > 15 && this.wealthIndicator <= 35) { // WOOD (POOR)
-                    return "Wood_wall1.png"; 
+                    return folder + "Wood_wall1.png"; 
                 }
                 else if (this.wealthIndicator > 35 && this.wealthIndicator <= 50) { // WOOD (RICH)
                     if (Math.random() < 0.5) {                                      // STONE (POOR)
-                        return "Wood_wall2.png";
+                        return folder + "Wood_wall2.png";
                     }
                     else {                                    
-                        return "Stone_wall2.png";
+                        return folder + "Stone_wall2.png";
                     }
                 }
                 else if (this.wealthIndicator > 50 && this.wealthIndicator <= 70) { // WOOD (RICH)
                     double n = Math.random();                                       // STONE (RICH)
                     if (n <= 0.4) {                                                 
-                        return "Wood_wall2.png";
+                        return folder + "Wood_wall2.png";
                     }
                     else {
-                        return "Stone_wall.png";
+                        return folder + "Stone_wall.png";
                     }
                 }
                 else if (this.wealthIndicator > 70 && this.wealthIndicator <= 85) { // LIMESTONE
                     double n = Math.random();                                       // STONE (RICH)
                     if (n <= 0.4) {                                                 // MARBLE
-                        return "limestone_wall.png";
+                        return folder + "limestone_wall.png";
                     }
                     else if (n > 0.4 && n <= 0.7){
-                        return "Stone_wall.png";
+                        return folder + "Stone_wall.png";
                     }
                     else {
-                        return "Marble_wall.png";
+                        return folder + "Marble_wall.png";
                     }
                 }
                 else {                                                              // MARBLE
                     if (Math.random() < 0.6) {                                      // LIMESTONE
-                        return "limestone_wall.png";
+                        return folder + "limestone_wall.png";
                     }
                     else {                                    
-                        return "Marble_wall.png";
+                        return folder + "Marble_wall.png";
                     }
                 }   
             case MODERN:
                 if (Math.random() < 0.5) {
-                    return "brick_wall.png";                        
+                    return folder + "brick_wall.png";                        
                 } else {
-                    return "brick_wall2.png";     
+                    return folder + "brick_wall2.png";     
                 }
             default: // FUTURISTIC
-                return "Metal_wall.png"; 
+                return folder + "Metal_wall.png"; 
         }
                 
     }
