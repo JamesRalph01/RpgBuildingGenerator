@@ -237,6 +237,7 @@ public class Wall extends BuildingItem {
                 this.texture = "Grunge_wall.png";
                 break;
         }
+        this.texture = "internal_walls/" + this.texture;
     }
     
     private void calcNormals() {
