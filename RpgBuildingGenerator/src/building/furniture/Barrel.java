@@ -16,8 +16,11 @@ public class Barrel extends BuildingItem {
     public Barrel() {
         super();
         this.setBounds(0, 0, 5, 20, 20, 5);
-        this.texture = "T_Table_Albedo.png";
-        this.obj = "table.obj";
-        this.scaleFactor = 0.1f;
+        this.rootPath = "furniture/Wooden Barrel/";
+        this.objFilename = "barrel.obj";
+        this.scaleFactor = 0.025f;
+        this.textures = new String[] {
+            "texture/wood/Wood Diffuse.jpg",
+            "texture/metal/Metal Diffuse.jpg"}; 
     }
 }
