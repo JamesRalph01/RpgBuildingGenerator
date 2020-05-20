@@ -17,9 +17,10 @@ public class BuildingItem {
     private final Vector3f maxBounds;
     private final Vector3f location;
     private final Vector3f rotation;
-    
-    public String texture;
-    public String obj;
+   
+    public String rootPath; // Root folder path inside texture folder e.g. 'Furniture/Barrel/'
+    public String[] textures;
+    public String objFilename; // Obj filename only - assumed stored in rootPath folder
     public float scaleFactor;
 
     

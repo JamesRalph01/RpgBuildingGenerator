@@ -12,7 +12,6 @@ import org.joml.Vector3f;
 import util.Point;
 import util.Triangulate;
 
-
 /**
  *
  * @author chrisralph
@@ -29,6 +28,8 @@ public class Floor extends BuildingItem {
     
     public Floor() {
         super();
+        this.rootPath = "floor/";
+        this.textures = new String[1];
     }
     
     public void setExternalPoints(ArrayList<Point> points) {
@@ -73,7 +74,7 @@ public class Floor extends BuildingItem {
     }
     
     private void chooseTexture(int wealthInd) {
-        this.texture = "Parquet_flooring.png";
+        this.textures[0] = "Parquet_flooring.png";
     }
     
     private void calcNormals() {

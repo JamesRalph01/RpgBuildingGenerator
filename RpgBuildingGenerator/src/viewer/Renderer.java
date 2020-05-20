@@ -329,6 +329,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         if (this.controller == null) return;
         if (this.controller.getFloorPlanner().hasfloorPlanAvailable() == false) return;
         
+        System.out.println("loading objects...");
+        
         Building building = this.controller.getFloorPlanner().get3DBuilding();
         
         // Create dynamic objects, starting with external walls
@@ -359,29 +361,36 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             }
             //Furniture
             for (BuildingItem item : room.getFurniture()) {
-                Mesh mesh = buildFurnitureMesh(gl, item);          
-                ViewerItem viewerItem = new ViewerItem(mesh);
-                viewerItem.setPosition(toNX(item.getLocation().x), 0.0f, toNY(item.getLocation().z));
-                viewerItem.setScale(item.scaleFactor);
-                viewerItems.add(viewerItem);                   
+                buildFurnitureMesh(gl, item);                            
             }
         }
     }
     
 
-    private Mesh buildFurnitureMesh(GL4 gl, BuildingItem furniture) {
-        Mesh mesh = null;
+    private void buildFurnitureMesh(GL4 gl, BuildingItem furniture) {
+        ViewerItem viewerItem;
+        FurnitureLoader loader = new FurnitureLoader();
         
         try {
-            mesh = OBJLoader.loadMesh(gl, "/models/" + furniture.obj);
-            Texture texture = new Texture(gl, "textures/" + furniture.texture);
-            Material material = new Material(texture, reflectance);
-            mesh.setMaterial(material);
+            int textureInd = 0;
+            ArrayList<Mesh> meshes;
+            meshes = loader.loadFurniture(gl, "textures/" + furniture.rootPath, furniture.objFilename);
+            for (Mesh mesh : meshes) {
+                Texture texture = new Texture(gl, "textures/" + furniture.rootPath + furniture.textures[textureInd++]);
+                Material material = new Material(texture, reflectance);
+                mesh.setMaterial(material);  
+
+                viewerItem = new ViewerItem(mesh);
+                viewerItem.setPosition(toNX(furniture.getLocation().x), 0.0f, toNY(furniture.getLocation().z));
+                viewerItem.setScale(furniture.scaleFactor);
+            
+                viewerItems.add(viewerItem);  
+            }
+
         } catch (Exception ex) {
             Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return mesh;
     }
     
    
@@ -391,7 +400,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         try {
             
-            texture = new Texture(gl, "textures/" + wall.texture);
+            texture = new Texture(gl, "textures/" + wall.rootPath + wall.textures[0]);
             texture.enableWrap(gl);
             
             Material material = new Material(texture, reflectance);
@@ -420,7 +429,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         try {
             
-            texture = new Texture(gl, "textures/" + floor.texture);
+            texture = new Texture(gl, "textures/" + floor.rootPath + floor.textures[0]);
             texture.enableWrap(gl);
             
             Material material = new Material(texture, reflectance);

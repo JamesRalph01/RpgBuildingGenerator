@@ -34,6 +34,14 @@ public class Wall extends BuildingItem {
         super();
         this.edge = edge;
         this.isInternal = edge.isInternal();
+        if (this.isInternal) {
+            this.rootPath = "internal_walls/";
+        } else {
+            this.rootPath = "external_walls/";           
+        }
+            
+        this.textures = new String[1];
+        
                
         if (this.isInternal) {
             this.width = 4;
@@ -55,7 +63,9 @@ public class Wall extends BuildingItem {
         calcWall2DPoints();
         generatePositions();
         calcLocation(screenOrigin);
-        this.texture = externalWallTexture; // Same texture set for all external walls
+    
+        
+        this.textures[0] = externalWallTexture; // Same texture set for all external walls
     }
     
     private void calcLocation(Vector3f screenOrigin) {
@@ -210,34 +220,33 @@ public class Wall extends BuildingItem {
         
         switch (roomType) {
             case MasterBedroom:
-                this.texture = "pattern.png"; 
+                this.textures[0] = "pattern.png"; 
                 break;
             case LivingRoom:
-                this.texture = "Red_stone_wall.png"; 
+                this.textures[0] = "Red_stone_wall.png"; 
                 break;
             case Kitchen:
-                this.texture = "Marble_tiles.png"; 
+                this.textures[0] = "Marble_tiles.png"; 
                 break;
             case Bathroom:
-                this.texture = "blue_tiles.png"; 
+                this.textures[0] = "blue_tiles.png"; 
                 break;
             case SpareRoom:
-                this.texture = "pattern.png"; 
+                this.textures[0] = "pattern.png"; 
                 break;
             case Toilet:
-                this.texture = "blue_tiles.png"; 
+                this.textures[0] = "blue_tiles.png"; 
                 break;
             case Utility:
-                this.texture = "Bronze.png"; 
+                this.textures[0] = "Bronze.png"; 
                 break;
             case DiningRoom:
-                this.texture = "Red_stone_wall.png"; 
+                this.textures[0] = "Red_stone_wall.png"; 
                 break;
             default:
-                this.texture = "Grunge_wall.png";
+                this.textures[0] = "Grunge_wall.png";
                 break;
         }
-        this.texture = "internal_walls/" + this.texture;
     }
     
     private void calcNormals() {
