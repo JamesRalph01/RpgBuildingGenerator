@@ -5,9 +5,11 @@
  */
 package building;
 
+import org.joml.GeometryUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import util.Edge;
+import java.util.ArrayList;
 
 /**
  *
@@ -18,6 +20,7 @@ public class Wall extends BuildingItem {
     public float[] positions;
     public float[] textCoords;
     public int[] indices;
+    public float[] normals;
     public boolean isInternal = false;
     
     private Edge edge;
@@ -166,6 +169,8 @@ public class Wall extends BuildingItem {
             // Back face
             20, 21, 23, 23, 21, 22,
         };
+        
+        calcNormals();   
     }
     
     
@@ -234,4 +239,30 @@ public class Wall extends BuildingItem {
         }
         this.texture = "internal_walls/" + this.texture;
     }
+    
+    private void calcNormals() {
+        ArrayList<Vector3f> vNormals = new ArrayList<>();
+        
+        for (int i=0; i<indices.length; i+=3) {
+            int offsetV0 = indices[i] * 3;
+            int offsetV1 = indices[i+1] * 3;
+            int offsetV2 = indices[i+2] * 3;
+            Vector3f v0 = new Vector3f(positions[offsetV0], positions[offsetV0+1], positions[offsetV0+2]);
+            Vector3f v1 = new Vector3f(positions[offsetV1], positions[offsetV1+1], positions[offsetV1+2]);
+            Vector3f v2 = new Vector3f(positions[offsetV2], positions[offsetV2+1], positions[offsetV2+2]);
+            Vector3f normal = new Vector3f();
+            GeometryUtils.normal(v0, v1, v2, normal);
+            vNormals.add(normal);
+        }
+        
+        this.normals = new float[vNormals.size() * 3];
+        int i=0;
+        for (Vector3f normal : vNormals) {
+            this.normals[i++] = normal.x;
+            this.normals[i++] = normal.y;
+            this.normals[i++] = normal.z;
+        }
+    }
+
+   
 }

@@ -17,11 +17,13 @@ public class Building extends BuildingItem {
     private ArrayList<Room> rooms;
     private int wealthIndicator;
     private floorplanner.FloorPlanner.BuildingTheme buildingTheme;
+    private Floor floor;
     
     public Building() {
         super();
         externalWalls = new ArrayList<>();
         rooms = new ArrayList<>();
+        floor = new Floor();
         wealthIndicator = 50;
     }
     
@@ -57,8 +59,15 @@ public class Building extends BuildingItem {
         return this.buildingTheme;
     }
     
+    public Floor getFloor() {
+        return floor;
+    }
+    
     public void Generate3DPositions() {
     
+        //Floor
+        this.floor.Generate3DPositionsInternal(this.getLocation(), this.wealthIndicator);
+        
         // External walls - One texture for all external walls
         String externalWallTexture = chooseExternalWallTexture();
         this.externalWalls.forEach((wall) -> {

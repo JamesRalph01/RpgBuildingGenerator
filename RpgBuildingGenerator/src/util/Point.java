@@ -12,7 +12,12 @@ import org.joml.Vector2i;
  *
  * @author chrisralph
  */
-public class Point extends Vector2i {
+public class Point extends Vector2i implements Comparable<Point> {
+
+    @Override
+    public int compareTo(Point o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     public enum Scope {
         NA, INTERNAL, EXTERNAL
