@@ -1,5 +1,6 @@
 package floorplanner;
 
+import building.Room;
 import util.Rect;
 
 /**
@@ -27,5 +28,6 @@ public interface Mappable
     public void   setOrder(int order);
     public int    getDepth();
     public void   setDepth(int depth);
-    public String getRoomType();
+    public Room.RoomType getRoomType();
+    public Room.AreaType getAreaType();
 }

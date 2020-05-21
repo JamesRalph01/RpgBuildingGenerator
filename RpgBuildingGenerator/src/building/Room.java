@@ -25,10 +25,18 @@ public class Room extends BuildingItem {
         SpareRoom,
         Toilet,
         Utility,
-        DiningRoom
+        DiningRoom,
+        Empty
+    }
+    
+    public enum AreaType {
+        SOCIAL,
+        SERVICE,
+        PRIVATE
     }
    
     public RoomType roomType;
+    public AreaType areaType;
             
     private ArrayList<Edge> edges;
     private float[] colourData;

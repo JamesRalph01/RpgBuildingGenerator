@@ -28,5 +28,10 @@ public class Rect {
         this.y = y;
         this.w = w;
         this.h = h;
-    } 
+    }
+    
+    @Override
+    public String toString() {
+        return ("X: " + this.x + ", Y:" + this.y + ", W:" + this.w + ", H:" + this.h);
+    }
 }

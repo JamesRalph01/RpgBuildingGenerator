@@ -1,5 +1,6 @@
 package floorplanner;
 
+import building.Room;
 import java.util.stream.IntStream;
 
 /**
@@ -24,13 +25,29 @@ public class DemoMapModel implements MapModel {
         double sum = IntStream.of(itemRatio).sum();
 
         for (int i = 0; i < items.length; i++) {
-            items[i] = new MapItem(totalArea / sum * itemRatio[i], 0, "NA");
+            items[i] = new MapItem(totalArea / sum * itemRatio[i], 0, Room.RoomType.Empty, Room.AreaType.SOCIAL);
         }
     }
 
+    
     @Override
-    public Mappable[] getItems() {
-        return items;
+    public Mappable[] getAreaRatios() {
+        return this.items;
+    }
+
+    @Override
+    public Mappable[] getSocialRatios() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Mappable[] getServiceRatios() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Mappable[] getPrivateRatios() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 

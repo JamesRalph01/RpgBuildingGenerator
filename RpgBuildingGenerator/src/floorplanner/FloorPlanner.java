@@ -22,6 +22,7 @@ import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Barrel;
 import designer.FloorPlan;
+import java.util.Arrays;
 import java.util.Date;
 import org.joml.Vector2f;
 import util.Edge;
@@ -59,6 +60,7 @@ public class FloorPlanner {
     PolygonHelper polygonHelper;
     private ArrayList<Room> rooms;
     private HashMap<Point, Point> listPointAdjustments;
+    private ArrayList<Mappable> roomList;
     
     //Outputs
     private Building building;
@@ -110,6 +112,58 @@ public class FloorPlanner {
         
         algorithm = new TreemapLayout();
         algorithm.layout(mapModel, bounds);
+
+        roomList = new ArrayList<>();
+        
+        Mappable[] items = mapModel.getAreaRatios();
+        for (Mappable item : items) {
+            
+            System.out.println(item.getAreaType() + " ::: " + item.getBounds());
+
+            switch (item.getAreaType()) {
+                case SOCIAL:
+                    /*System.out.println(item.getBounds());
+                    for (Mappable i: mapModel.getSocialRatios())
+                    {
+                        System.out.println(i.getSize());
+                    }*/
+                    algorithm.layout(mapModel.getSocialRatios(), item.getBounds());
+                    // Merge Area Ratios and add to roomList
+                    roomList.addAll(Arrays.asList(mapModel.getSocialRatios()));
+                    break;
+                case SERVICE:
+                    /*System.out.println(item.getBounds());
+                    for (Mappable i: mapModel.getServiceRatios())
+                    {
+                        System.out.println(i.getSize());
+                    }*/
+                    algorithm.layout(mapModel.getServiceRatios(), item.getBounds());
+                    roomList.addAll(Arrays.asList(mapModel.getServiceRatios()));
+                    break;
+                case PRIVATE:
+                    /*System.out.println(item.getBounds());
+                    for (Mappable i: mapModel.getPrivateRatios())
+                    {
+                        System.out.println(i.getSize());
+                    }*/
+                    algorithm.layout(mapModel.getPrivateRatios(), item.getBounds());
+                    roomList.addAll(Arrays.asList(mapModel.getPrivateRatios()));
+                    break;
+                default:
+                    //algorithm.layout(mapModel.getSocialRatios(), item.getBounds());
+                    //roomList.addAll(Arrays.asList(mapModel.getSocialRatios()));
+                    break;
+            }
+        }
+        
+        
+        
+        System.out.println("Hi");
+        for (Mappable room: roomList) {
+            System.out.println(room.getAreaType() + " : " + room.getRoomType() + " : " 
+                    + room.getBounds());
+        }
+                
         
         generateRooms(bounds);
         generate2DFloorplan(); // for display in designer view
@@ -138,28 +192,28 @@ public class FloorPlanner {
         return this.building;
     }
         
-    private Color getRoomColour(String roomType) {
+    private Color getRoomColour(Room.RoomType roomType) {
         int R,G,B;
         
-        if (!roomType.equals("NA")) {
+        if (!roomType.equals(Room.RoomType.Empty)) {
             // Social
             switch (roomType) {
-                case "Li":
-                case "Dr":
+                case LivingRoom:
+                case DiningRoom:
                     R = 255;
                     G = 20;
                     B = 20;
                     break;
-                case "Ki":
-                case "Ut":
+                case Kitchen:
+                case Utility:
                     R = 255;
                     G = 255;
                     B = 20;
                     break;
-                case "Mb":
-                case "Sr":
-                case "To":
-                case "Br":
+                case MasterBedroom:
+                case SpareRoom:
+                case Toilet:
+                case Bathroom:
                     R = 20;
                     G = 20;
                     B = 255;
@@ -179,51 +233,11 @@ public class FloorPlanner {
         return new Color(R,G,B);
     }
     
-     private Room.RoomType getRoomType(String roomType) {
-        RoomType rt = null;
-        
-        if (!roomType.equals("NA")) {
-            // Social
-            switch (roomType) {
-                case "Li":
-                    rt =  RoomType.LivingRoom;
-                    break;
-                case "Dr":
-                    rt =  RoomType.DiningRoom;
-                    break;
-                case "Ki":
-                    rt =  RoomType.Kitchen;
-                    break;
-                case "Ut":
-                    rt =  RoomType.Utility;
-                    break;
-                case "Mb":
-                    rt =  RoomType.MasterBedroom;
-                    break;
-                case "Sr":
-                    rt =  RoomType.SpareRoom;
-                    break;
-                case "To":
-                    rt =  RoomType.Toilet;
-                    break;
-                case "Br":
-                    rt =  RoomType.Bathroom;
-                    break;
-                default: 
-                    rt = RoomType.LivingRoom;
-                    break;
-            }
-        }
-
-        return rt;
-    }
-    
     private void generateRooms(Rect overallBounds)
     {
-        Rect bounds;
-        
+        Rect bounds;        
         listPointAdjustments = new HashMap<>();
-        Mappable[] items = mapModel.getItems();
+
         
         overallBounds.x = Math.round(overallBounds.x + 2);
         overallBounds.y = Math.round(overallBounds.y + 2);
@@ -238,9 +252,9 @@ public class FloorPlanner {
         
         // Convert treemap output into a Rooms collection with edges
         System.out.println("Step 1: Load Treemap");
-        for (int i=0; i<items.length; i++) {
-            Color c = getRoomColour(items[i].getRoomType());
-            bounds = items[i].getBounds();
+        for (Mappable item : this.roomList) {
+            Color c = getRoomColour(item.getRoomType());
+            bounds = item.getBounds();
             
             ArrayList<Edge> edges = new ArrayList<>();
             
@@ -262,7 +276,7 @@ public class FloorPlanner {
                                new Point(bounds.x,bounds.y), overallBounds));
             // set room type
             Room room = new Room(edges);
-            room.roomType = getRoomType(items[i].getRoomType());
+            room.roomType = item.getRoomType();
             for (Edge edge : edges) {
                 edge.point1().setColour(c);
                 edge.point2().setColour(c);
@@ -273,75 +287,75 @@ public class FloorPlanner {
 
         // Detect whether edges are internal or external so that we can expand external edges to fit 
         // the building outline polygon  
-        System.out.println("Step 2: internal/external edge detection");
-        for (Room room: rooms) {
-            for (Edge edge: room.edges()) {
-                // check if this edge shares any other room edge
-                // take a partial piece of the edge and check if intersects with another room
-                // partial to prevent overlaps where rooms touch
-                Edge partial = new Edge(edge);
-                partial.shrink(6);
-
-                for (Room roomToCheck: rooms) {    
-                    if (roomToCheck != room) {
-                        for (Edge edgeToCheck : roomToCheck.edges()) {
-                            if (partial.sharesEdge(edgeToCheck,6)) {
-                                edge.connectedEdges().add(edgeToCheck);
-                                edge.isInternal(true);
-                            }                          
-                        }
-                    }
-                }
-            }
-        }
-        printAllPoints(false); 
-        
-        // Now extend internal edges that have externally facing end points to a point on the building outline
-        System.out.println("Step 3: expand internal edges");
-        for (Room room: rooms) {  
-            for (Edge edge: room.edges()) {
-
-                if (edge.isInternal())
-                {
-                    for (int i = 0; i < 2; i++) {
-
-                        Point p = (i == 0 ? edge.point1() : edge.point2());
-
-                        if (p.scope == Point.Scope.EXTERNAL) {
-                            Edge closestOutsideEdge;
-                            Vector2d intersection = new Vector2d();
-                            closestOutsideEdge = polygonHelper.closestEdge(edge, p);
-                            if (closestOutsideEdge != null) {
-                                if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-                                                                    edge.point2().x, edge.point2().y,
-                                                                    closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-                                                                    closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-                                                                    intersection)) {
-
-                                    if (listPointAdjustments.containsKey(p) == false) {
-                                        listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
-                                    }
-
-                                }
-                            }
-
-                        }   
-                    }
-                }
-            }
-        }
-        // apply changes
-        Set set = listPointAdjustments.entrySet();
-        Iterator iterator = set.iterator();
-        while(iterator.hasNext()) {
-            Map.Entry mentry = (Map.Entry)iterator.next();
-            Point pOld = (Point) mentry.getKey();
-            Point pNew = (Point) mentry.getValue();
-            for (Room bRoom: rooms) {
-                bRoom.adjust(pOld, pNew);    
-            }
-        }
-        printAllPoints(false);
+//        System.out.println("Step 2: internal/external edge detection");
+//        for (Room room: rooms) {
+//            for (Edge edge: room.edges()) {
+//                // check if this edge shares any other room edge
+//                // take a partial piece of the edge and check if intersects with another room
+//                // partial to prevent overlaps where rooms touch
+//                Edge partial = new Edge(edge);
+//                partial.shrink(6);
+//
+//                for (Room roomToCheck: rooms) {    
+//                    if (roomToCheck != room) {
+//                        for (Edge edgeToCheck : roomToCheck.edges()) {
+//                            if (partial.sharesEdge(edgeToCheck,6)) {
+//                                edge.connectedEdges().add(edgeToCheck);
+//                                edge.isInternal(true);
+//                            }                          
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        printAllPoints(false); 
+//        
+//        // Now extend internal edges that have externally facing end points to a point on the building outline
+//        System.out.println("Step 3: expand internal edges");
+//        for (Room room: rooms) {  
+//            for (Edge edge: room.edges()) {
+//
+//                if (edge.isInternal())
+//                {
+//                    for (int i = 0; i < 2; i++) {
+//
+//                        Point p = (i == 0 ? edge.point1() : edge.point2());
+//
+//                        if (p.scope == Point.Scope.EXTERNAL) {
+//                            Edge closestOutsideEdge;
+//                            Vector2d intersection = new Vector2d();
+//                            closestOutsideEdge = polygonHelper.closestEdge(edge, p);
+//                            if (closestOutsideEdge != null) {
+//                                if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+//                                                                    edge.point2().x, edge.point2().y,
+//                                                                    closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+//                                                                    closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+//                                                                    intersection)) {
+//
+//                                    if (listPointAdjustments.containsKey(p) == false) {
+//                                        listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
+//                                    }
+//
+//                                }
+//                            }
+//
+//                        }   
+//                    }
+//                }
+//            }
+//        }
+//        // apply changes
+//        Set set = listPointAdjustments.entrySet();
+//        Iterator iterator = set.iterator();
+//        while(iterator.hasNext()) {
+//            Map.Entry mentry = (Map.Entry)iterator.next();
+//            Point pOld = (Point) mentry.getKey();
+//            Point pNew = (Point) mentry.getValue();
+//            for (Room bRoom: rooms) {
+//                bRoom.adjust(pOld, pNew);    
+//            }
+//        }
+//        printAllPoints(false);
 
     }
         
@@ -370,9 +384,9 @@ public class FloorPlanner {
         // Add internal walls
         for (Room room : rooms) {
             for (Edge edge : room.edges()) {
-                if (edge.isInternal()) {
+                //if (edge.isInternal()) {
                     floorplan.addEdge(edge);
-                }        
+                //}        
             }
         }
     } 

@@ -11,5 +11,8 @@ public interface MapModel
      *
      * @return An array of the Mappable objects in this MapModel.
      */
-    public Mappable[] getItems();
+    public Mappable[] getAreaRatios();
+    public Mappable[] getSocialRatios();
+    public Mappable[] getServiceRatios();
+    public Mappable[] getPrivateRatios();
 }

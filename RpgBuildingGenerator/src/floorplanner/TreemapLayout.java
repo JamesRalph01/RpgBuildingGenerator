@@ -15,7 +15,7 @@ public class TreemapLayout implements Layout {
     private int mid = 0;
 
     public void layout(MapModel model, Rect bounds) {
-        layout(model.getItems(), bounds);
+        layout(model.getAreaRatios(), bounds);
     }
 
     public void layout(Mappable[] items, Rect bounds)

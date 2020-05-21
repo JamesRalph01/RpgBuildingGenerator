@@ -241,7 +241,7 @@ public class PolygonHelper {
                 bounds.maxY = Math.max(bounds.maxY, point.y);
             }
         }
-        System.out.printf("Bounding rect x1 %f, y1 %f, x2 %f, y2 %f\n", bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+        //System.out.printf("Bounding rect x1 %f, y1 %f, x2 %f, y2 %f\n", bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
  
         return bounds;
      }
