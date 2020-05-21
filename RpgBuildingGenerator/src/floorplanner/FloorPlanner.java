@@ -6,6 +6,7 @@
 package floorplanner;
 
 import building.Building;
+import building.BuildingItem;
 import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import building.Room;
 import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Barrel;
+import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Date;
 import org.joml.Vector2f;
@@ -405,15 +407,23 @@ public class FloorPlanner {
         // Add Rooms
         for (Room room : this.rooms) {
             this.building.addRoom(room);
-            // Add Barrel to Living Room
+
+            // hack - stuff the furniture item in the midlle of the room
+            float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
+            float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
+            
+            BuildingItem furniture = null;
+            
             if (room.roomType == RoomType.LivingRoom) {
-                Barrel barrel = new Barrel();
-                float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
-                float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
-                barrel.setLocation(x, 0, z);
-                room.getFurniture().add(barrel);
+                furniture = new Barrel();
+            } else if (room.roomType == RoomType.DiningRoom) {
+                furniture = new Table();
             }
- 
+            if (furniture != null) {
+                furniture.setLocation(x, 0, z);
+                room.getFurniture().add(furniture);                 
+            }
+
         }
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
