@@ -22,6 +22,7 @@ import building.Room;
 import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Barrel;
+import building.furniture.Bed;
 import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Date;
@@ -418,6 +419,8 @@ public class FloorPlanner {
                 furniture = new Barrel();
             } else if (room.roomType == RoomType.DiningRoom) {
                 furniture = new Table();
+            } else if (room.roomType == RoomType.MasterBedroom) {
+                furniture = new Bed();
             }
             if (furniture != null) {
                 furniture.setLocation(x, 0, z);

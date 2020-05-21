@@ -13,4 +13,15 @@ import building.BuildingItem;
  */
 public class Bed extends BuildingItem{
     
+    public Bed() {
+        super();
+        this.setBounds(0, 0, 5, 20, 20, 5);
+        this.rootPath = "furniture/Wooden Bed/";
+        this.objFilename = "wooden bed.obj";
+        this.scaleFactor = 0.0005f;
+        this.textures = new String[] {
+            "textures/M_pillow_blanket_BaseColor.png",
+            "textures/M_bed_BaseColor.png"}; 
+    }    
+    
 }
