@@ -287,75 +287,75 @@ public class FloorPlanner {
 
         // Detect whether edges are internal or external so that we can expand external edges to fit 
         // the building outline polygon  
-//        System.out.println("Step 2: internal/external edge detection");
-//        for (Room room: rooms) {
-//            for (Edge edge: room.edges()) {
-//                // check if this edge shares any other room edge
-//                // take a partial piece of the edge and check if intersects with another room
-//                // partial to prevent overlaps where rooms touch
-//                Edge partial = new Edge(edge);
-//                partial.shrink(6);
-//
-//                for (Room roomToCheck: rooms) {    
-//                    if (roomToCheck != room) {
-//                        for (Edge edgeToCheck : roomToCheck.edges()) {
-//                            if (partial.sharesEdge(edgeToCheck,6)) {
-//                                edge.connectedEdges().add(edgeToCheck);
-//                                edge.isInternal(true);
-//                            }                          
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        printAllPoints(false); 
-//        
-//        // Now extend internal edges that have externally facing end points to a point on the building outline
-//        System.out.println("Step 3: expand internal edges");
-//        for (Room room: rooms) {  
-//            for (Edge edge: room.edges()) {
-//
-//                if (edge.isInternal())
-//                {
-//                    for (int i = 0; i < 2; i++) {
-//
-//                        Point p = (i == 0 ? edge.point1() : edge.point2());
-//
-//                        if (p.scope == Point.Scope.EXTERNAL) {
-//                            Edge closestOutsideEdge;
-//                            Vector2d intersection = new Vector2d();
-//                            closestOutsideEdge = polygonHelper.closestEdge(edge, p);
-//                            if (closestOutsideEdge != null) {
-//                                if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
-//                                                                    edge.point2().x, edge.point2().y,
-//                                                                    closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
-//                                                                    closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
-//                                                                    intersection)) {
-//
-//                                    if (listPointAdjustments.containsKey(p) == false) {
-//                                        listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
-//                                    }
-//
-//                                }
-//                            }
-//
-//                        }   
-//                    }
-//                }
-//            }
-//        }
-//        // apply changes
-//        Set set = listPointAdjustments.entrySet();
-//        Iterator iterator = set.iterator();
-//        while(iterator.hasNext()) {
-//            Map.Entry mentry = (Map.Entry)iterator.next();
-//            Point pOld = (Point) mentry.getKey();
-//            Point pNew = (Point) mentry.getValue();
-//            for (Room bRoom: rooms) {
-//                bRoom.adjust(pOld, pNew);    
-//            }
-//        }
-//        printAllPoints(false);
+        System.out.println("Step 2: internal/external edge detection");
+        for (Room room: rooms) {
+            for (Edge edge: room.edges()) {
+                // check if this edge shares any other room edge
+                // take a partial piece of the edge and check if intersects with another room
+                // partial to prevent overlaps where rooms touch
+                Edge partial = new Edge(edge);
+                partial.shrink(6);
+
+                for (Room roomToCheck: rooms) {    
+                    if (roomToCheck != room) {
+                        for (Edge edgeToCheck : roomToCheck.edges()) {
+                            if (partial.sharesEdge(edgeToCheck,6)) {
+                                edge.connectedEdges().add(edgeToCheck);
+                                edge.isInternal(true);
+                            }                          
+                        }
+                    }
+                }
+            }
+        }
+        printAllPoints(false); 
+        
+        // Now extend internal edges that have externally facing end points to a point on the building outline
+        System.out.println("Step 3: expand internal edges");
+        for (Room room: rooms) {  
+            for (Edge edge: room.edges()) {
+
+                if (edge.isInternal())
+                {
+                    for (int i = 0; i < 2; i++) {
+
+                        Point p = (i == 0 ? edge.point1() : edge.point2());
+
+                        if (p.scope == Point.Scope.EXTERNAL) {
+                            Edge closestOutsideEdge;
+                            Vector2d intersection = new Vector2d();
+                            closestOutsideEdge = polygonHelper.closestEdge(edge, p);
+                            if (closestOutsideEdge != null) {
+                                if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
+                                                                    edge.point2().x, edge.point2().y,
+                                                                    closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
+                                                                    closestOutsideEdge.point2().x, closestOutsideEdge.point2().y,
+                                                                    intersection)) {
+
+                                    if (listPointAdjustments.containsKey(p) == false) {
+                                        listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
+                                    }
+
+                                }
+                            }
+
+                        }   
+                    }
+                }
+            }
+        }
+        // apply changes
+        Set set = listPointAdjustments.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            Point pOld = (Point) mentry.getKey();
+            Point pNew = (Point) mentry.getValue();
+            for (Room bRoom: rooms) {
+                bRoom.adjust(pOld, pNew);    
+            }
+        }
+        printAllPoints(false);
 
     }
         
@@ -384,9 +384,9 @@ public class FloorPlanner {
         // Add internal walls
         for (Room room : rooms) {
             for (Edge edge : room.edges()) {
-                //if (edge.isInternal()) {
+                if (edge.isInternal()) {
                     floorplan.addEdge(edge);
-                //}        
+                }        
             }
         }
     } 
