@@ -126,7 +126,7 @@ public class Wall extends BuildingItem {
             heightRatio = 1;
             depthRatio = depth/30/heightRatio;
         }
-        System.out.println("RATIO >>>>>>> " + heightRatio + "   " + depthRatio);
+        //System.out.println("RATIO >>>>>>> " + heightRatio + "   " + depthRatio);
         textCoords = new float[]{
             // FRONT FACE
             0.0f, heightRatio,

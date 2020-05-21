@@ -5,6 +5,7 @@
  */
 package floorplanner;
 
+import building.Room;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -16,43 +17,160 @@ import java.util.ArrayList;
  */
 public class HouseMapModel implements MapModel {
 
-    private MapItem[] items;
+    private MapItem[] privateRooms;
+    private MapItem[] socialRooms;
+    private MapItem[] serviceRooms;
+    private MapItem[] totalAreas; // S, Se, P
+    
     private int[] roomRatio;
     private String[] labels;
+    
+    private double totalArea;
+    private int socialAreaRatio;
+    private int serviceAreaRatio;
+    private int privateAreaRatio;
+    private int socialTotal;
+    private int serviceTotal;
+    private int privateTotal;
+    private int numSocialRooms;
+    private int numServiceRooms;
+    private int numPrivateRooms;
 
     public HouseMapModel(double width, double height) {
-        this.roomRatio = new int[]{30,30,40}; // S,Se,P
+  
         
-        double totalArea = width * height;
-        getRatios(totalArea);
-        this.items = new MapItem[roomRatio.length];
-        System.out.println("TOTAL AREA " + totalArea);
-        double sum = IntStream.of(roomRatio).sum();
+        this.totalArea = width * height;
+        getRatios();
+       
+        // Make map model of 3 main areas
+        this.totalAreas = new MapItem[3];
+        double sum = this.socialAreaRatio + this.serviceAreaRatio + this.privateAreaRatio;
+        System.out.println(totalArea + " : " + sum + " : " + socialAreaRatio);
+        this.totalAreas[0] = new MapItem(totalArea / sum * this.socialAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.SOCIAL);
+        System.out.println(totalArea + " : " + sum + " : " + serviceAreaRatio);
+        this.totalAreas[1] = new MapItem(totalArea / sum * this.serviceAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.SERVICE);
+        System.out.println(totalArea + " : " + sum + " : " + privateAreaRatio);
+        this.totalAreas[2] = new MapItem(totalArea / sum * this.privateAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.PRIVATE);
+        
+        
+        // Calculate social, service and private map sizes
+        this.socialRooms = new MapItem[this.numSocialRooms];
+        this.serviceRooms = new MapItem[this.numServiceRooms];
+        this.privateRooms = new MapItem[this.numPrivateRooms];
+        
+        int socialCount = -1, serviceCount = -1, privateCount = -1;
+        for (int i = 0; i < roomRatio.length; i++) {
 
-        for (int i = 0; i < items.length; i++) {
-            items[i] = new MapItem(totalArea / sum * roomRatio[i], 0, this.labels[i]);
+            Room.RoomType roomType;
+            Room.AreaType areaType;
+            switch (this.labels[i]) {
+                case "Li":
+                    roomType = Room.RoomType.LivingRoom;
+                    areaType = Room.AreaType.SOCIAL;
+                    socialCount ++;
+                    break;
+                case "Dr":
+                    roomType = Room.RoomType.DiningRoom;
+                    areaType = Room.AreaType.SOCIAL;
+                    socialCount ++;
+                    break;
+                case "Mb":
+                    roomType = Room.RoomType.MasterBedroom;
+                    areaType = Room.AreaType.PRIVATE;
+                    privateCount ++;
+                    break;
+                case "Br":
+                    roomType = Room.RoomType.Bathroom;
+                    areaType = Room.AreaType.PRIVATE;
+                    privateCount ++;
+                    break;
+                case "To":
+                    roomType = Room.RoomType.Toilet;
+                    areaType = Room.AreaType.PRIVATE;
+                    privateCount ++;
+                    break;
+                case "Sr":
+                    roomType = Room.RoomType.SpareRoom;
+                    areaType = Room.AreaType.PRIVATE;
+                    privateCount ++;
+                    break;
+                case "Ki":
+                    roomType = Room.RoomType.Kitchen;
+                    areaType = Room.AreaType.SERVICE;
+                    serviceCount ++;
+                    break;
+                case "Ut":
+                    roomType = Room.RoomType.Utility;
+                    areaType = Room.AreaType.SERVICE;
+                    serviceCount ++;
+                    break;
+                default:
+                    roomType = Room.RoomType.Empty;
+                    areaType = Room.AreaType.SOCIAL;
+                    socialCount ++;
+                    break;
+            }
+            // Add rooms to relevant map models
+            switch (areaType) {
+                case SOCIAL:
+                    System.out.println("SOCIAL");
+                    System.out.println(this.totalAreas[0].size + " : " + this.socialTotal + " : " + roomRatio[i]);
+                    socialRooms[socialCount] = new MapItem(this.totalAreas[0].size / this.socialTotal * roomRatio[i], 0, roomType, areaType);
+                    break;
+                case SERVICE:
+                    System.out.println("SERVICE");
+                    System.out.println(this.totalAreas[1].size + " : " + this.serviceTotal + " : " + roomRatio[i]);
+                    serviceRooms[serviceCount] = new MapItem(this.totalAreas[1].size / this.serviceTotal * roomRatio[i], 0, roomType, areaType);
+                    break;
+                case PRIVATE:
+                    System.out.println("PRIVATE");
+                    System.out.println(this.totalAreas[2].size + " : " + this.privateTotal + " : " + roomRatio[i]);
+                    privateRooms[privateCount] = new MapItem(this.totalAreas[2].size / this.privateTotal * roomRatio[i], 0, roomType, areaType);
+                    break;
+                default:
+                    System.out.println("ERROR");
+                    break;
+            }
         }
     }
     
     @Override
-    public Mappable[] getItems() {
-        return items;
+    public Mappable[] getAreaRatios() {
+        return this.totalAreas;
+    }
+    
+     @Override
+    public Mappable[] getSocialRatios() {
+        return this.socialRooms;
+    }
+    
+     @Override
+    public Mappable[] getServiceRatios() {
+        return this.serviceRooms;
+    }
+    
+     @Override
+    public Mappable[] getPrivateRatios() {
+        return this.privateRooms;
     }
     
     
-    private void getRatios(double totalArea) {
-        ArrayList<Integer> socialRatio = new ArrayList<>();
+    private void getRatios() {
+        
+        this.roomRatio = new int[]{30,30,40}; // S,Se,P
+        this.socialTotal = 0; this.serviceTotal = 0; this.privateTotal = 0;
+        ArrayList<Integer> socialRatios = new ArrayList<>();
         ArrayList<String> socialLabels = new ArrayList<>();
-        socialRatio.add(50);
+        socialRatios.add(50); this.socialTotal += 50;
         socialLabels.add("Li"); // Living Room
-        ArrayList<Integer> serviceRatio = new ArrayList<>();
+        ArrayList<Integer> serviceRatios = new ArrayList<>();
         ArrayList<String> serviceLabels = new ArrayList<>();
-        serviceRatio.add(50);
+        serviceRatios.add(50); this.serviceTotal += 50;
         serviceLabels.add("Ki"); // Kitchen
-        ArrayList<Integer> privateRatio = new ArrayList<>();
+        ArrayList<Integer> privateRatios = new ArrayList<>();
         ArrayList<String> privateLabels = new ArrayList<>();
-        privateRatio.add(100);
-        privateRatio.add(25);
+        privateRatios.add(100); this.privateTotal += 100;
+        privateRatios.add(25); this.privateTotal += 25;
         privateLabels.add("Mb"); // Master Bedroom
         privateLabels.add("Br"); // Bathroom
         
@@ -70,25 +188,25 @@ public class HouseMapModel implements MapModel {
                     switch (room) {
                         case 'T':
                             // Toilet
-                            privateRatio.add(20);
+                            privateRatios.add(20); this.privateTotal += 20;
                             this.roomRatio[2] += 10;
                             privateLabels.add("To");
                             break;
                         case 'U':
                             // Utility Room
-                            serviceRatio.add(20);
+                            serviceRatios.add(20); this.serviceTotal += 20;
                             this.roomRatio[1] += 10;
                             serviceLabels.add("Ut");
                             break;
                         case 'S':
                             // Spare Room
-                            privateRatio.add(40);
+                            privateRatios.add(40); this.privateTotal += 40;
                             this.roomRatio[2] += 30;
                             privateLabels.add("Sr");
                             break;
                         case 'D':
                             // Dining Room
-                            socialRatio.add(40);
+                            socialRatios.add(40); this.socialTotal += 40;
                             this.roomRatio[0] += 20;
                             socialLabels.add("Dr");
                             break;
@@ -97,21 +215,21 @@ public class HouseMapModel implements MapModel {
                 }
                 if (i>3){
                     // Add extra bedrooms
-                    privateRatio.add(40);
+                    privateRatios.add(40); this.privateTotal += 40;
                     this.roomRatio[2] += 30;
                     privateLabels.add("Sr");
                 }
             }
         }      
-                
-        int sPercent = this.roomRatio[0];
-        int sePercent = this.roomRatio[1];
-        int pPercent = this.roomRatio[2];
-        this.roomRatio = new int[socialRatio.size()+serviceRatio.size()+privateRatio.size()];
+        
+        this.socialAreaRatio = this.roomRatio[0];
+        this.serviceAreaRatio = this.roomRatio[1];
+        this.privateAreaRatio = this.roomRatio[2];
+        this.roomRatio = new int[socialRatios.size()+serviceRatios.size()+privateRatios.size()];
         this.labels = new String[socialLabels.size()+serviceLabels.size()+privateLabels.size()];
         
         // Add ratios to roomRatios
-        int index=0, sum=0;
+        int index=0, sum;
         char[] availableSections = {'S','E','P'}; // E = service
         
         for (int it=0; it<3; it++) {
@@ -121,31 +239,31 @@ public class HouseMapModel implements MapModel {
             
             switch (section) {
                 case 'S':
-                    for (Integer i:socialRatio){
+                    for (Integer i:socialRatios){
                         sum += i;
                     }   
-                    for (int s=0; s<socialRatio.size(); s++){
-                        this.roomRatio[index] = socialRatio.get(s)/(sum/sPercent);
+                    for (int s=0; s<socialRatios.size(); s++){
+                        this.roomRatio[index] = socialRatios.get(s);
                         this.labels[index] = socialLabels.get(s);
                         index++;
                     }   
                     break;
                 case 'E':
-                    for (Integer i:serviceRatio){
+                    for (Integer i:serviceRatios){
                         sum += i;
                     }   
-                    for (int se=0; se<serviceRatio.size(); se++){
-                        this.roomRatio[index] = serviceRatio.get(se)/(sum/sePercent);
+                    for (int se=0; se<serviceRatios.size(); se++){
+                        this.roomRatio[index] = serviceRatios.get(se);
                         this.labels[index] = serviceLabels.get(se);
                         index++;
                     }   
                     break;
                 case 'P':
-                    for (Integer i:privateRatio){
+                    for (Integer i:privateRatios){
                         sum += i;
                     }   
-                    for (int p=0; p<privateRatio.size(); p++){
-                        this.roomRatio[index] = privateRatio.get(p)/(sum/pPercent);
+                    for (int p=0; p<privateRatios.size(); p++){
+                        this.roomRatio[index] = privateRatios.get(p);
                         this.labels[index] = privateLabels.get(p);
                         index++;
                     }   
@@ -155,17 +273,19 @@ public class HouseMapModel implements MapModel {
             }
             availableSections = removeElements(availableSections,section);
         }
+        this.numSocialRooms = socialRatios.size();
+        this.numServiceRooms = serviceRatios.size();
+        this.numPrivateRooms = privateRatios.size();
         
-        
-        System.out.println("Size = "+ totalArea);
+        /*System.out.println("Size = "+ totalArea);
         for (int i=0; i<this.roomRatio.length; i++) {
             System.out.print(this.roomRatio[i] + " ");
         }
         System.out.println("");
-        for (int j=0; j<this.labels.length; j++) {
-            System.out.print(this.labels[j] + " ");
+        for (String label : this.labels) {
+            System.out.print(label + " ");
         }
-        System.out.println("");
+        System.out.println("");*/
  
     }
     
