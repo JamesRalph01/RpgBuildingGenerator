@@ -29,7 +29,7 @@ public class PolygonHelper {
         
         // Were the points defined in CW order?
         if (isCCW() == false) {
-            // No, reverse our points
+            // Yes, reverse our points to ensure CCW
            Collections.reverse(points);
         }
 

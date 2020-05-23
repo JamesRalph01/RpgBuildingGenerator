@@ -5,6 +5,7 @@
  */
 package building;
 
+import floorplanner.FloorPlanner.BuildingTheme;
 import java.util.ArrayList;
 import org.joml.GeometryUtils;
 import org.joml.Rectangled;
@@ -40,12 +41,12 @@ public class Floor extends BuildingItem {
         this.boundingRect = boundingRect;
     }
     
-    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd) {
+    public void Generate3DPositionsInternal(Vector3f screenOrigin, BuildingTheme buildingTheme, int wealthInd) {
         generatePositions();
         calcLocation(screenOrigin);
         calcTextureCoords();
         calcNormals();
-        chooseTexture(wealthInd);
+        chooseTexture(buildingTheme, wealthInd);
     }
         
     private void calcLocation(Vector3f screenOrigin) {
@@ -56,25 +57,46 @@ public class Floor extends BuildingItem {
     private void generatePositions() {
         ArrayList<Point> triangles;        
         triangles = Triangulate.computeTriangles(points);
-
-        positions = new float[triangles.size() * 3];
-        indices = new int[triangles.size()];
         
+        for (Point point : triangles) {
+            System.out.printf("(%s) \n", point.toString());
+        }
+
+        positions = new float[triangles.size() * 3]; // 3 entries per point (x,y,z)
+        textCoords = new float[triangles.size() * 2]; // 2 entries per point (u,v)
+        indices = new int[triangles.size()]; // 1 entry per point
+       
         int p = 0;
         int ind = 0;
         for (Point point : triangles) {
-            // V1
-            indices[ind++] = triangles.indexOf(point);
+            indices[ind] = ind; //triangles.indexOf(point);
+            ind++;
             positions[p++] = (float) point.x;
             positions[p++] = 0.0f;
-            positions[p++] = (float) point.y; // Z!            
+            positions[p++] = (float) point.y; // Z!  
         }
 
-        
     }
     
-    private void chooseTexture(int wealthInd) {
-        this.textures[0] = "Parquet_flooring.png";
+    private void chooseTexture(BuildingTheme buildingTheme, int wealthIndicator) {
+
+        switch (buildingTheme) {
+            case MEDIEVAL:
+                if (wealthIndicator <= 50) {
+                    this.textures[0] = "Dirt.png"; 
+                } else {
+                    this.textures[0] = "Sandy_gravel.png";
+                }
+            case MODERN:
+                if (wealthIndicator <= 50) {
+                    this.textures[0] = "Parquet_flooring.png";  
+                } else {
+                    this.textures[0] = "Light_wooden_parquet_flooring.png";
+                }
+            default: // FUTURISTIC
+                this.textures[0] = "Brushed_iron.png"; 
+        }
+               
     }
     
     private void calcNormals() {
@@ -95,30 +117,33 @@ public class Floor extends BuildingItem {
         this.normals = new float[vNormals.size() * 3];
         int i=0;
         for (Vector3f normal : vNormals) {
-            this.normals[i++] = normal.x;
-            this.normals[i++] = normal.y;
-            this.normals[i++] = normal.z;
+//            this.normals[i++] = normal.x;
+//            this.normals[i++] = normal.y;
+//            this.normals[i++] = normal.z;
+            this.normals[i++] = 0.0f;
+            this.normals[i++] = 1.0f;
+            this.normals[i++] = 0.0f;
         }
     }
     
     private void calcTextureCoords() {
 
         int t = 0;
-        float textureWidth = 11;
-        float textureHeight = 11;
-        float normalisedX = 1.0f / textureWidth;
-        float normalisedY = 1.0f / textureHeight;
-
-        this.textCoords = new float[positions.length * 2];
-        
         for (int i=0; i < positions.length; i+=3) {            
-            float vX = positions[i];
-            float vY = positions[i+2]; // Z
-
-            // Convert  coord to texture coord
-            this.textCoords[t++] = normalisedX * (vX - (Math.floorDiv((long)vX, (long)textureWidth) * textureWidth));     
-            this.textCoords[t++] = normalisedY * (vY - (Math.floorDiv((long)vY, (long)textureWidth) * textureWidth));
-            
+            float vX = positions[i] - (float) this.boundingRect.minX;
+            float vY = positions[i+2] - (float) this.boundingRect.minY; // Z
+            float u = toU(vX);
+            float v = toV(vY);
+            this.textCoords[t++] = u;
+            this.textCoords[t++] = v;   
         }
+    }
+    
+    private float toU(float deviceCoordX) {
+        return (1.0f / (float) this.boundingRect.lengthX())  * deviceCoordX;
+    }
+    
+    private float toV(float deviceCoordY) { 
+        return 1.0f - (1.0f / (float) this.boundingRect.lengthY()  * deviceCoordY);
     }
 }

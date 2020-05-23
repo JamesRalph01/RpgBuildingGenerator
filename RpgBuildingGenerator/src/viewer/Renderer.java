@@ -162,7 +162,6 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             // load new objects
             if (controller.getFloorPlanner().hasfloorPlanAvailable()) {
-                System.out.println("Loading objects");
                 loadObjects(gl);
                 camera.setPosition(0, 0, 1);
                 sceneRotation.set(-35.0f, 0, 0);
