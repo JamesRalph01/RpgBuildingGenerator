@@ -42,7 +42,5 @@ public class FloorPlan implements IDesignerComponent {
             g.setColor(wall.point1().getColour());
             g.drawLine(wall.point1().x, wall.point1().y, wall.point2().x, wall.point2().y);          
         }
-        
-         
     }    
 }

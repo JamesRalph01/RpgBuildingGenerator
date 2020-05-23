@@ -47,4 +47,9 @@ public class ChurchMapModel implements MapModel {
     public Mappable[] getPrivateRatios() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean checkRoomConnection(Room.RoomType room, Room.RoomType toCheck) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
