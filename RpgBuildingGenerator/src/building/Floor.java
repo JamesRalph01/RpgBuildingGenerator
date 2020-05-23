@@ -57,24 +57,24 @@ public class Floor extends BuildingItem {
         ArrayList<Point> triangles;        
         triangles = Triangulate.computeTriangles(points);
 
-        positions = new float[triangles.size() * 3];
-        indices = new int[triangles.size()];
-        
+        positions = new float[triangles.size() * 3]; // 3 entries per point (x,y,z)
+        textCoords = new float[triangles.size() * 2]; // 2 entries per point (u,v)
+        indices = new int[triangles.size()]; // 1 entry per point
+       
         int p = 0;
         int ind = 0;
         for (Point point : triangles) {
-            // V1
             indices[ind++] = triangles.indexOf(point);
             positions[p++] = (float) point.x;
             positions[p++] = 0.0f;
-            positions[p++] = (float) point.y; // Z!            
+            positions[p++] = (float) point.y; // Z!  
         }
 
-        
     }
     
     private void chooseTexture(int wealthInd) {
-        this.textures[0] = "Parquet_flooring.png";
+        // this.textures[0] = "Parquet_flooring.png";
+        this.textures[0] = "Light_wooden_parquet_flooring.png";
     }
     
     private void calcNormals() {
@@ -104,21 +104,34 @@ public class Floor extends BuildingItem {
     private void calcTextureCoords() {
 
         int t = 0;
+        
         float textureWidth = 11;
         float textureHeight = 11;
+        
         float normalisedX = 1.0f / textureWidth;
         float normalisedY = 1.0f / textureHeight;
 
-        this.textCoords = new float[positions.length * 2];
-        
         for (int i=0; i < positions.length; i+=3) {            
-            float vX = positions[i];
-            float vY = positions[i+2]; // Z
+            float vX = positions[i] - (float) this.boundingRect.minX;
+            float vY = positions[i+2] - (float) this.boundingRect.minY; // Z
+            float u = toU(vX);
+            float v = toV(vY);
+            
+            this.textCoords[t++] = u;
+            this.textCoords[t++] = v;   
 
             // Convert  coord to texture coord
-            this.textCoords[t++] = normalisedX * (vX - (Math.floorDiv((long)vX, (long)textureWidth) * textureWidth));     
-            this.textCoords[t++] = normalisedY * (vY - (Math.floorDiv((long)vY, (long)textureWidth) * textureWidth));
+            //this.textCoords[t++] = normalisedX * (vX - (Math.floorDiv((long)vX, (long)textureWidth) * textureWidth));     
+            //this.textCoords[t++] = normalisedY * (vY - (Math.floorDiv((long)vY, (long)textureWidth) * textureWidth));
             
         }
+    }
+    
+    private float toU(float deviceCoordX) {
+        return (1.0f / (float) this.boundingRect.lengthX())  * deviceCoordX;
+    }
+    
+    private float toV(float deviceCoordY) { 
+        return 1.0f - (1.0f / (float) this.boundingRect.lengthY()  * deviceCoordY);
     }
 }

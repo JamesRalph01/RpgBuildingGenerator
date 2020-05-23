@@ -49,7 +49,7 @@ public class Wall extends BuildingItem {
             this.width = 6; // Chunky external walls            
         }
 
-        this.height = 30;
+        this.height = 40;
     }
 
     public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType) {

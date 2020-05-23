@@ -150,9 +150,14 @@ public class Triangulate
             t = Triangulate(p);
             ArrayList<Point> triangles = new ArrayList<>();
             for(int i=0; i < t.n; i++) {
-                triangles.add(new Point(p.p[t.t[i][0]].x, p.p[t.t[i][0]].y));
-                triangles.add(new Point(p.p[t.t[i][1]].x, p.p[t.t[i][1]].y));
-                triangles.add(new Point(p.p[t.t[i][2]].x, p.p[t.t[i][2]].y));
+                ArrayList<Point> triangle = new ArrayList<>();
+                
+                triangle.add(new Point(p.p[t.t[i][0]].x, p.p[t.t[i][0]].y));
+                triangle.add(new Point(p.p[t.t[i][1]].x, p.p[t.t[i][1]].y));
+                triangle.add(new Point(p.p[t.t[i][2]].x, p.p[t.t[i][2]].y));
+                
+                PolygonHelper ph = new PolygonHelper(triangle);
+                triangles.addAll(triangle);
             }
             return triangles;
 	}
