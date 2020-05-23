@@ -288,7 +288,10 @@ public class FloorPlanner {
                                 edge.connectedEdges().add(edgeToCheck);
                                 edge.isInternal(true);
                                 if (mapModel.checkRoomConnection(room.getRoomType(), roomToCheck.getRoomType())) {
-                                    room.addRoomConnection(roomToCheck.getRoomType());
+                                    if (edge.getAlignment() == edgeToCheck.getAlignment()) {
+                                        room.addRoomConnection(roomToCheck.getRoomType(),edge);
+                                        //System.out.println("Adding " + roomToCheck.getRoomType() + " TO " + room.getRoomType());
+                                    }
                                 }
                             }                          
                         }
@@ -409,6 +412,21 @@ public class FloorPlanner {
         for (Room room : this.rooms) {
             this.building.addRoom(room);
 
+            // Add Door Connections
+            ArrayList<Room.RoomType> roomConnections = room.getRoomConnections();
+            
+            if (roomConnections.size() >= 1) { // Has Room Connections
+                ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
+                BuildingItem door = null;
+                Point doorLocation = null;
+                for (int i=0; i<roomConnections.size(); i++) {
+                    door = new Barrel();
+                    doorLocation = connectionEdges.get(i).getMidPoint();
+                    door.setLocation(doorLocation.x(), 0, doorLocation.y());
+                    room.getFurniture().add(door); 
+                }
+            }
+            
             // hack - stuff the furniture item in the midlle of the room
             float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
             float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
