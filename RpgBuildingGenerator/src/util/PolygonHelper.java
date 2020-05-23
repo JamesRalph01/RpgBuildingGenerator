@@ -290,7 +290,7 @@ public class PolygonHelper {
     private void extendLine(Point pointToExtend, Edge edge) {
         int direction = 1;
         
-        if (edge.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+        if (edge.getAlignment() == Edge.EdgeAlignment.HORIZONTAL) {
  
             if (pointToExtend.equals(edge.point1())) {
                 direction = (edge.point1().x < edge.point2().x ? -1 : 1);

@@ -6,6 +6,8 @@
 package building;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.joml.Rectangled;
 import org.joml.Vector3f;
 import util.Point;
@@ -42,7 +44,9 @@ public class Room extends BuildingItem {
     private float[] colourData;
     private ArrayList<Wall> internalWalls = new ArrayList<>();
     private ArrayList<BuildingItem> furniture = new ArrayList<>();
+    
     private ArrayList<RoomType> roomConnections = new ArrayList<>();
+    private ArrayList<Edge> roomConnectionEdges = new ArrayList<>();
     
     
     public Room(ArrayList<Edge> edges) {
@@ -130,12 +134,19 @@ public class Room extends BuildingItem {
         return this.internalWalls;
     } 
     
-    public void addRoomConnection(RoomType roomConnection) {
-        this.roomConnections.add(roomConnection);
+    public void addRoomConnection(RoomType roomConnection, Edge edge) {
+        if (!this.roomConnections.contains(roomConnection)) {
+            this.roomConnections.add(roomConnection);
+            this.roomConnectionEdges.add(edge);
+        }
     }
     
     public ArrayList<RoomType> getRoomConnections() {
         return this.roomConnections;
+    }
+    
+    public ArrayList<Edge> getRoomConnectionEdges() {
+        return this.roomConnectionEdges;
     }
     
     public AreaType getAreaType() {
@@ -155,7 +166,7 @@ public class Room extends BuildingItem {
     }
     
     public void printRoomConnections() {
-        System.out.println(this.roomType + " Room connecrions:");
+        System.out.println(this.roomType + " Room connections:");
         for (RoomType room: this.roomConnections) {
             System.out.println(room);
         }
