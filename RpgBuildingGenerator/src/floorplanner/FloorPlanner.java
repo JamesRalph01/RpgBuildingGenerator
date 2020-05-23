@@ -7,6 +7,7 @@ package floorplanner;
 
 import building.Building;
 import building.BuildingItem;
+import building.Door;
 import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
@@ -430,6 +431,13 @@ public class FloorPlanner {
             BuildingItem furniture = null;
             
             if (room.roomType == RoomType.LivingRoom) {
+                // Add Door
+                BuildingItem door = new Door();
+                int dx = room.edges().get(0).x1() + 10;
+                int dy = room.edges().get(0).y1() + 10;
+                door.setLocation(dx, 0, dy);
+                room.getFurniture().add(door);                 
+                
                 furniture = new Barrel();
             } else if (room.roomType == RoomType.DiningRoom) {
                 furniture = new Table();
@@ -442,6 +450,8 @@ public class FloorPlanner {
             }
 
         }
+       
+        
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
     }
