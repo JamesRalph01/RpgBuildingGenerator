@@ -7,6 +7,7 @@ package floorplanner;
 
 import building.Building;
 import building.BuildingItem;
+import building.furniture.Door;
 import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import org.joml.Vector2f;
 import util.Edge;
+import util.Edge.EdgeAlignment;
 import util.PolygonHelper;
 import util.Point;
 /**
@@ -420,8 +422,15 @@ public class FloorPlanner {
                 BuildingItem door = null;
                 Point doorLocation = null;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Barrel();
+                    door = new Door();
                     doorLocation = connectionEdges.get(i).getMidPoint();
+                    if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
+                        doorLocation.y += 4; 
+                        door.setRotation(0, 90, 0);   
+                    } else {
+                        doorLocation.x += 4;
+                        door.setRotation(0, 0, 0);         
+                    }
                     door.setLocation(doorLocation.x(), 0, doorLocation.y());
                     room.getFurniture().add(door); 
                 }
@@ -446,6 +455,8 @@ public class FloorPlanner {
             }
 
         }
+       
+        
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
     }

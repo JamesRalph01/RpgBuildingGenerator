@@ -214,6 +214,14 @@ public class Edge {
         return hash;
     }
     
+    public int getLength() {
+        if (this.getAlignment() == EdgeAlignment.HORIZONTAL) {
+            return Math.abs(this.x1() - this.x2());
+        } else {
+            return Math.abs(this.y1() - this.y2());            
+        }
+    }
+    
     public Point getMidPoint() {
         return new Point((this.x1()+this.x2())/2,(this.y1()+this.y2())/2);
     }
