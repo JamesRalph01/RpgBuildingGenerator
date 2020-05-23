@@ -66,7 +66,7 @@ public class Building extends BuildingItem {
     public void Generate3DPositions() {
     
         //Floor
-        this.floor.Generate3DPositionsInternal(this.getLocation(), this.wealthIndicator);
+        this.floor.Generate3DPositionsInternal(this.getLocation(), this.buildingTheme, this.wealthIndicator);
         
         // External walls - One texture for all external walls
         String externalWallTexture = chooseExternalWallTexture();

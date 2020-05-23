@@ -6,6 +6,7 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Triangulate
 {
@@ -156,10 +157,49 @@ public class Triangulate
                 triangle.add(new Point(p.p[t.t[i][1]].x, p.p[t.t[i][1]].y));
                 triangle.add(new Point(p.p[t.t[i][2]].x, p.p[t.t[i][2]].y));
                 
-                PolygonHelper ph = new PolygonHelper(triangle);
+//                double A = (triangle.get(1).x * triangle.get(0).y) +
+//                           (triangle.get(2).x * triangle.get(1).y) +
+//                           (triangle.get(0).x * triangle.get(2).y);
+//                double B = (triangle.get(0).x * triangle.get(1).y) +
+//                           (triangle.get(1).x * triangle.get(2).y) +
+//                           (triangle.get(2).x * triangle.get(0).y);
+//                if(A > B) {
+//                    // CW triangle - flip it
+//                    Collections.reverse(triangle);
+//                }
+
+                System.out.printf("Tri (%s) (%s) (%s) CW = %s\n", 
+                    triangle.get(0).toString(), triangle.get(1).toString(), 
+                    triangle.get(2).toString(), isCCW(triangle));
+
+                if (isCCW(triangle)) {
+                    Collections.reverse(triangle);    
+                }
                 triangles.addAll(triangle);
             }
             return triangles;
 	}
-
+        
+        
+    private static boolean isCCW(ArrayList<Point> points) {
+        int signedArea = 0;
+        int x1,x2,y1,y2;
+                
+        for (int i=0; i < points.size(); i++) {
+            x1 = points.get(i).x;
+            y1 = points.get(i).y;
+            
+            if (i == points.size() -1) {
+                x2 = points.get(0).x;
+                y2 = points.get(0).y;
+            } else
+            {
+                x2 = points.get(i+1).x;
+                y2 = points.get(i+1).y;
+            }
+            signedArea += (x1 * y2 - x2 * y1);    
+            
+        }
+        return signedArea > 0;
+    }
 }
