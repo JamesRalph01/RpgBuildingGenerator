@@ -79,7 +79,7 @@ public class Edge {
         }
     }
     
-    public EdgeAlignment alignment() {
+    public EdgeAlignment getAlignment() {
         if (points[0].x == points[1].x) return EdgeAlignment.VERTICAL;
         if (points[0].y == points[1].y) return EdgeAlignment.HORIZONTAL;
         return EdgeAlignment.SLANTED;        
@@ -140,7 +140,7 @@ public class Edge {
         rect.minY = Math.min((double) this.y1(), (double) this.y2());
         rect.maxY = Math.max((double) this.y1(), (double) this.y2());
         
-        if (this.alignment() == Edge.EdgeAlignment.HORIZONTAL) {
+        if (this.getAlignment() == Edge.EdgeAlignment.HORIZONTAL) {
             //rect.minX -= tolerance;
             //rect.maxX -= tolerance;
             rect.minY -= tolerance;
@@ -215,11 +215,15 @@ public class Edge {
     }
     
     public int getLength() {
-        if (this.alignment() == EdgeAlignment.HORIZONTAL) {
+        if (this.getAlignment() == EdgeAlignment.HORIZONTAL) {
             return Math.abs(this.x1() - this.x2());
         } else {
             return Math.abs(this.y1() - this.y2());            
         }
+    }
+    
+    public Point getMidPoint() {
+        return new Point((this.x1()+this.x2())/2,(this.y1()+this.y2())/2);
     }
     
 }

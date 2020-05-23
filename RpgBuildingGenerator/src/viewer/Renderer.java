@@ -382,6 +382,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                 viewerItem = new ViewerItem(mesh);
                 viewerItem.setPosition(toNX(furniture.getLocation().x), 0.0f, toNY(furniture.getLocation().z));
                 viewerItem.setScale(furniture.scaleFactor);
+                viewerItem.setRotation(furniture.getRotation().x, furniture.getRotation().y, furniture.getRotation().z);
             
                 viewerItems.add(viewerItem);  
             }

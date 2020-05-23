@@ -422,8 +422,15 @@ public class FloorPlanner {
                 BuildingItem door = null;
                 Point doorLocation = null;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Barrel();
+                    door = new Door();
                     doorLocation = connectionEdges.get(i).getMidPoint();
+                    if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
+                        doorLocation.y += 4; 
+                        door.setRotation(0, 90, 0);   
+                    } else {
+                        doorLocation.x += 4;
+                        door.setRotation(0, 0, 0);         
+                    }
                     door.setLocation(doorLocation.x(), 0, doorLocation.y());
                     room.getFurniture().add(door); 
                 }
@@ -435,25 +442,7 @@ public class FloorPlanner {
             
             BuildingItem furniture = null;
             
-            if (room.roomType == RoomType.LivingRoom) {
-                // Add Door
-                int dx;
-                int dy;  
-
-                BuildingItem door = new Door();
-
-                if (room.edges().get(0).alignment() == EdgeAlignment.HORIZONTAL) {
-                    dx = Math.min(room.edges().get(0).x1(), room.edges().get(0).x2()) + room.edges().get(0).getLength() / 2;
-                    dy = room.edges().get(0).y1() + 4;           
-                } else {
-                    dx = room.edges().get(0).x1() + 4;
-                    dy = Math.min(room.edges().get(0).y1(), room.edges().get(0).y2()) + room.edges().get(0).getLength() / 2; 
-                    door.setRotation(0, -90, 0);         
-                }
-
-                door.setLocation(dx, 0, dy);
-                room.getFurniture().add(door);                 
-                
+            if (room.getRoomType() == RoomType.LivingRoom) {
                 furniture = new Barrel();
             } else if (room.getRoomType() == RoomType.DiningRoom) {
                 furniture = new Table();
