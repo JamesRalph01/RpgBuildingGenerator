@@ -80,7 +80,7 @@ public class FurnitureLoader {
             FloatTuple specularColor = mtl.getKs();
             // ...
             
-            Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(obj), ObjData.getTexCoordsArray(obj, 2, false), 
+            Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(obj), ObjData.getTexCoordsArray(obj, 2, true), 
                                      ObjData.getNormalsArray(obj), ObjData.getFaceNormalIndicesArray(obj));
                         
             meshes.add(mesh);

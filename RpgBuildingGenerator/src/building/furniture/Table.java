@@ -18,8 +18,8 @@ public class Table extends BuildingItem {
         this.setBounds(0, 0, 5, 20, 20, 5);
         this.rootPath = "furniture/Moroccan table/";
         this.objFilename = "Moroccan table.obj";
-        this.scaleFactor = 0.0010f;
+        this.scaleFactor = 0.0020f;
         this.textures = new String[] {
-            "textures/Wood Diffuse.jpg"}; 
+            "textures/Painted_wood_Base_Color.png"}; 
     }    
 }

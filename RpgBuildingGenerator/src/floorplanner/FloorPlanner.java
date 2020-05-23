@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import org.joml.Vector2f;
 import util.Edge;
+import util.Edge.EdgeAlignment;
 import util.PolygonHelper;
 import util.Point;
 /**
@@ -432,9 +433,20 @@ public class FloorPlanner {
             
             if (room.roomType == RoomType.LivingRoom) {
                 // Add Door
+                int dx;
+                int dy;  
+
                 BuildingItem door = new Door();
-                int dx = room.edges().get(0).x1() + 10;
-                int dy = room.edges().get(0).y1() + 10;
+
+                if (room.edges().get(0).alignment() == EdgeAlignment.HORIZONTAL) {
+                    dx = Math.min(room.edges().get(0).x1(), room.edges().get(0).x2()) + room.edges().get(0).getLength() / 2;
+                    dy = room.edges().get(0).y1() + 4;           
+                } else {
+                    dx = room.edges().get(0).x1() + 4;
+                    dy = Math.min(room.edges().get(0).y1(), room.edges().get(0).y2()) + room.edges().get(0).getLength() / 2; 
+                    door.setRotation(0, -90, 0);         
+                }
+
                 door.setLocation(dx, 0, dy);
                 room.getFurniture().add(door);                 
                 

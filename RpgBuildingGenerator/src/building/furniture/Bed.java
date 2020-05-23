@@ -20,8 +20,8 @@ public class Bed extends BuildingItem{
         this.objFilename = "wooden bed.obj";
         this.scaleFactor = 0.0005f;
         this.textures = new String[] {
-            "textures/M_pillow_blanket_BaseColor.png",
-            "textures/M_bed_BaseColor.png"}; 
+            "textures/M_bed_BaseColor.png",
+            "textures/M_pillow_blanket_BaseColor.png"}; 
     }    
     
 }
