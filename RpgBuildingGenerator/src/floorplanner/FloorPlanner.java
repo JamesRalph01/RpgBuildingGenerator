@@ -7,7 +7,7 @@ package floorplanner;
 
 import building.Building;
 import building.BuildingItem;
-import building.Door;
+import building.furniture.Door;
 import java.awt.Color;
 import util.Rect;
 import java.util.ArrayList;
