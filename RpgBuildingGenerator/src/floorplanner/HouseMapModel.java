@@ -6,10 +6,14 @@
 package floorplanner;
 
 import building.Room;
+import building.Room.RoomType;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -35,10 +39,20 @@ public class HouseMapModel implements MapModel {
     private int numSocialRooms;
     private int numServiceRooms;
     private int numPrivateRooms;
+    
+    private Map<RoomType, RoomType[]> roomConnections = new HashMap<RoomType, RoomType[]>() {{
+        put(RoomType.LivingRoom,    new RoomType[]{RoomType.Kitchen,RoomType.MasterBedroom,RoomType.Toilet,RoomType.DiningRoom});
+        put(RoomType.Kitchen,       new RoomType[]{RoomType.LivingRoom,RoomType.Utility,RoomType.DiningRoom});
+        put(RoomType.MasterBedroom, new RoomType[]{RoomType.LivingRoom,RoomType.Bathroom,RoomType.SpareRoom});
+        put(RoomType.Bathroom,      new RoomType[]{RoomType.MasterBedroom,RoomType.SpareRoom});
+        put(RoomType.SpareRoom,     new RoomType[]{RoomType.MasterBedroom,RoomType.Bathroom});
+        put(RoomType.Utility,       new RoomType[]{RoomType.Kitchen});
+        put(RoomType.Toilet,        new RoomType[]{RoomType.LivingRoom});
+        put(RoomType.DiningRoom,    new RoomType[]{RoomType.LivingRoom,RoomType.Kitchen});
+    }};
 
     public HouseMapModel(double width, double height) {
   
-        
         this.totalArea = width * height;
         getRatios();
        
@@ -300,5 +314,14 @@ public class HouseMapModel implements MapModel {
          // Create a copy of arr[]  
          return Arrays.copyOf(arr, index); 
     } 
+    
+    public boolean checkRoomConnection(RoomType room, RoomType toCheck) {
+        for (RoomType type: this.roomConnections.get(room)) {
+            if (type.equals(toCheck)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

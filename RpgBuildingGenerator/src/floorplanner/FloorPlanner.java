@@ -125,30 +125,14 @@ public class FloorPlanner {
 
             switch (item.getAreaType()) {
                 case SOCIAL:
-                    /*System.out.println(item.getBounds());
-                    for (Mappable i: mapModel.getSocialRatios())
-                    {
-                        System.out.println(i.getSize());
-                    }*/
                     algorithm.layout(mapModel.getSocialRatios(), item.getBounds());
-                    // Merge Area Ratios and add to roomList
                     roomList.addAll(Arrays.asList(mapModel.getSocialRatios()));
                     break;
                 case SERVICE:
-                    /*System.out.println(item.getBounds());
-                    for (Mappable i: mapModel.getServiceRatios())
-                    {
-                        System.out.println(i.getSize());
-                    }*/
                     algorithm.layout(mapModel.getServiceRatios(), item.getBounds());
                     roomList.addAll(Arrays.asList(mapModel.getServiceRatios()));
                     break;
                 case PRIVATE:
-                    /*System.out.println(item.getBounds());
-                    for (Mappable i: mapModel.getPrivateRatios())
-                    {
-                        System.out.println(i.getSize());
-                    }*/
                     algorithm.layout(mapModel.getPrivateRatios(), item.getBounds());
                     roomList.addAll(Arrays.asList(mapModel.getPrivateRatios()));
                     break;
@@ -159,15 +143,12 @@ public class FloorPlanner {
             }
         }
         
-        
-        
         System.out.println("Hi");
         for (Mappable room: roomList) {
             System.out.println(room.getAreaType() + " : " + room.getRoomType() + " : " 
                     + room.getBounds());
         }
                 
-        
         generateRooms(bounds);
         generate2DFloorplan(); // for display in designer view
         generate3DBuilding(); // for 3D rendering view
@@ -279,12 +260,13 @@ public class FloorPlanner {
                                new Point(bounds.x,bounds.y), overallBounds));
             // set room type
             Room room = new Room(edges);
-            room.roomType = item.getRoomType();
+            room.setRoomType(item.getRoomType());
             for (Edge edge : edges) {
                 edge.point1().setColour(c);
                 edge.point2().setColour(c);
             }
             rooms.add(room);
+            
         }
         printAllPoints(false);
 
@@ -305,11 +287,15 @@ public class FloorPlanner {
                             if (partial.sharesEdge(edgeToCheck,6)) {
                                 edge.connectedEdges().add(edgeToCheck);
                                 edge.isInternal(true);
+                                if (mapModel.checkRoomConnection(room.getRoomType(), roomToCheck.getRoomType())) {
+                                    room.addRoomConnection(roomToCheck.getRoomType());
+                                }
                             }                          
                         }
                     }
                 }
             }
+            room.printRoomConnections();
         }
         printAllPoints(false); 
         
@@ -429,11 +415,11 @@ public class FloorPlanner {
             
             BuildingItem furniture = null;
             
-            if (room.roomType == RoomType.LivingRoom) {
+            if (room.getRoomType() == RoomType.LivingRoom) {
                 furniture = new Barrel();
-            } else if (room.roomType == RoomType.DiningRoom) {
+            } else if (room.getRoomType() == RoomType.DiningRoom) {
                 furniture = new Table();
-            } else if (room.roomType == RoomType.MasterBedroom) {
+            } else if (room.getRoomType() == RoomType.MasterBedroom) {
                 furniture = new Bed();
             }
             if (furniture != null) {
