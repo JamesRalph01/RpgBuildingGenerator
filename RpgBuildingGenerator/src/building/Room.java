@@ -35,13 +35,14 @@ public class Room extends BuildingItem {
         PRIVATE
     }
    
-    public RoomType roomType;
-    public AreaType areaType;
+    private RoomType roomType;
+    private AreaType areaType;
             
     private ArrayList<Edge> edges;
     private float[] colourData;
     private ArrayList<Wall> internalWalls = new ArrayList<>();
     private ArrayList<BuildingItem> furniture = new ArrayList<>();
+    private ArrayList<RoomType> roomConnections = new ArrayList<>();
     
     
     public Room(ArrayList<Edge> edges) {
@@ -128,6 +129,37 @@ public class Room extends BuildingItem {
     public ArrayList<Wall> getInternalWalls() {
         return this.internalWalls;
     } 
+    
+    public void addRoomConnection(RoomType roomConnection) {
+        this.roomConnections.add(roomConnection);
+    }
+    
+    public ArrayList<RoomType> getRoomConnections() {
+        return this.roomConnections;
+    }
+    
+    public AreaType getAreaType() {
+        return this.areaType;
+    }
+    
+    public RoomType getRoomType() {
+        return this.roomType;
+    }
+    
+    public void setAreaType(AreaType type) {
+        this.areaType = type;
+    }
+    
+    public void setRoomType(RoomType type) {
+        this.roomType = type;
+    }
+    
+    public void printRoomConnections() {
+        System.out.println(this.roomType + " Room connecrions:");
+        for (RoomType room: this.roomConnections) {
+            System.out.println(room);
+        }
+    }
     
     public void Generate3DPositions(Vector3f screenOrigin, int wealthInd) {
         calcLocation(screenOrigin);
