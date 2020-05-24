@@ -23,6 +23,10 @@ import viewer.objutil.ObjData;
 import viewer.objutil.ObjReader;
 import viewer.objutil.ObjSplitting;
 import viewer.objutil.ObjUtils;
+import building.BuildingItem;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.joml.Vector4f;
 
 /**
  *
@@ -34,11 +38,12 @@ public class FurnitureLoader {
         
     }
     
-    public ArrayList<Mesh> loadFurniture(GL4 gl, String rootPath, String filenameOBJ) throws FileNotFoundException, IOException {
+    public ArrayList<Mesh> loadFurniture(GL4 gl, BuildingItem item) throws FileNotFoundException, IOException {
         ArrayList<Mesh> meshes = new ArrayList<>();
 
+        System.out.println("Loading OBJ" + item.objFilename);
         // Read an OBJ file
-        InputStream objInputStream = new FileInputStream(rootPath + filenameOBJ);
+        InputStream objInputStream = new FileInputStream("textures/" + item.rootPath + item.objFilename);
         Obj originalObj = ObjReader.read(objInputStream);
         
         // Convert the OBJ into a "renderable" OBJ. 
@@ -51,7 +56,7 @@ public class FurnitureLoader {
         ArrayList<Mtl> allMtls = new ArrayList<>();
         for (String mtlFileName : obj.getMtlFileNames())
         {
-            InputStream mtlInputStream = new FileInputStream(rootPath + mtlFileName);
+            InputStream mtlInputStream = new FileInputStream("textures/" + item.rootPath  + mtlFileName);
             ArrayList<Mtl> mtls = (ArrayList<Mtl>) MtlReader.read(mtlInputStream);
             allMtls.addAll(mtls);
         }
@@ -67,8 +72,8 @@ public class FurnitureLoader {
             String materialName = entry.getKey();
             Obj materialGroup = entry.getValue();
             
-            //System.out.println("Material name  : " + materialName);
-            //System.out.println("Material group : " + materialGroup);
+            System.out.println("Material name  : " + materialName);
+            System.out.println("Material group : " + materialGroup);            
             
             // Find the MTL that defines the material with the current name
             Mtl mtl = findMtlForName(allMtls, materialName);
@@ -80,10 +85,24 @@ public class FurnitureLoader {
             FloatTuple specularColor = mtl.getKs();
             // ...
             
-            Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(obj), ObjData.getTexCoordsArray(obj, 2, true), 
-                                     ObjData.getNormalsArray(obj), ObjData.getFaceNormalIndicesArray(obj));
-                        
-            meshes.add(mesh);
+            System.out.println("Diffuse name : " + mtl.getMapKd());
+            
+            Texture texture;
+            try {
+                texture = new Texture(gl, "textures/" + item.rootPath + mtl.getMapKd());
+                Material material = new Material(texture, (1.0f/255.0f) * mtl.getNs()); // reflectance  
+                material.setAmbientColour(new Vector4f(mtl.getKa().getX(), mtl.getKa().getY(), mtl.getKa().getZ(), 1.0f));
+                material.setDiffuseColour(new Vector4f(mtl.getKd().getX(), mtl.getKd().getY(), mtl.getKd().getZ(), 1.0f));
+                material.setSpecularColour(new Vector4f(mtl.getKs().getX(), mtl.getKs().getY(), mtl.getKs().getZ(), 1.0f));
+    
+                Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(obj), ObjData.getTexCoordsArray(obj, 2, true), 
+                                         ObjData.getNormalsArray(obj), ObjData.getFaceNormalIndicesArray(obj));
+                mesh.setMaterial(material);
+                meshes.add(mesh);
+            } catch (Exception ex) {
+                Logger.getLogger(FurnitureLoader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
         return meshes;
     }

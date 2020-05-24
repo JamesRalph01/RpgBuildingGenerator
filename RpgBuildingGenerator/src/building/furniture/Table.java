@@ -19,7 +19,5 @@ public class Table extends BuildingItem {
         this.rootPath = "furniture/Moroccan table/";
         this.objFilename = "Moroccan table.obj";
         this.scaleFactor = 0.0020f;
-        this.textures = new String[] {
-            "textures/Painted_wood_Base_Color.png"}; 
     }    
 }
