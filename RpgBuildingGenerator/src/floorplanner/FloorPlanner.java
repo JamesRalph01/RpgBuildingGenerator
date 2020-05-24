@@ -419,20 +419,21 @@ public class FloorPlanner {
             
             if (roomConnections.size() >= 1) { // Has Room Connections
                 ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
-                BuildingItem door = null;
-                Point doorLocation = null;
+                BuildingItem door, reverseDoor;
+                Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Door();
+                    door = new Door(); reverseDoor = new Door();
                     doorLocation = connectionEdges.get(i).getMidPoint();
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
-                        doorLocation.y += 4; 
-                        door.setRotation(0, 90, 0);   
+                        doorLocation.y += 2; 
+                        door.setRotation(0, 0, 0);   
                     } else {
-                        doorLocation.x += 4;
-                        door.setRotation(0, 0, 0);         
+                        doorLocation.x += 2;
+                        door.setRotation(0, -90, 0);         
                     }
                     door.setLocation(doorLocation.x(), 0, doorLocation.y());
                     room.getFurniture().add(door); 
+                    System.out.println("DOOR ADDED in " + room.getRoomType());
                 }
             }
             
