@@ -19,8 +19,5 @@ public class Barrel extends BuildingItem {
         this.rootPath = "furniture/Wooden Barrel/";
         this.objFilename = "barrel.obj";
         this.scaleFactor = 0.025f;
-        this.textures = new String[] {
-            "texture/wood/Wood Diffuse.jpg",
-            "texture/metal/Metal Diffuse.jpg"}; 
     }
 }

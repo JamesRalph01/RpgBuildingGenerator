@@ -24,6 +24,8 @@ import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Barrel;
 import building.furniture.Bed;
+import building.furniture.MetalDoor;
+import building.furniture.SciFiDoor;
 import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;

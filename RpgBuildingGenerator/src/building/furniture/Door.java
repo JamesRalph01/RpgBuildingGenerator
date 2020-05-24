@@ -19,7 +19,5 @@ public class Door extends BuildingItem {
         this.rootPath = "furniture/Door/Medieval_Door/";
         this.objFilename = "Medieval door.obj";
         this.scaleFactor = 0.0020f;
-        this.textures = new String[] {
-            "Privy Council Door.png"}; 
     }    
 }

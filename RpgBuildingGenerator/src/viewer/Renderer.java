@@ -371,19 +371,13 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         FurnitureLoader loader = new FurnitureLoader();
         
         try {
-            int textureInd = 0;
             ArrayList<Mesh> meshes;
-            meshes = loader.loadFurniture(gl, "textures/" + furniture.rootPath, furniture.objFilename);
+            meshes = loader.loadFurniture(gl, furniture);
             for (Mesh mesh : meshes) {
-                Texture texture = new Texture(gl, "textures/" + furniture.rootPath + furniture.textures[textureInd++]);
-                Material material = new Material(texture, reflectance);
-                mesh.setMaterial(material);  
-
                 viewerItem = new ViewerItem(mesh);
                 viewerItem.setPosition(toNX(furniture.getLocation().x), 0.0f, toNY(furniture.getLocation().z));
                 viewerItem.setScale(furniture.scaleFactor);
                 viewerItem.setRotation(furniture.getRotation().x, furniture.getRotation().y, furniture.getRotation().z);
-            
                 viewerItems.add(viewerItem);  
             }
 

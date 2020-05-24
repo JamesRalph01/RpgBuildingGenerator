@@ -16,12 +16,9 @@ public class Bed extends BuildingItem{
     public Bed() {
         super();
         this.setBounds(0, 0, 5, 20, 20, 5);
-        this.rootPath = "furniture/Wooden Bed/";
-        this.objFilename = "wooden bed.obj";
-        this.scaleFactor = 0.0005f;
-        this.textures = new String[] {
-            "textures/M_bed_BaseColor.png",
-            "textures/M_pillow_blanket_BaseColor.png"}; 
+        this.rootPath = "furniture/bed with side tables/";
+        this.objFilename = "bed.obj";
+        this.scaleFactor = 0.1f;
     }    
     
 }
