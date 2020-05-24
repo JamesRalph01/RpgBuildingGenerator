@@ -41,11 +41,11 @@ public class Transformation {
                 rotateX((float)Math.toRadians(-sceneRotation.x)).
                 rotateY((float)Math.toRadians(-sceneRotation.y)).
                 rotateZ((float)Math.toRadians(-sceneRotation.z)).
+                translate(sceneTranslation).
                 translate(gameItem.getPosition()).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).
-                translate(sceneTranslation).
                 scale(gameItem.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
