@@ -291,7 +291,7 @@ public class FloorPlanner {
                                 edge.isInternal(true);
                                 if (mapModel.checkRoomConnection(room.getRoomType(), roomToCheck.getRoomType())) {
                                     if (edge.getAlignment() == edgeToCheck.getAlignment()) {
-                                        room.addRoomConnection(roomToCheck.getRoomType(),edge);
+                                        room.addRoomConnection(roomToCheck,edge);
                                         //System.out.println("Adding " + roomToCheck.getRoomType() + " TO " + room.getRoomType());
                                     }
                                 }
@@ -415,25 +415,46 @@ public class FloorPlanner {
             this.building.addRoom(room);
 
             // Add Door Connections
-            ArrayList<Room.RoomType> roomConnections = room.getRoomConnections();
+            ArrayList<Room> roomConnections = room.getRoomConnections();
             
             if (roomConnections.size() >= 1) { // Has Room Connections
                 ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
-                BuildingItem door, reverseDoor;
+                BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Door(); reverseDoor = new Door();
-                    doorLocation = connectionEdges.get(i).getMidPoint();
+                    door = new Door();
+                    Edge sharedEdge = room.getDoorLocation(connectionEdges.get(i),roomConnections.get(i));
+                    int edgeLength;
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
-                        doorLocation.y += 2; 
-                        door.setRotation(0, 0, 0);   
-                    } else {
-                        doorLocation.x += 2;
-                        door.setRotation(0, -90, 0);         
+                        edgeLength = Math.abs(sharedEdge.x1() - sharedEdge.x2());
                     }
-                    door.setLocation(doorLocation.x(), 0, doorLocation.y());
-                    room.getFurniture().add(door); 
-                    System.out.println("DOOR ADDED in " + room.getRoomType());
+                    else {
+                        edgeLength = Math.abs(sharedEdge.y1() - sharedEdge.y2());
+                    }
+                    
+                    if (edgeLength > 20) {
+                        doorLocation = new Point((sharedEdge.x1()+sharedEdge.x2())/2,(sharedEdge.y1()+sharedEdge.y2())/2);
+                        if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
+                            door.setRotation(0, 0, 0);
+                            if (room.isRoomAbove(connectionEdges.get(i),roomConnections.get(i))) {
+                                doorLocation.y -= 5; 
+                            }
+                            else {
+                                doorLocation.y += 5;
+                            } 
+                        } else { // VERTICAL
+                            door.setRotation(0, -90, 0); 
+                            if (room.isRoomLeft(connectionEdges.get(i),roomConnections.get(i))) {
+                                doorLocation.x += 5;
+                            }
+                            else {
+                                doorLocation.x -= 5;
+                            }   
+                        }
+                        door.setLocation(doorLocation.x(), 0, doorLocation.y());
+                        room.getFurniture().add(door); 
+                        System.out.println("DOOR ADDED between " + room.getRoomType() + " AND " + roomConnections.get(i));
+                    }
                 }
             }
             
