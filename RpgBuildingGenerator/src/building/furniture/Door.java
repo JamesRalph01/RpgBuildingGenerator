@@ -6,6 +6,7 @@
 package building.furniture;
 
 import building.BuildingItem;
+import floorplanner.FloorPlanner.BuildingTheme;
 
 /**
  *
@@ -13,11 +14,25 @@ import building.BuildingItem;
  */
 public class Door extends BuildingItem {
     
-    public Door() {
+    public Door(BuildingTheme theme) {
         super();
-        this.setBounds(0, 0, 5, 20, 20, 5);
-        this.rootPath = "furniture/Door/Medieval_Door/";
-        this.objFilename = "Medieval door.obj";
-        this.scaleFactor = 0.0020f;
+        switch (theme) {
+            case MODERN:
+                break;
+            case MEDIEVAL:
+                this.setBounds(0, 0, 5, 20, 20, 5);
+                this.rootPath = "furniture/Door/Medieval_Door/";
+                this.objFilename = "Medieval door.obj";
+                this.scaleFactor = 0.0020f;
+                break;
+            case FUTURISTIC:
+                this.setBounds(0, 0, 5, 20, 20, 5);
+                this.rootPath = "furniture/Door/SciFi door/";
+                this.objFilename = "scifi.obj";
+                this.scaleFactor = 0.040f;
+                break;
+            default:
+                break;
+        }
     }    
 }

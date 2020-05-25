@@ -39,11 +39,11 @@ public class HouseMapModel implements MapModel {
     private int numPrivateRooms;
     
     private Map<RoomType, RoomType[]> roomConnections = new HashMap<RoomType, RoomType[]>() {{
-        put(RoomType.LivingRoom,    new RoomType[]{RoomType.Kitchen,RoomType.MasterBedroom,RoomType.Toilet,RoomType.DiningRoom});
-        put(RoomType.Kitchen,       new RoomType[]{RoomType.LivingRoom,RoomType.Utility,RoomType.DiningRoom,RoomType.MasterBedroom});
+        put(RoomType.LivingRoom,    new RoomType[]{RoomType.Kitchen,RoomType.MasterBedroom,RoomType.Toilet,RoomType.DiningRoom,RoomType.SpareRoom});
+        put(RoomType.Kitchen,       new RoomType[]{RoomType.LivingRoom,RoomType.Utility,RoomType.DiningRoom,RoomType.MasterBedroom,RoomType.SpareRoom});
         put(RoomType.MasterBedroom, new RoomType[]{RoomType.LivingRoom,RoomType.Bathroom,RoomType.SpareRoom,RoomType.Kitchen});
         put(RoomType.Bathroom,      new RoomType[]{RoomType.SpareRoom,RoomType.MasterBedroom,});
-        put(RoomType.SpareRoom,     new RoomType[]{RoomType.MasterBedroom,RoomType.Bathroom,RoomType.SpareRoom});
+        put(RoomType.SpareRoom,     new RoomType[]{RoomType.MasterBedroom,RoomType.Bathroom,RoomType.SpareRoom,RoomType.LivingRoom,RoomType.Kitchen});
         put(RoomType.Utility,       new RoomType[]{RoomType.Kitchen});
         put(RoomType.Toilet,        new RoomType[]{RoomType.LivingRoom,RoomType.DiningRoom});
         put(RoomType.DiningRoom,    new RoomType[]{RoomType.LivingRoom,RoomType.Kitchen,RoomType.Toilet});

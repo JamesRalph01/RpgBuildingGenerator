@@ -415,7 +415,12 @@ public class FloorPlanner {
         // Add Rooms
         for (Room room : this.rooms) {
             this.building.addRoom(room);
-
+            
+            
+            //           //
+            //   DOORS   //
+            //           //
+            
             // Add Door Connections
             ArrayList<Room> roomConnections = room.getRoomConnections();
             
@@ -424,7 +429,7 @@ public class FloorPlanner {
                 BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Door();
+                    door = new Door(this.buildingTheme);
                     Edge sharedEdge = room.getDoorLocation(connectionEdges.get(i),roomConnections.get(i));
                     int edgeLength;
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
@@ -456,9 +461,14 @@ public class FloorPlanner {
                         door.setLocation(doorLocation.x(), 0, doorLocation.y());
                         room.getFurniture().add(door); 
                         System.out.println("DOOR ADDED between " + room.getRoomType() + " AND " + roomConnections.get(i));
+                        System.out.println(edgeLength);
                     }
                 }
             }
+            
+            //               //
+            //   FURNITURE   //
+            //               //
             
             // hack - stuff the furniture item in the midlle of the room
             float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
@@ -466,6 +476,17 @@ public class FloorPlanner {
             
             BuildingItem furniture = null;
             
+            switch (this.buildingTheme) {
+                    case MODERN:
+                        break;
+                    case MEDIEVAL:
+                        break;
+                    case FUTURISTIC:
+                        break;
+                    default:
+                        break;
+            
+            }
             if (room.getRoomType() == RoomType.LivingRoom) {
                 furniture = new Barrel();
             } else if (room.getRoomType() == RoomType.DiningRoom) {
