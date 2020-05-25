@@ -11,6 +11,7 @@ import java.util.Map;
 import org.joml.Rectangled;
 import org.joml.Vector3f;
 import util.Point;
+import util.Edge.EdgeAlignment;
 import util.Edge;
 import util.PolygonHelper;
 /**
@@ -45,7 +46,7 @@ public class Room extends BuildingItem {
     private ArrayList<Wall> internalWalls = new ArrayList<>();
     private ArrayList<BuildingItem> furniture = new ArrayList<>();
     
-    private ArrayList<RoomType> roomConnections = new ArrayList<>();
+    private ArrayList<Room> roomConnections = new ArrayList<>();
     private ArrayList<Edge> roomConnectionEdges = new ArrayList<>();
     
     
@@ -134,14 +135,14 @@ public class Room extends BuildingItem {
         return this.internalWalls;
     } 
     
-    public void addRoomConnection(RoomType roomConnection, Edge edge) {
+    public void addRoomConnection(Room roomConnection, Edge edge) {
         if (!this.roomConnections.contains(roomConnection)) {
             this.roomConnections.add(roomConnection);
             this.roomConnectionEdges.add(edge);
         }
     }
     
-    public ArrayList<RoomType> getRoomConnections() {
+    public ArrayList<Room> getRoomConnections() {
         return this.roomConnections;
     }
     
@@ -167,7 +168,7 @@ public class Room extends BuildingItem {
     
     public void printRoomConnections() {
         System.out.println(this.roomType + " Room connections:");
-        for (RoomType room: this.roomConnections) {
+        for (Room room: this.roomConnections) {
             System.out.println(room);
         }
     }
@@ -190,5 +191,56 @@ public class Room extends BuildingItem {
                 this.internalWalls.add(wall);
             }
         }
+    }
+    
+    public boolean isRoomAbove(Edge thisEdge, Room connectedRoom) {
+        ArrayList<Room> connectedRooms = connectedRoom.getRoomConnections();
+        for (int i=0; i<connectedRooms.size(); i++) {
+            if (connectedRooms.get(i).getRoomType() == this.roomType) {
+                if (connectedRoom.getRoomConnectionEdges().get(i).y1() > thisEdge.y1()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean isRoomLeft(Edge thisEdge, Room connectedRoom) {
+        ArrayList<Room> connectedRooms = connectedRoom.getRoomConnections();
+        for (int i=0; i<connectedRooms.size(); i++) {
+            if (connectedRooms.get(i).getRoomType() == this.roomType) {
+                if (connectedRoom.getRoomConnectionEdges().get(i).x1() < thisEdge.x1()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+        
+    public Edge getDoorLocation(Edge thisEdge, Room connectedRoom) {
+        ArrayList<Room> connectedRooms = connectedRoom.getRoomConnections();
+        for (int i=0; i<connectedRooms.size(); i++) {
+            if (connectedRooms.get(i).getRoomType() == this.roomType) {
+                Edge edge2 = connectedRoom.getRoomConnectionEdges().get(i);
+                        
+                Point min1 = new Point(Math.min(thisEdge.x1(), thisEdge.x2()),Math.min(thisEdge.y1(),thisEdge.y2()));
+                Point max1 = new Point(Math.max(thisEdge.x1(), thisEdge.x2()),Math.max(thisEdge.y1(),thisEdge.y2()));
+
+                Point min2 = new Point(Math.min(edge2.x1(), edge2.x2()),Math.min(edge2.y1(),edge2.y2()));
+                Point max2 = new Point(Math.max(edge2.x1(), edge2.x2()),Math.max(edge2.y1(),edge2.y2()));
+
+                Point minInt = new Point(Math.max(min1.x, min2.x), Math.max(min1.y, min2.y));
+                Point maxInt = new Point(Math.min(max1.x, max2.x), Math.min(max1.y, max2.y));
+                
+                return new Edge(minInt,maxInt);
+            }
+        }
+        System.err.println("Can't get door location");
+        return new Edge(new Point(0,0), new Point(0,0));
+    }
+    
+    @Override
+    public String toString() {
+        return "Room " + this.roomType;
     }
 }
