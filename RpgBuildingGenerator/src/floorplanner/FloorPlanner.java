@@ -22,10 +22,15 @@ import org.joml.Vector2d;
 import building.Room;
 import building.Room.RoomType;
 import building.Wall;
+import building.furniture.Bar;
 import building.furniture.Barrel;
 import building.furniture.Bed;
+import building.furniture.MedievalTable;
 import building.furniture.MetalDoor;
+import building.furniture.OldSofa;
+import building.furniture.SciFiBox;
 import building.furniture.SciFiDoor;
+import building.furniture.Shelf;
 import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;
@@ -488,9 +493,12 @@ public class FloorPlanner {
             
             }
             if (room.getRoomType() == RoomType.LivingRoom) {
-                furniture = new Barrel();
+                //furniture = new OldSofa();
+                //furniture = new SciFiBox();
+                furniture = new Bar();
             } else if (room.getRoomType() == RoomType.DiningRoom) {
-                furniture = new Table();
+                //furniture = new MedievalTable();
+                furniture = new Shelf();
             } else if (room.getRoomType() == RoomType.MasterBedroom) {
                 furniture = new Bed();
             }
