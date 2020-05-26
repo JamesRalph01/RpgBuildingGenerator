@@ -18,4 +18,5 @@ public interface MapModel
     public Mappable[] getServiceRatios();
     public Mappable[] getPrivateRatios();
     public boolean checkRoomConnection(Room.RoomType room, Room.RoomType toCheck);
+
 }

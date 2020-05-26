@@ -185,24 +185,29 @@ public class FloorPlanner {
         return this.building;
     }
         
-    private Color getRoomColour(Room.RoomType roomType) {
+    private Color getRoomColour(RoomType roomType) {
         int R,G,B;
         
-        if (!roomType.equals(Room.RoomType.Empty)) {
+        if (!roomType.equals(RoomType.Empty)) {
             // Social
             switch (roomType) {
+                // SOCIAL AREAS
                 case LivingRoom:
                 case DiningRoom:
+                case TavernFloor:
                     R = 255;
                     G = 20;
                     B = 20;
                     break;
+                // SERVICE AREAS
                 case Kitchen:
                 case Utility:
+                case StoreRoom:
                     R = 255;
                     G = 255;
                     B = 20;
                     break;
+                // PRIVATE AREAS
                 case MasterBedroom:
                 case SpareRoom:
                 case Toilet:
@@ -372,7 +377,6 @@ public class FloorPlanner {
 //
 //            System.out.println("===========================");
 //        }
-
     }
     
     private void generate2DFloorplan() {
@@ -481,32 +485,38 @@ public class FloorPlanner {
             
             BuildingItem furniture = null;
             
-            switch (this.buildingTheme) {
-                    case MODERN:
-                        break;
-                    case MEDIEVAL:
-                        break;
-                    case FUTURISTIC:
-                        break;
-                    default:
-                        break;
-            
+            switch (room.getRoomType()) {
+                case LivingRoom:
+                    furniture = new Barrel();
+                    break;
+                case DiningRoom:
+                    furniture = new Table();
+                    break;
+                case Kitchen:
+                    break;
+                case Utility:
+                    break;
+                case MasterBedroom:
+                    furniture = new Bed();
+                    break;
+                case SpareRoom:
+                    break;
+                case Toilet:
+                    break;
+                case Bathroom:
+                    break;
+                case TavernFloor:
+                    break;
+                case StoreRoom:
+                    break;
+                default:
+                    break;            
             }
-            if (room.getRoomType() == RoomType.LivingRoom) {
-                //furniture = new OldSofa();
-                //furniture = new SciFiBox();
-                furniture = new Bar();
-            } else if (room.getRoomType() == RoomType.DiningRoom) {
-                //furniture = new MedievalTable();
-                furniture = new Shelf();
-            } else if (room.getRoomType() == RoomType.MasterBedroom) {
-                furniture = new Bed();
-            }
+
             if (furniture != null) {
                 furniture.setLocation(x, 0, z);
                 room.getFurniture().add(furniture);                 
             }
-
         }
        
         

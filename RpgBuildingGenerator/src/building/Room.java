@@ -29,6 +29,9 @@ public class Room extends BuildingItem {
         Toilet,
         Utility,
         DiningRoom,
+        TavernFloor,
+        StoreRoom,
+        ChurchFloor,
         Empty
     }
     
