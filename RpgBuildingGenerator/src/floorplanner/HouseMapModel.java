@@ -5,8 +5,8 @@
  */
 package floorplanner;
 
-import building.Room;
 import building.Room.RoomType;
+import building.Room.AreaType;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.ArrayList;
@@ -58,11 +58,11 @@ public class HouseMapModel implements MapModel {
         this.totalAreas = new MapItem[3];
         double sum = this.socialAreaRatio + this.serviceAreaRatio + this.privateAreaRatio;
         System.out.println(totalArea + " : " + sum + " : " + socialAreaRatio);
-        this.totalAreas[0] = new MapItem(totalArea / sum * this.socialAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.SOCIAL);
+        this.totalAreas[0] = new MapItem(totalArea / sum * this.socialAreaRatio, 0, RoomType.Empty, AreaType.SOCIAL);
         System.out.println(totalArea + " : " + sum + " : " + serviceAreaRatio);
-        this.totalAreas[1] = new MapItem(totalArea / sum * this.serviceAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.SERVICE);
+        this.totalAreas[1] = new MapItem(totalArea / sum * this.serviceAreaRatio, 0, RoomType.Empty, AreaType.SERVICE);
         System.out.println(totalArea + " : " + sum + " : " + privateAreaRatio);
-        this.totalAreas[2] = new MapItem(totalArea / sum * this.privateAreaRatio, 0, Room.RoomType.Empty, Room.AreaType.PRIVATE);
+        this.totalAreas[2] = new MapItem(totalArea / sum * this.privateAreaRatio, 0, RoomType.Empty, AreaType.PRIVATE);
         
         
         // Calculate social, service and private map sizes
@@ -73,52 +73,52 @@ public class HouseMapModel implements MapModel {
         int socialCount = -1, serviceCount = -1, privateCount = -1;
         for (int i = 0; i < roomRatio.length; i++) {
 
-            Room.RoomType roomType;
-            Room.AreaType areaType;
+            RoomType roomType;
+            AreaType areaType;
             switch (this.labels[i]) {
                 case "Li":
-                    roomType = Room.RoomType.LivingRoom;
-                    areaType = Room.AreaType.SOCIAL;
+                    roomType = RoomType.LivingRoom;
+                    areaType = AreaType.SOCIAL;
                     socialCount ++;
                     break;
                 case "Dr":
-                    roomType = Room.RoomType.DiningRoom;
-                    areaType = Room.AreaType.SOCIAL;
+                    roomType = RoomType.DiningRoom;
+                    areaType = AreaType.SOCIAL;
                     socialCount ++;
                     break;
                 case "Mb":
-                    roomType = Room.RoomType.MasterBedroom;
-                    areaType = Room.AreaType.PRIVATE;
+                    roomType = RoomType.MasterBedroom;
+                    areaType = AreaType.PRIVATE;
                     privateCount ++;
                     break;
                 case "Br":
-                    roomType = Room.RoomType.Bathroom;
-                    areaType = Room.AreaType.PRIVATE;
+                    roomType = RoomType.Bathroom;
+                    areaType = AreaType.PRIVATE;
                     privateCount ++;
                     break;
                 case "To":
-                    roomType = Room.RoomType.Toilet;
-                    areaType = Room.AreaType.SOCIAL;
+                    roomType = RoomType.Toilet;
+                    areaType = AreaType.SOCIAL;
                     socialCount ++;
                     break;
                 case "Sr":
-                    roomType = Room.RoomType.SpareRoom;
-                    areaType = Room.AreaType.PRIVATE;
+                    roomType = RoomType.SpareRoom;
+                    areaType = AreaType.PRIVATE;
                     privateCount ++;
                     break;
                 case "Ki":
-                    roomType = Room.RoomType.Kitchen;
-                    areaType = Room.AreaType.SERVICE;
+                    roomType = RoomType.Kitchen;
+                    areaType = AreaType.SERVICE;
                     serviceCount ++;
                     break;
                 case "Ut":
-                    roomType = Room.RoomType.Utility;
-                    areaType = Room.AreaType.SERVICE;
+                    roomType = RoomType.Utility;
+                    areaType = AreaType.SERVICE;
                     serviceCount ++;
                     break;
                 default:
-                    roomType = Room.RoomType.Empty;
-                    areaType = Room.AreaType.SOCIAL;
+                    roomType = RoomType.Empty;
+                    areaType = AreaType.SOCIAL;
                     socialCount ++;
                     break;
             }
@@ -151,17 +151,17 @@ public class HouseMapModel implements MapModel {
         return this.totalAreas;
     }
     
-     @Override
+    @Override
     public Mappable[] getSocialRatios() {
         return this.socialRooms;
     }
     
-     @Override
+    @Override
     public Mappable[] getServiceRatios() {
         return this.serviceRooms;
     }
     
-     @Override
+    @Override
     public Mappable[] getPrivateRatios() {
         return this.privateRooms;
     }
@@ -303,16 +303,17 @@ public class HouseMapModel implements MapModel {
     
     private static char[] removeElements(char[] arr, char key) 
     { 
-          // Move all other elements to beginning  
-          int index = 0; 
-          for (int i=0; i<arr.length; i++) 
-             if (arr[i] != key) 
-                arr[index++] = arr[i]; 
-  
-         // Create a copy of arr[]  
-         return Arrays.copyOf(arr, index); 
+        // Move all other elements to beginning  
+        int index = 0; 
+        for (int i=0; i<arr.length; i++) 
+           if (arr[i] != key) 
+              arr[index++] = arr[i]; 
+
+       // Create a copy of arr[]  
+       return Arrays.copyOf(arr, index); 
     } 
     
+    @Override
     public boolean checkRoomConnection(RoomType room, RoomType toCheck) {
         for (RoomType type: this.roomConnections.get(room)) {
             if (type.equals(toCheck)) {
