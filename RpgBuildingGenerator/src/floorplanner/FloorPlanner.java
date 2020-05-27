@@ -485,7 +485,7 @@ public class FloorPlanner {
             float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
             
             BuildingItem furniture = null;
-            Point edgePlacement = room.findFreeEdgePoint();
+            Point edgePlacement = room.findFreeEdge().getMidPoint();
             
             switch (room.getRoomType()) {
                 case LivingRoom:

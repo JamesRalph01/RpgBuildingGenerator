@@ -243,7 +243,7 @@ public class Room extends BuildingItem {
         return new Edge(new Point(0,0), new Point(0,0));
     }
     
-    public Point findFreeEdgePoint() {
+    public Edge findFreeEdge() {
         ArrayList<Edge> freeEdges = new ArrayList<>();
         boolean isFree;
         for (Edge edge: this.edges) {
@@ -264,9 +264,23 @@ public class Room extends BuildingItem {
         Random randomGenerator = new Random();
         int index = randomGenerator.nextInt(freeEdges.size());
         Edge edge = freeEdges.get(index);
-        Point placement = edge.getMidPoint();
-        return placement;
+        return edge;
     }
+    
+    public String getEdgePlacing(Edge thisEdge) {
+        String edgePlacement = null;
+        // If edge above
+        edgePlacement = "TOP";
+        // If edge on Left
+        edgePlacement = "LEFT";
+        // If edge on Right
+        edgePlacement = "RIGHT";
+        // If edge below
+        edgePlacement = "BELOW";
+        
+        return edgePlacement;
+    }
+    
     
     @Override
     public String toString() {
