@@ -73,7 +73,18 @@ public class Point extends Vector2i implements Comparable<Point> {
         return (float) colour.getBlue() / 255f;
     }
     
-    
+    public boolean isAbove(Point point) {
+        return this.y > point.y();
+    }
+    public boolean isBelow(Point point) {
+        return this.y < point.y();
+    }
+    public boolean isLeft(Point point) {
+        return this.x < point.x();
+    }
+    public boolean isRight(Point point) {
+        return this.x > point.x();
+    }
     
     @Override
     public String toString() {
