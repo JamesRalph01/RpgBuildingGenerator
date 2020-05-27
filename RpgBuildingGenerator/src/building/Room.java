@@ -8,6 +8,7 @@ package building;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import org.joml.Rectangled;
 import org.joml.Vector3f;
 import util.Point;
@@ -240,6 +241,31 @@ public class Room extends BuildingItem {
         }
         System.err.println("Can't get door location");
         return new Edge(new Point(0,0), new Point(0,0));
+    }
+    
+    public Point findFreeEdgePoint() {
+        ArrayList<Edge> freeEdges = new ArrayList<>();
+        boolean isFree;
+        for (Edge edge: this.edges) {
+            isFree = true;
+            for (Edge connectedEdge: this.roomConnectionEdges) {
+                if (edge == connectedEdge) {
+                    isFree = false;
+                }
+            }
+            if (isFree) {
+                freeEdges.add(edge);
+            }
+        }
+        
+        if (freeEdges.isEmpty()) {
+            return null;
+        }
+        Random randomGenerator = new Random();
+        int index = randomGenerator.nextInt(freeEdges.size());
+        Edge edge = freeEdges.get(index);
+        Point placement = edge.getMidPoint();
+        return placement;
     }
     
     @Override

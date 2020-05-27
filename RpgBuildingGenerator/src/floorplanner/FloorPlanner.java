@@ -31,6 +31,7 @@ import building.furniture.OldSofa;
 import building.furniture.SciFiBox;
 import building.furniture.SciFiDoor;
 import building.furniture.Shelf;
+import building.furniture.Stool;
 import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;
@@ -484,30 +485,40 @@ public class FloorPlanner {
             float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
             
             BuildingItem furniture = null;
+            Point edgePlacement = room.findFreeEdgePoint();
             
             switch (room.getRoomType()) {
                 case LivingRoom:
-                    furniture = new Barrel();
+                    x = edgePlacement.x();
+                    z = edgePlacement.y();
+                    furniture = new OldSofa();
                     break;
                 case DiningRoom:
-                    furniture = new Table();
+                    furniture = new MedievalTable();
                     break;
                 case Kitchen:
+                    furniture = new Table();
                     break;
                 case Utility:
+                    furniture = new Stool();
                     break;
                 case MasterBedroom:
                     furniture = new Bed();
                     break;
                 case SpareRoom:
+                    furniture = new Bed();
                     break;
                 case Toilet:
                     break;
                 case Bathroom:
                     break;
                 case TavernFloor:
+                    furniture = new Bar();
                     break;
                 case StoreRoom:
+                    furniture = new Barrel();
+                    break;
+                case ChurchFloor:
                     break;
                 default:
                     break;            
