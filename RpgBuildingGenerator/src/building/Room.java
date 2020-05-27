@@ -269,14 +269,32 @@ public class Room extends BuildingItem {
     
     public String getEdgePlacing(Edge thisEdge) {
         String edgePlacement = null;
-        // If edge above
-        edgePlacement = "TOP";
-        // If edge on Left
-        edgePlacement = "LEFT";
-        // If edge on Right
-        edgePlacement = "RIGHT";
-        // If edge below
-        edgePlacement = "BELOW";
+        Edge leftEdge = thisEdge;
+        Edge rightEdge = thisEdge;
+        Edge topEdge = thisEdge;
+        Edge bottomEdge = thisEdge;
+        for (Edge edge: this.edges())
+        {
+            if (edge != thisEdge && edge.getAlignment() != EdgeAlignment.SLANTED) {
+                if (edge.getMidPoint().isAbove(thisEdge.getMidPoint())) {
+                    topEdge = edge;
+                }
+                if (edge.getMidPoint().isLeft(thisEdge.getMidPoint())) {
+                    leftEdge = edge;
+                }
+                if (edge.getMidPoint().isRight(thisEdge.getMidPoint())) {
+                    rightEdge = edge;
+                }
+                if (edge.getMidPoint().isBelow(thisEdge.getMidPoint())) {
+                    bottomEdge = edge;
+                }
+            }
+        }
+        
+        if (topEdge == thisEdge) {edgePlacement = "TOP";}
+        else if (leftEdge == thisEdge) {edgePlacement = "LEFT";}
+        else if (rightEdge == thisEdge) {edgePlacement = "RIGHT";}
+        else if (bottomEdge == thisEdge) {edgePlacement = "BELOW";}
         
         return edgePlacement;
     }

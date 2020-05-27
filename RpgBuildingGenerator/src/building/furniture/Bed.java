@@ -18,7 +18,7 @@ public class Bed extends BuildingItem{
         this.setBounds(0, 0, 5, 20, 20, 5);
         this.rootPath = "furniture/bed with side tables/";
         this.objFilename = "bed.obj";
-        this.scaleFactor = 0.1f;
+        this.scaleFactor = 0.07f;
     }    
     
 }

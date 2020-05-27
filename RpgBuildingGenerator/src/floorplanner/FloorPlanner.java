@@ -480,33 +480,37 @@ public class FloorPlanner {
             //   FURNITURE   //
             //               //
             
-            // hack - stuff the furniture item in the midlle of the room
-            float x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
-            float z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
-            
             BuildingItem furniture = null;
-            Point edgePlacement = room.findFreeEdge().getMidPoint();
+            boolean placeInCentre = false;
+            boolean placeOnEdge = false;
+            float displacement = 0;
             
             switch (room.getRoomType()) {
                 case LivingRoom:
-                    x = edgePlacement.x();
-                    z = edgePlacement.y();
                     furniture = new OldSofa();
+                    placeOnEdge = true;
+                    displacement = 10;
                     break;
                 case DiningRoom:
                     furniture = new MedievalTable();
+                    placeInCentre = true;
                     break;
                 case Kitchen:
                     furniture = new Table();
+                    placeInCentre = true;
                     break;
                 case Utility:
                     furniture = new Stool();
+                    placeInCentre = true;
                     break;
                 case MasterBedroom:
                     furniture = new Bed();
+                    placeOnEdge = true;
+                    displacement = 15;
                     break;
                 case SpareRoom:
                     furniture = new Bed();
+                    placeOnEdge = true;
                     break;
                 case Toilet:
                     break;
@@ -514,22 +518,68 @@ public class FloorPlanner {
                     break;
                 case TavernFloor:
                     furniture = new Bar();
+                    placeOnEdge = true;
                     break;
                 case StoreRoom:
                     furniture = new Barrel();
+                    placeOnEdge = true;
                     break;
                 case ChurchFloor:
                     break;
                 default:
                     break;            
             }
+            
+            float x = 0, z = 0;
+            
+            if (placeInCentre) {
+                x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
+                z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
+            }
+            if (placeOnEdge) {
+                Edge freeEdge = room.findFreeEdge();
+                if (freeEdge != null) {
+                    Point placement = freeEdge.getMidPoint();
+                    String edgePlacement = room.getEdgePlacing(freeEdge);
+                    System.out.println(edgePlacement);
+                    if (edgePlacement != null) switch (edgePlacement) {
+                        case "TOP":
+                            x = placement.x();
+                            z = placement.y() - displacement;
+                            furniture.setRotation(0, 180, 0);
+                            break;
+                        case "LEFT":
+                            x = placement.x() + displacement;
+                            z = placement.y();
+                            furniture.setRotation(0, 90, 0);
+                            break;
+                        case "RIGHT":
+                            x = placement.x() - displacement;
+                            z = placement.y();
+                            furniture.setRotation(0, -90, 0);
+                            break;
+                        case "BELOW":
+                            x = placement.x();
+                            z = placement.y() + displacement;
+                            furniture.setRotation(0, 0, 0);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else {
+                    furniture = null; // Remove furniture: No free edge
+                }
+            }
+           
 
             if (furniture != null) {
                 furniture.setLocation(x, 0, z);
                 room.getFurniture().add(furniture);                 
             }
         }
-       
+        
+        
         
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
