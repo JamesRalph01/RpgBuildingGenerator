@@ -73,6 +73,8 @@ public class Point extends Vector2i implements Comparable<Point> {
         return (float) colour.getBlue() / 255f;
     }
     
+    
+    
     @Override
     public String toString() {
         return ("(" + this.x + "," + this.y + ")");
