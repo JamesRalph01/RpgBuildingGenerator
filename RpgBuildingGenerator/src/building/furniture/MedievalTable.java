@@ -16,7 +16,7 @@ public class MedievalTable extends BuildingItem {
         this.setBounds(0, 0, 5, 20, 20, 5);
         this.rootPath = "furniture/Medieval Table/";
         this.objFilename = "Medieval table.obj";
-        this.scaleFactor = 0.010f;
+        this.scaleFactor = 0.008f;
     }    
     
 }

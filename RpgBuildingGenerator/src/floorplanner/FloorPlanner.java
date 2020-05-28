@@ -489,7 +489,7 @@ public class FloorPlanner {
                 case LivingRoom:
                     furniture = new OldSofa();
                     placeOnEdge = true;
-                    displacement = 10;
+                    displacement = 13;
                     break;
                 case DiningRoom:
                     furniture = new MedievalTable();
@@ -506,11 +506,12 @@ public class FloorPlanner {
                 case MasterBedroom:
                     furniture = new Bed();
                     placeOnEdge = true;
-                    displacement = 15;
+                    displacement = 25;
                     break;
                 case SpareRoom:
                     furniture = new Bed();
                     placeOnEdge = true;
+                    displacement = 25;
                     break;
                 case Toilet:
                     break;
@@ -583,8 +584,6 @@ public class FloorPlanner {
         
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
-    }
-
-        
+    }     
 }
 

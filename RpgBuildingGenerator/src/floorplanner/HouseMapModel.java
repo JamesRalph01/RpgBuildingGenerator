@@ -169,7 +169,7 @@ public class HouseMapModel implements MapModel {
     
     private void getRatios() {
         
-        this.roomRatio = new int[]{30,30,40}; // S,Se,P
+        this.roomRatio = new int[]{40,40,40}; // S,Se,P
         this.socialTotal = 0; this.serviceTotal = 0; this.privateTotal = 0;
         ArrayList<Integer> socialRatios = new ArrayList<>();
         ArrayList<String> socialLabels = new ArrayList<>();
@@ -219,7 +219,7 @@ public class HouseMapModel implements MapModel {
                         case 'D':
                             // Dining Room
                             socialRatios.add(40); this.socialTotal += 40;
-                            this.roomRatio[0] += 20;
+                            this.roomRatio[0] += 30;
                             socialLabels.add("Dr");
                             break;
                     }
