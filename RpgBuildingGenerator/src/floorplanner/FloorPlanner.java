@@ -23,7 +23,9 @@ import building.Room;
 import building.Room.RoomType;
 import building.Wall;
 import building.furniture.Bar;
+import building.furniture.BarTable;
 import building.furniture.Barrel;
+import building.furniture.Barrels;
 import building.furniture.Bed;
 import building.furniture.MedievalTable;
 import building.furniture.MetalDoor;
@@ -500,8 +502,8 @@ public class FloorPlanner {
                     placeInCentre = true;
                     break;
                 case Utility:
-                    furniture = new Stool();
-                    placeInCentre = true;
+                    //furniture = new Stool();
+                    //placeInCentre = true;
                     break;
                 case MasterBedroom:
                     furniture = new Bed();
@@ -517,8 +519,12 @@ public class FloorPlanner {
                 case Bathroom:
                     break;
                 case TavernFloor:
-                    furniture = new Bar();
-                    placeOnEdge = true;
+                    //furniture = new Bar();
+                    //placeOnEdge = true;
+                    furniture = new BarTable();
+                    placeInCentre = true;
+                    //furniture = new Barrels();
+                    //placeInCentre = true;
                     break;
                 case StoreRoom:
                     furniture = new Barrel();
