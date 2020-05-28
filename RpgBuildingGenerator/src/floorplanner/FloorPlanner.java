@@ -41,6 +41,7 @@ import util.Edge;
 import util.Edge.EdgeAlignment;
 import util.PolygonHelper;
 import util.Point;
+import util.Point.Scope;
 /**
  *
  * @author chrisralph
@@ -322,8 +323,8 @@ public class FloorPlanner {
         for (Room room: rooms) {  
             for (Edge edge: room.edges()) {
 
-                if (edge.isInternal())
-                {
+                if (edge.isInternal()) {
+                    
                     for (int i = 0; i < 2; i++) {
 
                         Point p = (i == 0 ? edge.point1() : edge.point2());
@@ -342,10 +343,8 @@ public class FloorPlanner {
                                     if (listPointAdjustments.containsKey(p) == false) {
                                         listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
                                     }
-
                                 }
                             }
-
                         }   
                     }
                 }
@@ -363,7 +362,50 @@ public class FloorPlanner {
             }
         }
         printAllPoints(false);
-
+        
+        System.out.println("Step 4: add external walls");
+        for (Room room: rooms) {
+            boolean isExternalRoom = false;
+            for (Edge edge: room.edges()) {
+                if (!edge.isInternal()) {
+                    isExternalRoom = true;
+                }
+            }
+            
+            if (isExternalRoom) {
+                Point externalPoint;
+                ArrayList<Edge> externalEdges = new ArrayList<>();
+                ArrayList<Point> externalPoints = new ArrayList<>();
+                for (Edge edge: room.edges()) {
+                    externalPoint = null;
+                    if (edge.point1().scope == Scope.EXTERNAL) {
+                        externalPoint = edge.point1();
+                        externalEdges.add(edge);
+                        externalPoints.add(externalPoint);
+                    }
+                    if (edge.point2().scope == Scope.EXTERNAL) {
+                        externalPoint = edge.point2();
+                        externalEdges.add(edge);
+                        externalPoints.add(externalPoint);
+                    }
+                }
+                int[] externalIndexes = new int[externalEdges.size()];
+                for (int i=0; i<externalEdges.size(); i++) {
+                    Edge closestEdge = polygonHelper.closestEdge(externalEdges.get(i), externalPoints.get(i));
+                    externalIndexes[i] = polygonHelper.edges().indexOf(closestEdge);
+                }
+                // Delete all external edges
+                for (Edge edge: room.edges()) {
+                    if (!edge.isInternal()) {
+                        room.edges().remove(edge);
+                    }
+                }
+                for (int i=externalIndexes[0]; i<externalIndexes[externalIndexes.length]; i++) {
+                    
+                }
+                room.edges().add(, element);
+            }
+        }
     }
         
     private void printAllPoints(boolean includeadj) {
