@@ -87,17 +87,20 @@ public class FurnitureLoader {
             
             System.out.println("Diffuse name : " + mtl.getMapKd());
             
-            Texture texture;
             try {
-                texture = new Texture(gl, "textures/" + item.rootPath + mtl.getMapKd());
+                Texture texture = new Texture(gl, "textures/" + item.rootPath + mtl.getMapKd());
+                
                 Material material = new Material(texture, (1.0f/255.0f) * mtl.getNs()); // reflectance  
                 material.setAmbientColour(new Vector4f(mtl.getKa().getX(), mtl.getKa().getY(), mtl.getKa().getZ(), 1.0f));
                 material.setDiffuseColour(new Vector4f(mtl.getKd().getX(), mtl.getKd().getY(), mtl.getKd().getZ(), 1.0f));
                 material.setSpecularColour(new Vector4f(mtl.getKs().getX(), mtl.getKs().getY(), mtl.getKs().getZ(), 1.0f));
-    
-                Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(obj), ObjData.getTexCoordsArray(obj, 2, true), 
-                                         ObjData.getNormalsArray(obj), ObjData.getFaceNormalIndicesArray(obj));
+                
+                Mesh mesh = new Mesh(gl, ObjData.getVerticesArray(materialGroup), ObjData.getTexCoordsArray(materialGroup, 2, true), 
+                                         ObjData.getNormalsArray(materialGroup), ObjData.getFaceNormalIndicesArray(materialGroup));
+                
+                
                 mesh.setMaterial(material);
+                mesh.setName("OBJ: " + item.objFilename + " MTL: " + materialName);
                 meshes.add(mesh);
             } catch (Exception ex) {
                 Logger.getLogger(FurnitureLoader.class.getName()).log(Level.SEVERE, null, ex);

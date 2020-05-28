@@ -18,6 +18,10 @@ public class Door extends BuildingItem {
         super();
         switch (theme) {
             case MODERN:
+                this.setBounds(0, 0, 5, 20, 20, 5);
+                this.rootPath = "furniture/Door/metal door/";
+                this.objFilename = "metal door.obj";
+                this.scaleFactor = 0.025f;
                 break;
             case MEDIEVAL:
                 this.setBounds(0, 0, 5, 20, 20, 5);
