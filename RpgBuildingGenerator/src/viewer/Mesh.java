@@ -13,16 +13,12 @@ import java.util.List;
 public class Mesh {
 
     private static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
-
     private final int vaoId;
-
     private final List<Integer> vboIdList;
-
     private final int vertexCount;
-
     private Vector3f colour;
-    
     private Material material;
+    private String name;
     
     public Mesh(GL4 gl, float[] positions, float[] textCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
@@ -213,6 +209,10 @@ public class Mesh {
         }
     }
     
+    public void setName(String name) {
+        this.name = name;
+    }
+     
     public Material getMaterial() {
         return material;
     }
@@ -240,6 +240,7 @@ public class Mesh {
     public void render(GL4 gl) {
         Texture texture = material.getTexture();
         if (texture != null) {
+
             // Activate first texture bank
             gl.glActiveTexture(GL4.GL_TEXTURE0);
             // Bind the texture

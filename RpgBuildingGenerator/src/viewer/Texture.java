@@ -11,11 +11,16 @@ public class Texture {
 
     private int textureId;
     private int width, height;
+    private String name;
 
     public Texture(GL4 gl, String fileName) throws Exception {
         this.loadTexture(gl, fileName);
+        this.name = fileName;
     }
-
+    
+    public String getName() {
+        return this.name;
+    }
 
     public void bind(GL4 gl) {
         gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
