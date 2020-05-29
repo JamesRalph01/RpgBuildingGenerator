@@ -29,6 +29,7 @@ import building.furniture.Barrels;
 import building.furniture.Bed;
 import building.furniture.MedievalTable;
 import building.furniture.MetalDoor;
+import building.furniture.ModernToilet;
 import building.furniture.OldSofa;
 import building.furniture.SciFiBox;
 import building.furniture.SciFiDoor;
@@ -515,6 +516,8 @@ public class FloorPlanner {
                     placeOnEdge = true;
                     break;
                 case Toilet:
+                    furniture = new ModernToilet();
+                    placeInCentre = true;
                     break;
                 case Bathroom:
                     break;

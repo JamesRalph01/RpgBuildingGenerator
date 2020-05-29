@@ -88,9 +88,16 @@ public class FurnitureLoader {
             System.out.println("Diffuse name : " + mtl.getMapKd());
             
             try {
-                Texture texture = new Texture(gl, "textures/" + item.rootPath + mtl.getMapKd());
+                Material material;
+                Texture texture;
                 
-                Material material = new Material(texture, (1.0f/255.0f) * mtl.getNs()); // reflectance  
+                material = new Material(); // reflectance  
+                
+                if (mtl.getMapKd() != null) {
+                    texture = new Texture(gl, "textures/" + item.rootPath + mtl.getMapKd());
+                    material.setTexture(texture);
+                }
+                material.setReflectance((1.0f/255.0f) * mtl.getNs());
                 material.setAmbientColour(new Vector4f(mtl.getKa().getX(), mtl.getKa().getY(), mtl.getKa().getZ(), 1.0f));
                 material.setDiffuseColour(new Vector4f(mtl.getKd().getX(), mtl.getKd().getY(), mtl.getKd().getZ(), 1.0f));
                 material.setSpecularColour(new Vector4f(mtl.getKs().getX(), mtl.getKs().getY(), mtl.getKs().getZ(), 1.0f));
