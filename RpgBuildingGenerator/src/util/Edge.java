@@ -5,6 +5,7 @@
  */
 package util;
 
+import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -224,6 +225,26 @@ public class Edge {
     
     public Point getMidPoint() {
         return new Point((this.x1()+this.x2())/2,(this.y1()+this.y2())/2);
+    }
+    
+    public Point getPerpendicularPointPositive(Point point1, Point point2, int Distance) {
+        int x1 = point1.x();
+        int x2 = point2.x();
+        int y1 = point1.y();
+        int y2 = point2.y();
+        double x3 = (x1+x2)/2 + (Distance/sqrt((y1-y2)^2+(x2-x1)^2))*(x2-x1);
+        double y3 = (y1+y2)/2 + (Distance/sqrt((y1-y2)^2+(x2-x1)^2))*(y1-y2);
+        return new Point(x3,y3);
+    }
+    
+    public Point getPerpendicularPointNegative(Point point1, Point point2, int Distance) {
+        int x1 = point1.x();
+        int x2 = point2.x();
+        int y1 = point1.y();
+        int y2 = point2.y();
+        double x3 = (x1+x2)/2 - (Distance/sqrt((y1-y2)^2+(x2-x1)^2))*(x2-x1);
+        double y3 = (y1+y2)/2 - (Distance/sqrt((y1-y2)^2+(x2-x1)^2))*(y1-y2);
+        return new Point(x3,y3);
     }
     
 }

@@ -38,6 +38,7 @@ import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import org.joml.Vector2f;
 import util.Edge;
 import util.Edge.EdgeAlignment;
@@ -366,48 +367,7 @@ public class FloorPlanner {
         printAllPoints(false);
         
         System.out.println("Step 4: add external walls");
-        for (Room room: rooms) {
-            boolean isExternalRoom = false;
-            for (Edge edge: room.edges()) {
-                if (!edge.isInternal()) {
-                    isExternalRoom = true;
-                }
-            }
-            
-            if (isExternalRoom) {
-                Point externalPoint;
-                ArrayList<Edge> externalEdges = new ArrayList<>();
-                ArrayList<Point> externalPoints = new ArrayList<>();
-                for (Edge edge: room.edges()) {
-                    externalPoint = null;
-                    if (edge.point1().scope == Scope.EXTERNAL) {
-                        externalPoint = edge.point1();
-                        externalEdges.add(edge);
-                        externalPoints.add(externalPoint);
-                    }
-                    if (edge.point2().scope == Scope.EXTERNAL) {
-                        externalPoint = edge.point2();
-                        externalEdges.add(edge);
-                        externalPoints.add(externalPoint);
-                    }
-                }
-                int[] externalIndexes = new int[externalEdges.size()];
-                for (int i=0; i<externalEdges.size(); i++) {
-                    Edge closestEdge = polygonHelper.closestEdge(externalEdges.get(i), externalPoints.get(i));
-                    externalIndexes[i] = polygonHelper.edges().indexOf(closestEdge);
-                }
-                // Delete all external edges
-                for (Edge edge: room.edges()) {
-                    if (!edge.isInternal()) {
-                        room.edges().remove(edge);
-                    }
-                }
-                for (int i=externalIndexes[0]; i<externalIndexes[externalIndexes.length]; i++) {
-                    
-                }
-                room.edges().add(, element);
-            }
-        }
+        
     }
         
     private void printAllPoints(boolean includeadj) {
@@ -475,12 +435,50 @@ public class FloorPlanner {
             //   DOORS   //
             //           //
             
+            Edge doorEdge = new Edge(new Point(),new Point());
+            // Exterior Doors //
+            if (this.buildingType == BuildingType.HOUSE && room.getRoomType() == RoomType.LivingRoom) {
+                for (Edge edge: room.edges()) {
+                    if (edge.point1().scope == Scope.EXTERNAL) {
+                        Edge closestEdge = polygonHelper.closestEdge(edge, edge.point1());
+                        doorEdge = new Edge(edge.point1(), closestEdge.point1());
+                    }
+                    else if (edge.point2().scope == Scope.EXTERNAL) {
+                        Edge closestEdge = polygonHelper.closestEdge(edge, edge.point1());
+                        doorEdge = new Edge(edge.point2(), closestEdge.point1());
+                    }
+                }
+            }
+            if (this.buildingType == BuildingType.TAVERN && room.getRoomType() == RoomType.TavernFloor) {
+                
+            }
+            // Place Exterior Door on edge
+            BuildingItem door = new Door(this.buildingTheme);
+            room.getFurniture().add(door);
+            
+            float edgeAngle = (float)Math.toDegrees(Math.atan2(doorEdge.y2()-doorEdge.y1(), doorEdge.x2()-doorEdge.x1()));
+            if (edgeAngle < 0) {
+                edgeAngle += 360;
+            }
+            System.out.println(edgeAngle);
+            door.setRotation(0, edgeAngle, 0);
+            Point doorFront = doorEdge.getPerpendicularPointPositive(doorEdge.point1(), doorEdge.point2(), 5);
+            door.setLocation(doorFront.x(), 0, doorFront.y());
+            
+            door = new Door(this.buildingTheme);
+            room.getFurniture().add(door);
+            door.setRotation(0, edgeAngle, 0);
+            doorFront = doorEdge.getPerpendicularPointNegative(doorEdge.point1(), doorEdge.point2(), 5);
+            door.setLocation(doorFront.x(), 0, doorFront.y());
+            
+
+            
+            // Interior Doors //
             // Add Door Connections
             ArrayList<Room> roomConnections = room.getRoomConnections();
             
             if (roomConnections.size() >= 1) { // Has Room Connections
                 ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
-                BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
                     door = new Door(this.buildingTheme);
