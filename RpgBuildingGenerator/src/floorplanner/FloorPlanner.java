@@ -32,7 +32,6 @@ import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
 import building.furniture.ExternalDoor;
 import building.furniture.Fire;
-import building.furniture.Fridge;
 import building.furniture.KitchenSinkAndOven;
 import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
@@ -451,8 +450,8 @@ public class FloorPlanner {
                 BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    //door = new Door(this.buildingTheme, wealthIndicator);
-                    door = new ExternalDoor(this.buildingTheme, wealthIndicator);
+                    door = new Door(this.buildingTheme, wealthIndicator);
+                    //door = new ExternalDoor(this.buildingTheme, wealthIndicator);
                     Edge sharedEdge = room.getDoorLocation(connectionEdges.get(i),roomConnections.get(i));
                     int edgeLength;
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {

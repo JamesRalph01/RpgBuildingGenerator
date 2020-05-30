@@ -18,11 +18,19 @@ public class ExternalDoor extends BuildingItem
         super();
         switch (theme) {
             case MODERN:
-                this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/Door/Modern External Door/";
-                this.objFilename = "door.obj";
-                this.scaleFactor = 0.0008f;
-                break;
+//                if (wealthIndicator > 50) {
+//                    this.setBounds(0, 0, 5, 20, 20, 5);
+//                    this.rootPath = "furniture/Door/Modern External Door/";
+//                    this.objFilename = "door.obj";
+//                    this.scaleFactor = 0.0008f;
+//                } else {
+                    this.setBounds(0, 0, 5, 20, 20, 5);
+                    this.rootPath = "furniture/Door/Modern External Door2/";
+                    this.objFilename = "door.obj";
+                    this.scaleFactor = 0.0008f;   
+                    break;
+//                }
+//                break;
             case MEDIEVAL:
                 throw new UnsupportedOperationException("Not supported yet.");
             case FUTURISTIC:

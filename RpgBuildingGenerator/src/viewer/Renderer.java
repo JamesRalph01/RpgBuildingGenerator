@@ -47,6 +47,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     
     private Timestamp viewerTimestamp = null;
     
+    private boolean saveImage = false;
+    
     private final Vector3f cameraInc;
     private final Camera camera;
     private ArrayList<ViewerItem> viewerItems;
@@ -96,7 +98,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             // Lighting         
             ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
             Vector3f lightColour = new Vector3f(1, 1, 1);
-            Vector3f lightPosition = new Vector3f(0, 0, 1);
+            Vector3f lightPosition = new Vector3f(0, 0, 2);
             float lightIntensity = 1.0f;
             pointLight = new PointLight(lightColour, lightPosition, lightIntensity);
             PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
@@ -213,7 +215,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             mesh.render(gl);
         }
 
-        shaderProgram.unbind(gl);    
+        shaderProgram.unbind(gl);   
+        
+        if (controller.getSaveImage()) {
+            imageToFile(gl, controller.getimageFilename());
+            controller.setSaveImage(false);
+        }
          
     }
 
@@ -473,9 +480,9 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     @Override
     public void componentHidden(ComponentEvent e) {
     }
-    
-    protected void saveImage(GL4 gl) {
-
+        
+    private void imageToFile(GL4 gl, String filename) {
+              
         try {
             BufferedImage screenshot = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
             Graphics graphics = screenshot.getGraphics();
@@ -499,7 +506,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
                     graphics.drawRect(w, canvasHeight - h, 1, 1); // height - h is for flipping the image
                 }
             }
-            File outputfile = new File("D:\\Downloads\\texture.png");
+            File outputfile = new File(filename);
             ImageIO.write(screenshot, "png", outputfile);
         } catch (IOException ex) {
         }
