@@ -21,6 +21,7 @@ import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
 import building.Room.RoomType;
+import static building.Room.RoomType.Kitchen;
 import building.Wall;
 import building.furniture.Bar;
 import building.furniture.BarTable;
@@ -30,6 +31,7 @@ import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
 import building.furniture.Fire;
 import building.furniture.Fridge;
+import building.furniture.KitchenSinkAndOven;
 import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
 import building.furniture.ModernToilet;
@@ -507,8 +509,11 @@ public class FloorPlanner {
                     placeInCentre = true;
                     break;
                 case Kitchen:
-                    furniture = new KitchenTable(buildingTheme);
-                    placeInCentre = true;              
+                    //furniture = new KitchenTable(buildingTheme);
+                    //placeInCentre = true;     
+                    furniture = new KitchenSinkAndOven();
+                    placeOnEdge = true;
+                    displacement = 10;
                     break;
                 case Utility:
                     //furniture = new Stool();
