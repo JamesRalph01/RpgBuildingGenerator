@@ -43,8 +43,6 @@ public class Door extends BuildingItem {
                 this.objFilename = "scifi.obj";
                 this.scaleFactor = 0.040f;
                 break;
-            default:
-                break;
         }
     }    
 }

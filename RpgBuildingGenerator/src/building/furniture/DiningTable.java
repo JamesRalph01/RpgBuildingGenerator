@@ -30,12 +30,7 @@ public class DiningTable extends BuildingItem {
                 this.scaleFactor = 0.010f;            
                 break;
             case FUTURISTIC:       
-                break;
-            default:
-                break;
-        
-        
+                throw new UnsupportedOperationException("Not supported yet.");
         }    
-    
     }        
 }

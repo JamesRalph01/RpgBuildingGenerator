@@ -35,13 +35,6 @@ public class Fridge extends BuildingItem {
                 this.objFilename = "Fridge.obj";
                 this.scaleFactor = 0.0008f;                    
                 break;
-            default:
-                this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/Fridge/Double_Door_Fridge/";
-                this.objFilename = "Fridge.obj";
-                this.scaleFactor = 0.0008f;                    
-                break;
-        }
-        
+        }        
     }       
 }

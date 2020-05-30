@@ -24,21 +24,14 @@ public class TV extends BuildingItem {
                 this.scaleFactor = 0.002f;                    
                 break;
             case MEDIEVAL:
-                this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/tv/Entertainment stand/";
-                this.objFilename = "entertainment stand.obj";
-                this.scaleFactor = 0.002f;                    
-                break;
+                throw new UnsupportedOperationException("Really?");                 
             case FUTURISTIC:
                 this.setBounds(0, 0, 5, 20, 20, 5);
                 this.rootPath = "furniture/tv/Entertainment stand/";
                 this.objFilename = "entertainment stand.obj";
                 this.scaleFactor = 0.002f;                    
                 break;
-            default:
-                break;
-        }
-        
+        }        
     }    
     
 }

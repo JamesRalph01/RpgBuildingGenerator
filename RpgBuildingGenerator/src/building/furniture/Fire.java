@@ -18,8 +18,7 @@ public class Fire extends BuildingItem {
         super();
         switch (theme) {
             case MODERN:
-
-                break;
+                throw new UnsupportedOperationException("Not supported yet.");
             case MEDIEVAL:
                 if (wealthIndicator > 50) {
                     this.setBounds(0, 0, 5, 20, 20, 5);
@@ -32,13 +31,10 @@ public class Fire extends BuildingItem {
                     this.objFilename = "firepit.obj";
                     this.scaleFactor = 0.01f;                      
                 }
-
                 break;
             case FUTURISTIC:
+                throw new UnsupportedOperationException("Not supported yet.");
 
-                break;
-            default:
-                break;
         }
     }    
     

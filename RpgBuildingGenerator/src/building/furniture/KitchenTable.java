@@ -30,13 +30,7 @@ public class KitchenTable extends BuildingItem {
                 this.scaleFactor = 0.009f;            
                 break;
             case FUTURISTIC:
-       
-                break;
-            default:
-                break;
-        
-        
+                throw new UnsupportedOperationException("Not supported yet.");
         }    
-    
     }    
 }

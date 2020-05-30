@@ -12,5 +12,7 @@ import building.BuildingItem;
  * @author chrisralph
  */
 public class Window extends BuildingItem {
-    
+    public Window() {
+        throw new UnsupportedOperationException("Not supported yet.");           
+    }
 }

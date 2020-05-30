@@ -35,10 +35,6 @@ public class SingleBed extends BuildingItem{
                 this.objFilename = "bed.obj";
                 this.scaleFactor = 0.07f;                
                 break;
-            default:
-                break;
         }
-        
     }    
-    
 }
