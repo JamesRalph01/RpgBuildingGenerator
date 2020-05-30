@@ -28,6 +28,7 @@ import building.furniture.Barrel;
 import building.furniture.Barrels;
 import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
+import building.furniture.Fire;
 import building.furniture.Fridge;
 import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
@@ -534,10 +535,12 @@ public class FloorPlanner {
                 case TavernFloor:
                     //furniture = new Bar();
                     //placeOnEdge = true;
-                    furniture = new BarTable();
-                    placeInCentre = true;
+                    //furniture = new BarTable();
+                    //placeInCentre = true;
                     //furniture = new Barrels();
                     //placeInCentre = true;
+                    furniture = new Fire(this.buildingTheme, this.wealthIndicator);
+                    placeInCentre = true;                    
                     break;
                 case StoreRoom:
                     furniture = new Barrel();
