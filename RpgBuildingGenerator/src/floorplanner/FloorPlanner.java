@@ -26,9 +26,10 @@ import building.furniture.Bar;
 import building.furniture.BarTable;
 import building.furniture.Barrel;
 import building.furniture.Barrels;
+import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
 import building.furniture.Fridge;
-import building.furniture.MedievalTable;
+import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
 import building.furniture.ModernToilet;
 import building.furniture.OldSofa;
@@ -501,13 +502,13 @@ public class FloorPlanner {
                     displacement = 10;
                     break;
                 case DiningRoom:
-                    furniture = new MedievalTable();
+                    furniture = new DiningTable(buildingTheme);
                     placeInCentre = true;
                     break;
                 case Kitchen:
                     //furniture = new Table();
                     //placeInCentre = true;
-                    furniture = new Fridge(buildingTheme);
+                    furniture = new KitchenTable(buildingTheme);
                     placeOnEdge = true;
                     displacement = 10;                  
                     break;
