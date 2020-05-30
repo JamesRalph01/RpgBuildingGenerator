@@ -19,15 +19,15 @@ public class KitchenTable extends BuildingItem {
         switch (theme) {
             case MODERN:
                 this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/bed/bed with side tables/";
-                this.objFilename = "bed.obj";
-                this.scaleFactor = 0.07f;                    
+                this.rootPath = "furniture/Table/Modern Kitchen Table/";
+                this.objFilename = "Modern Kitchen Table.obj";
+                this.scaleFactor = 0.001f;                    
                 break;
             case MEDIEVAL:
                 this.setBounds(0, 0, 5, 20, 20, 5);
                 this.rootPath = "furniture/table/Medieval Table/";
                 this.objFilename = "Medieval table.obj";
-                this.scaleFactor = 0.010f;            
+                this.scaleFactor = 0.009f;            
                 break;
             case FUTURISTIC:
        

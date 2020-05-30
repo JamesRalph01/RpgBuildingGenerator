@@ -507,11 +507,8 @@ public class FloorPlanner {
                     placeInCentre = true;
                     break;
                 case Kitchen:
-                    //furniture = new Table();
-                    //placeInCentre = true;
                     furniture = new KitchenTable(buildingTheme);
-                    placeOnEdge = true;
-                    displacement = 10;                  
+                    placeInCentre = true;              
                     break;
                 case Utility:
                     //furniture = new Stool();
