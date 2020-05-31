@@ -5,12 +5,32 @@
  */
 package main;
 
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import static javax.swing.JFileChooser.SAVE_DIALOG;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import util.Point;
+import viewer.Renderer;
 
 /**
  *
@@ -175,6 +195,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
         labelWealthy.setText("Wealthy");
 
         buttonSave.setText("Save");
+        buttonSave.setEnabled(false);
         buttonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonSaveActionPerformed(evt);
@@ -384,7 +405,26 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_tabPaneStateChanged
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        // Show file location dialog
+        // parent component of the dialog
+        //JFrame parentFrame = new JFrame();
+
+        JFileChooser fileChooser = new JFileChooser();
+        
+        FileNameExtensionFilter filt = new FileNameExtensionFilter("PNG file", "png");
+        fileChooser.addChoosableFileFilter(filt);
+        fileChooser.setFileFilter(filt);
+        fileChooser.setDialogTitle("Specify file to save");   
+        fileChooser.setDialogType(SAVE_DIALOG);
+
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+            controller.setSaveImage(true);
+            controller.setimageFilename(fileToSave.getAbsolutePath());
+        }
+       
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void radioModernActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioModernActionPerformed

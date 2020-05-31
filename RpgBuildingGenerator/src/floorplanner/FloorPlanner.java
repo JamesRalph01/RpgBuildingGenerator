@@ -21,20 +21,28 @@ import designer.BuildingOutline;
 import org.joml.Vector2d;
 import building.Room;
 import building.Room.RoomType;
+import static building.Room.RoomType.Kitchen;
 import building.Wall;
 import building.furniture.Bar;
 import building.furniture.BarTable;
 import building.furniture.Barrel;
 import building.furniture.Barrels;
-import building.furniture.Bed;
-import building.furniture.MedievalTable;
+import building.furniture.Bath;
+import building.furniture.DiningTable;
+import building.furniture.DoubleBed;
+import building.furniture.ExternalDoor;
+import building.furniture.Fire;
+import building.furniture.KitchenSinkAndOven;
+import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
 import building.furniture.ModernToilet;
 import building.furniture.OldSofa;
 import building.furniture.SciFiBox;
 import building.furniture.SciFiDoor;
 import building.furniture.Shelf;
+import building.furniture.SingleBed;
 import building.furniture.Stool;
+import building.furniture.TV;
 import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;
@@ -442,7 +450,8 @@ public class FloorPlanner {
                 BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Door(this.buildingTheme);
+                    door = new Door(this.buildingTheme, wealthIndicator);
+                    //door = new ExternalDoor(this.buildingTheme, wealthIndicator);
                     Edge sharedEdge = room.getDoorLocation(connectionEdges.get(i),roomConnections.get(i));
                     int edgeLength;
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
@@ -490,29 +499,35 @@ public class FloorPlanner {
             
             switch (room.getRoomType()) {
                 case LivingRoom:
-                    furniture = new OldSofa();
+//                    furniture = new OldSofa();
+//                    placeOnEdge = true;
+//                    displacement = 10;
+                    furniture = new TV(buildingTheme);
                     placeOnEdge = true;
                     displacement = 10;
                     break;
                 case DiningRoom:
-                    furniture = new MedievalTable();
+                    furniture = new DiningTable(buildingTheme);
                     placeInCentre = true;
                     break;
                 case Kitchen:
-                    furniture = new Table();
-                    placeInCentre = true;
+                    //furniture = new KitchenTable(buildingTheme);
+                    //placeInCentre = true;     
+                    furniture = new KitchenSinkAndOven();
+                    placeOnEdge = true;
+                    displacement = 10;
                     break;
                 case Utility:
                     //furniture = new Stool();
                     //placeInCentre = true;
                     break;
                 case MasterBedroom:
-                    furniture = new Bed();
+                    furniture = new DoubleBed(buildingTheme);
                     placeOnEdge = true;
                     displacement = 15;
                     break;
                 case SpareRoom:
-                    furniture = new Bed();
+                    furniture = new SingleBed(buildingTheme);
                     placeOnEdge = true;
                     break;
                 case Toilet:
@@ -520,14 +535,19 @@ public class FloorPlanner {
                     placeInCentre = true;
                     break;
                 case Bathroom:
+                    
+                    //furniture = new Bath(buildingTheme); <<< CRASHES
+                    //placeInCentre = true;                 
                     break;
                 case TavernFloor:
                     //furniture = new Bar();
                     //placeOnEdge = true;
-                    furniture = new BarTable();
-                    placeInCentre = true;
+                    //furniture = new BarTable();
+                    //placeInCentre = true;
                     //furniture = new Barrels();
                     //placeInCentre = true;
+                    furniture = new Fire(this.buildingTheme, this.wealthIndicator);
+                    placeInCentre = true;                    
                     break;
                 case StoreRoom:
                     furniture = new Barrel();

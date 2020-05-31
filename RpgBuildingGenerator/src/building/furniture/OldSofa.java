@@ -19,6 +19,5 @@ public class OldSofa extends BuildingItem {
         this.objFilename = "old sofa.obj";
         this.scaleFactor = 0.00100f;
     }    
-    
-    
+
 }

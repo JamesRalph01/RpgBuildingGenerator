@@ -14,28 +14,34 @@ import floorplanner.FloorPlanner.BuildingTheme;
  */
 public class Door extends BuildingItem {
     
-    public Door(BuildingTheme theme) {
+    public Door(BuildingTheme theme, int wealthIndicator) {
         super();
         switch (theme) {
             case MODERN:
                 this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/Door/metal door/";
-                this.objFilename = "metal door.obj";
-                this.scaleFactor = 0.025f;
+                this.rootPath = "furniture/Door/Modern door/";
+                this.objFilename = "Modern door.obj";
+                this.scaleFactor = 0.004f;
                 break;
             case MEDIEVAL:
-                this.setBounds(0, 0, 5, 20, 20, 5);
-                this.rootPath = "furniture/Door/Medieval_Door/";
-                this.objFilename = "Medieval door.obj";
-                this.scaleFactor = 0.0020f;
+                if (wealthIndicator > 50) {
+                    this.setBounds(0, 0, 5, 20, 20, 5);
+                    this.rootPath = "furniture/Door/Medieval_Door/";
+                    this.objFilename = "Medieval door.obj";
+                    this.scaleFactor = 0.0020f;                    
+                } else {
+                    this.setBounds(0, 0, 5, 20, 20, 5);
+                    this.rootPath = "furniture/Door/Poor medieval door/";
+                    this.objFilename = "Poor medieval door.obj";
+                    this.scaleFactor = 0.07f;                      
+                }
+
                 break;
             case FUTURISTIC:
                 this.setBounds(0, 0, 5, 20, 20, 5);
                 this.rootPath = "furniture/Door/SciFi door/";
                 this.objFilename = "scifi.obj";
                 this.scaleFactor = 0.040f;
-                break;
-            default:
                 break;
         }
     }    
