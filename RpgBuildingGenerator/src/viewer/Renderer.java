@@ -98,8 +98,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             // Lighting         
             ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
             Vector3f lightColour = new Vector3f(1, 1, 1);
-            Vector3f lightPosition = new Vector3f(0, 0, 2);
-            float lightIntensity = 1.0f;
+            Vector3f lightPosition = new Vector3f(0, 0, 0.8f);
+            float lightIntensity = 0.7f;
             pointLight = new PointLight(lightColour, lightPosition, lightIntensity);
             PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
             pointLight.setAttenuation(att);
@@ -430,20 +430,22 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         
         try {
             
-            texture = new Texture(gl, "textures/" + floor.rootPath + floor.textures[0]);
-            texture.enableWrap(gl);
+            //texture = new Texture(gl, "textures/" + floor.rootPath + floor.textures[0]);
+            //texture.enableWrap(gl);
             
-            Material material = new Material(texture, reflectance);
+           // Material material = new Material(texture, reflectance);
+            Material material = new Material(new Vector4f(255/184f,255/184f,255/184f,1.0f), .75f);
             
             // normalise positions
             float[] positions = new float[floor.positions.length];
             for (int i=0; i < floor.positions.length; i+=3) {
                 positions[i] = toNX(floor.positions[i]);
-                positions[i+1] = toNX(floor.positions[i+1]);
+                positions[i+1] = 0.0f;
                 positions[i+2] = toNY(floor.positions[i+2]);
             }
 
-            mesh = new Mesh(gl, positions, floor.textCoords, floor.normals, floor.indices);
+            //mesh = new Mesh(gl, positions, floor.textCoords, floor.normals, floor.indices);
+            mesh = new Mesh(gl, positions, floor.indices);
             mesh.setMaterial(material);
             
         } catch (Exception ex) {

@@ -72,7 +72,7 @@ public class Floor extends BuildingItem {
             indices[ind] = ind; //triangles.indexOf(point);
             ind++;
             positions[p++] = (float) point.x;
-            positions[p++] = 0.0f;
+            positions[p++] = 1.0f;
             positions[p++] = (float) point.y; // Z!  
         }
 
@@ -117,12 +117,12 @@ public class Floor extends BuildingItem {
         this.normals = new float[vNormals.size() * 3];
         int i=0;
         for (Vector3f normal : vNormals) {
-//            this.normals[i++] = normal.x;
-//            this.normals[i++] = normal.y;
-//            this.normals[i++] = normal.z;
-            this.normals[i++] = 0.0f;
-            this.normals[i++] = 1.0f;
-            this.normals[i++] = 0.0f;
+            this.normals[i++] = normal.x;
+            this.normals[i++] = normal.y;
+            this.normals[i++] = normal.z;
+            //this.normals[i++] = 0.0f;
+            //this.normals[i++] = 1.0f;
+            //this.normals[i++] = 0.0f;
         }
     }
     
