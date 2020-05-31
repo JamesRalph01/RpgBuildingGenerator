@@ -5,38 +5,24 @@
  */
 package main;
 
-import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import floorplanner.FloorPlanner;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import static javax.swing.JFileChooser.SAVE_DIALOG;
-import javax.swing.JFrame;
+import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import util.Point;
-import viewer.Renderer;
 
 /**
  *
  * @author chrisralph
  */
-public class ApplicationMainWindow extends javax.swing.JFrame {
+public class ApplicationMainWindow extends javax.swing.JFrame implements PropertyChangeListener {
 
     /**
      * Creates new form NewApplicationMainWindow
@@ -44,11 +30,18 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     
     private Controller controller;
     private GLCanvas viewerPanel;
+    private ProgressMonitor progressBar;
     
     public ApplicationMainWindow() {
-        controller = new Controller();
         initComponents();
+//        progressBar = new ProgressMonitor();
+//        this.add(progressBar);
+//        progressBar.setVisible(false);
+        
+        controller = new Controller();
+        controller.setprogressBar(progressBar);
         setController(controller);
+        
         tabPane.setSelectedComponent(designerPanel);
     }
     
@@ -76,6 +69,7 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     
     public void setController(Controller controller) {
         this.controller = controller;
+        controller.setprogressBar(progressBar);
         designerPanel.setController(controller);
     }
 
@@ -401,6 +395,12 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
             sliderEcon.setEnabled(false);
             labelPoor.setEnabled(false);
             labelWealthy.setEnabled(false);
+            
+            //Clicking on Viewer will start the 3D renderer
+            progressBar = new ProgressMonitor(this, "Generating House", "", 0, 100);
+            progressBar.setProgress(0);
+            controller.setprogressBar(progressBar);
+            
         }
     }//GEN-LAST:event_tabPaneStateChanged
 
@@ -506,4 +506,8 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
     private javax.swing.JSlider sliderEcon;
     private javax.swing.JTabbedPane tabPane;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+    }
 }

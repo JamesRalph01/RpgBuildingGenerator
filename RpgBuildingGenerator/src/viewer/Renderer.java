@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.imageio.ImageIO;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import main.Controller;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
@@ -44,6 +46,7 @@ import org.joml.Vector4f;
 public class Renderer implements GLEventListener, MouseListener, MouseMotionListener, KeyListener, ComponentListener {
 
     public Controller controller;
+    private BackgroundMeshLoader backgroundMeshLoader;
     
     private Timestamp viewerTimestamp = null;
     
@@ -98,7 +101,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             // Lighting         
             ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
             Vector3f lightColour = new Vector3f(1, 1, 1);
-            Vector3f lightPosition = new Vector3f(0, 0, 2);
+            Vector3f lightPosition = new Vector3f(0, 0, 1.2f);
             float lightIntensity = 1.0f;
             pointLight = new PointLight(lightColour, lightPosition, lightIntensity);
             PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
@@ -164,7 +167,8 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
             
             // load new objects
             if (controller.getFloorPlanner().hasfloorPlanAvailable()) {
-                loadObjects(gl);
+                loadObjects(gl); // Will be run in the background
+                
                 camera.setPosition(0, 0, 1);
                 sceneRotation.set(-35.0f, 0, 0);
                 sceneTranslation.x = toNX(controller.getFloorPlanner().get3DBuilding().getLocation().x);
@@ -202,19 +206,20 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         lightPos.y = aux.y;
         lightPos.z = aux.z;
         shaderProgram.setUniform(gl, "pointLight", currPointLight);        
-        
         shaderProgram.setUniform(gl, "texture_sampler", 0);
+        
         // Render each viewerItem
-        for (ViewerItem viewerItem : viewerItems) {
-            Mesh mesh = viewerItem.getMesh();
-            // Set model view matrix for this item
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation, sceneTranslation);
-            shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
-            // Render the mesh for this game item
-            shaderProgram.setUniform(gl, "material", mesh.getMaterial());
-            mesh.render(gl);
+        if (controller.getLoadingObjects() == false) {
+            for (ViewerItem viewerItem : viewerItems) {
+                Mesh mesh = viewerItem.getMesh();
+                // Set model view matrix for this item
+                Matrix4f modelViewMatrix = transformation.getModelViewMatrix(viewerItem, viewMatrix, sceneRotation, sceneTranslation);
+                shaderProgram.setUniform(gl, "modelViewMatrix", modelViewMatrix);
+                // Render the mesh for this game item
+                shaderProgram.setUniform(gl, "material", mesh.getMaterial());
+                mesh.render(gl);
+            }            
         }
-
         shaderProgram.unbind(gl);   
         
         if (controller.getSaveImage()) {
@@ -321,147 +326,12 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
     }
     
     private void loadObjects(GL4 gl) {
-                    
-        try {
-            initBuilding(gl);
-        } catch (Exception ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            
+        controller.setLoadingObjects(true);
+        backgroundMeshLoader = new BackgroundMeshLoader(gl, this.controller);                
+        backgroundMeshLoader.execute();
     }
     
-    private void initBuilding(GL4 gl) {
-    
-        if (this.controller == null) return;
-        if (this.controller.getFloorPlanner().hasfloorPlanAvailable() == false) return;
-        
-        System.out.println("loading objects...");
-        
-        Building building = this.controller.getFloorPlanner().get3DBuilding();
-        
-        // Create dynamic objects, starting with external walls
-        for (Wall wall : building.getExternalWalls()) {
-            Mesh mesh = buildWallMesh(gl, building, wall);          
-            ViewerItem viewerItem = new ViewerItem(mesh);
-            viewerItems.add(viewerItem);  
-        }
-        
-        //Floor
-        try {
-            Floor floor = building.getFloor();
-            Mesh mesh = buildFloorMesh(gl, floor);         
-            ViewerItem viewerItem = new ViewerItem(mesh);
-            viewerItems.add(viewerItem);      
-        } catch (Exception ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         
-        
-        // Now room interior
-        for (Room room : building.getRooms()) {
-            // Internal walls
-            for (Wall wall : room.getInternalWalls()) {
-                Mesh mesh = buildWallMesh(gl, building, wall);          
-                ViewerItem viewerItem = new ViewerItem(mesh);
-                viewerItems.add(viewerItem);                  
-            }
-            //Furniture
-            for (BuildingItem item : room.getFurniture()) {
-                buildFurnitureMesh(gl, item);                            
-            }
-        }
-    }
-    
-
-    private void buildFurnitureMesh(GL4 gl, BuildingItem furniture) {
-        ViewerItem viewerItem;
-        FurnitureLoader loader = new FurnitureLoader();
-        
-        try {
-            ArrayList<Mesh> meshes;
-            meshes = loader.loadFurniture(gl, furniture);
-            for (Mesh mesh : meshes) {
-                viewerItem = new ViewerItem(mesh);
-                viewerItem.setPosition(toNX(furniture.getLocation().x), 0.0f, toNY(furniture.getLocation().z));
-                viewerItem.setScale(furniture.scaleFactor);
-                viewerItem.setRotation(furniture.getRotation().x, furniture.getRotation().y, furniture.getRotation().z);
-                viewerItems.add(viewerItem);  
-            }
-
-        } catch (Exception ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-    
-   
-    private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
-        Mesh mesh = null;
-        Texture texture;
-        
-        try {
-            
-            texture = new Texture(gl, "textures/" + wall.rootPath + wall.textures[0]);
-            texture.enableWrap(gl);
-            
-            Material material = new Material(texture, reflectance);
-            
-            // normalise positions
-            float[] positions = new float[wall.positions.length];
-            for (int i=0; i < wall.positions.length; i+=3) {
-                positions[i] = toNX(wall.positions[i]);
-                positions[i+1] = toNX(wall.positions[i+1]);
-                positions[i+2] = toNY(wall.positions[i+2]);
-            }
-
-            mesh = new Mesh(gl, positions, wall.textCoords, wall.normals, wall.indices);
-            mesh.setMaterial(material);
-            
-        } catch (Exception ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return mesh;
-    }
-    
-     private Mesh buildFloorMesh(GL4 gl, Floor floor) {
-        Mesh mesh = null;
-        Texture texture;
-        
-        try {
-            
-            texture = new Texture(gl, "textures/" + floor.rootPath + floor.textures[0]);
-            texture.enableWrap(gl);
-            
-            Material material = new Material(texture, reflectance);
-            
-            // normalise positions
-            float[] positions = new float[floor.positions.length];
-            for (int i=0; i < floor.positions.length; i+=3) {
-                positions[i] = toNX(floor.positions[i]);
-                positions[i+1] = toNX(floor.positions[i+1]);
-                positions[i+2] = toNY(floor.positions[i+2]);
-            }
-
-            mesh = new Mesh(gl, positions, floor.textCoords, floor.normals, floor.indices);
-            mesh.setMaterial(material);
-            
-        } catch (Exception ex) {
-            Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return mesh;
-    }
-   
-    
-    
-    private float toNX(float deviceCoordX) {
-        return (2.0f / (float) canvasWidth)  * deviceCoordX;
-    }
-    
-    private float toNY(float deviceCoordY) { 
-        return -1 * (2.0f / (float) canvasHeight)  * deviceCoordY;
-    }
+ 
     
     @Override
     public void componentResized(ComponentEvent e) {
@@ -511,6 +381,189 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         } catch (IOException ex) {
         }
     }
+    
+    private float toNX(float deviceCoordX) {
+        return (2.0f / (float) canvasWidth)  * deviceCoordX;
+    }
+
+    private float toNY(float deviceCoordY) { 
+        return -1 * (2.0f / (float) canvasHeight)  * deviceCoordY;
+    }
+
+    class BackgroundMeshLoader extends SwingWorker<Void, Void> {
+        
+        private GL4 gl;
+        private Controller controller;
+        private ProgressMonitor progressBar;
+        
+        public BackgroundMeshLoader(GL4 gl, Controller controller) {
+            super();
+            this.gl  = gl;
+            this.controller = controller;
+            this.progressBar = controller.getProgressBar();
+        }
+        
+        @Override
+        public Void doInBackground() {
+
+            int itemCount = 0;
+            int progressCount = 0;
+
+            Building building = this.controller.getFloorPlanner().get3DBuilding();
+
+            // Get item count for progress bar
+            itemCount = building.getExternalWalls().size();
+            itemCount++; // Floor
+            for (Room room : building.getRooms()) {
+                itemCount+= room.getInternalWalls().size();
+                itemCount+= room.getFurniture().size();
+            }
+
+            // Show Progress Bar for rendering 3D view
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(itemCount);
+            progressBar.setProgress(0);
+
+            System.out.println("loading objects...");
+
+            // Create dynamic objects, starting with external walls
+            progressBar.setNote("Loading external walls...");
+            for (Wall wall : building.getExternalWalls()) {
+                Mesh mesh = buildWallMesh(gl, building, wall);          
+                ViewerItem viewerItem = new ViewerItem(mesh);
+                viewerItems.add(viewerItem); 
+                progressBar.setProgress(progressCount++);
+            }
+
+            //Floor
+            try {
+                progressBar.setNote("Loading floor...");
+                Floor floor = building.getFloor();
+                Mesh mesh = buildFloorMesh(gl, floor);         
+                ViewerItem viewerItem = new ViewerItem(mesh);
+                viewerItems.add(viewerItem);      
+                progressBar.setProgress(progressCount++);
+            } catch (Exception ex) {
+                Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
 
+            // Now room interior
+            progressBar.setNote("Loading room walls and furniture...");
+            for (Room room : building.getRooms()) {
+                // Internal walls
+                for (Wall wall : room.getInternalWalls()) {
+                    Mesh mesh = buildWallMesh(gl, building, wall);          
+                    ViewerItem viewerItem = new ViewerItem(mesh);
+                    viewerItems.add(viewerItem);                  
+                    progressBar.setProgress(progressCount++);
+                }
+                //Furniture
+                for (BuildingItem item : room.getFurniture()) {
+                    buildFurnitureMesh(gl, item);     
+                    progressBar.setProgress(progressCount++);
+                }
+            }
+            
+            progressBar.close();
+
+            return null;
+        }
+ 
+        @Override
+        public void done() {
+            controller.setLoadingObjects(false);
+        }
+        
+
+        private void buildFurnitureMesh(GL4 gl, BuildingItem furniture) {
+            ViewerItem viewerItem;
+            FurnitureLoader loader = new FurnitureLoader();
+
+            try {
+                ArrayList<Mesh> meshes;
+                meshes = loader.loadFurniture(gl, furniture);
+                for (Mesh mesh : meshes) {
+                    viewerItem = new ViewerItem(mesh);
+                    viewerItem.setPosition(toNX(furniture.getLocation().x), 0.0f, toNY(furniture.getLocation().z));
+                    viewerItem.setScale(furniture.scaleFactor);
+                    viewerItem.setRotation(furniture.getRotation().x, furniture.getRotation().y, furniture.getRotation().z);
+                    viewerItems.add(viewerItem);  
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+
+
+        private Mesh buildWallMesh(GL4 gl, Building building, Wall wall) {
+            Mesh mesh = null;
+            Texture texture;
+
+            try {
+
+                texture = new Texture(gl, "textures/" + wall.rootPath + wall.textures[0]);
+                texture.enableWrap(gl);
+
+                Material material = new Material(texture, reflectance);
+
+                // normalise positions
+                float[] positions = new float[wall.positions.length];
+                for (int i=0; i < wall.positions.length; i+=3) {
+                    positions[i] = toNX(wall.positions[i]);
+                    positions[i+1] = toNX(wall.positions[i+1]);
+                    positions[i+2] = toNY(wall.positions[i+2]);
+                }
+
+                mesh = new Mesh(gl, positions, wall.textCoords, wall.normals, wall.indices);
+                mesh.setMaterial(material);
+
+            } catch (Exception ex) {
+                Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return mesh;
+        }
+
+         private Mesh buildFloorMesh(GL4 gl, Floor floor) {
+            Mesh mesh = null;
+            Texture texture;
+
+            try {
+
+                texture = new Texture(gl, "textures/" + floor.rootPath + floor.textures[0]);
+                texture.enableWrap(gl);
+
+                Material material = new Material(texture, reflectance);
+
+                // normalise positions
+                float[] positions = new float[floor.positions.length];
+                for (int i=0; i < floor.positions.length; i+=3) {
+                    positions[i] = toNX(floor.positions[i]);
+                    positions[i+1] = toNX(floor.positions[i+1]);
+                    positions[i+2] = toNY(floor.positions[i+2]);
+                }
+
+                mesh = new Mesh(gl, positions, floor.textCoords, floor.normals, floor.indices);
+                mesh.setMaterial(material);
+
+            } catch (Exception ex) {
+                Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return mesh;
+        }
+
+
+        private float toNX(float deviceCoordX) {
+            return (2.0f / (float) canvasWidth)  * deviceCoordX;
+        }
+
+        private float toNY(float deviceCoordY) { 
+            return -1 * (2.0f / (float) canvasHeight)  * deviceCoordY;
+        }
+        
+    }
 }
