@@ -357,9 +357,6 @@ public class ApplicationMainWindow extends javax.swing.JFrame {
 
     private void buttonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateActionPerformed
         
-        // TODO: need to only allow generation if a building outline has been defined
-        // maybe put up a message box
-        
         if (controller.getBuildingOutLine().isComplete()) {
             controller.getFloorPlanner().generate(controller.getBuildingOutLine());
             designerPanel.Update();

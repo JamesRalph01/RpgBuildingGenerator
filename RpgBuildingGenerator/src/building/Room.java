@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import org.joml.Rectangled;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import util.Point;
 import util.Edge.EdgeAlignment;
@@ -35,6 +36,22 @@ public class Room extends BuildingItem {
         ChurchFloor,
         Empty
     }
+    
+    public String[] RoomTypeText = {
+        "MB",
+        "LR",
+        "K",
+        "BR",
+        "SR",
+        "T",
+        "U",
+        "DR",
+        "TF",
+        "SR",
+        "CF",
+        ""
+    };
+    
     
     public enum AreaType {
         SOCIAL,
@@ -72,10 +89,32 @@ public class Room extends BuildingItem {
         return points;
     }
     
+    public Point centreOf() {
+        Point c = new Point(this.bounds().lengthX() / 2, 
+                            this.bounds().lengthY() / 2);
+        c.x += this.bounds().minX;
+        c.y += this.bounds().minY;
+        return c;
+    }
+    
     public Rectangled bounds() {
-        PolygonHelper polygon;
-        polygon = new PolygonHelper(this.points());
-        return polygon.boundingRect();
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        
+        for (Edge edge : this.edges) {
+            minX = Math.min(edge.x1(), minX);
+            minX = Math.min(edge.x2(), minX);
+            maxX = Math.max(edge.x1(), maxX);
+            maxX = Math.max(edge.x2(), maxX);            
+
+            minY = Math.min(edge.y1(), minY);
+            minY = Math.min(edge.y2(), minY);
+            maxY = Math.max(edge.y1(), maxY);
+            maxY = Math.max(edge.y2(), maxY);  
+        }
+        return new Rectangled(minX, minY, maxX, maxY);
     }
     
     

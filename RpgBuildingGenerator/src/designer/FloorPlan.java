@@ -5,9 +5,15 @@
  */
 package designer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import util.Edge;
+import util.Point;
 
 /**
  *
@@ -17,9 +23,15 @@ public class FloorPlan implements IDesignerComponent {
 
     private boolean enabled = true;
     ArrayList<Edge> walls = new ArrayList<>();
+    HashMap<String, Point> labels = new HashMap<>();
+    
     
     public void addEdge(Edge edge) {
         walls.add(edge);
+    }
+    
+    public void setLabels(HashMap<String, Point> labels) {
+        this.labels = labels;
     }
     
     @Override
@@ -42,5 +54,17 @@ public class FloorPlan implements IDesignerComponent {
             g.setColor(wall.point1().getColour());
             g.drawLine(wall.point1().x, wall.point1().y, wall.point2().x, wall.point2().y);          
         }
+        
+        // Room labels
+        g.setColor(Color.lightGray);
+        Set set = this.labels.entrySet();
+        Iterator iterator = set.iterator();
+        while(iterator.hasNext()) {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            
+            Point point = (Point) mentry.getValue();
+            String label = (String) mentry.getKey();
+            g.drawString(label, point.x, point.y);
+        } 
     }    
 }
