@@ -455,8 +455,7 @@ public class Renderer implements GLEventListener, MouseListener, MouseMotionList
         return mesh;
     }
    
-    
-    
+
     private float toNX(float deviceCoordX) {
         return (2.0f / (float) canvasWidth)  * deviceCoordX;
     }

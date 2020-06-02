@@ -393,6 +393,8 @@ public class FloorPlanner {
     
     private void generate2DFloorplan() {
 
+        HashMap<String, Point> labels = new HashMap<>();
+        
         // Add external walls
         for (Edge edge : polygonHelper.edges()) {
             floorplan.addEdge(edge);
@@ -400,12 +402,16 @@ public class FloorPlanner {
         
         // Add internal walls
         for (Room room : rooms) {
+            labels.put(room.RoomTypeText[room.getRoomType().ordinal()], room.centreOf());
             for (Edge edge : room.edges()) {
                 if (edge.isInternal()) {
                     floorplan.addEdge(edge);
                 }        
             }
         }
+        
+        floorplan.setLabels(labels);
+        
     } 
     
     private void generate3DBuilding() {
@@ -502,9 +508,12 @@ public class FloorPlanner {
 //                    furniture = new OldSofa();
 //                    placeOnEdge = true;
 //                    displacement = 10;
-                    furniture = new TV(buildingTheme);
-                    placeOnEdge = true;
-                    displacement = 10;
+                    if (buildingTheme != BuildingTheme.MEDIEVAL)
+                    {
+                        furniture = new TV(buildingTheme);
+                        placeOnEdge = true;
+                        displacement = 10;
+                    }
                     break;
                 case DiningRoom:
                     furniture = new DiningTable(buildingTheme);
@@ -559,53 +568,57 @@ public class FloorPlanner {
                     break;            
             }
             
-            float x = 0, z = 0;
+            if (furniture != null) {
+                
+                float x = 0, z = 0;
             
-            if (placeInCentre) {
-                x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
-                z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
-            }
-            if (placeOnEdge) {
-                Edge freeEdge = room.findFreeEdge();
-                if (freeEdge != null) {
-                    Point placement = freeEdge.getMidPoint();
-                    String edgePlacement = room.getEdgePlacing(freeEdge);
-                    System.out.println(edgePlacement);
-                    if (edgePlacement != null) switch (edgePlacement) {
-                        case "TOP":
-                            x = placement.x();
-                            z = placement.y() - displacement;
-                            furniture.setRotation(0, 180, 0);
-                            break;
-                        case "LEFT":
-                            x = placement.x() + displacement;
-                            z = placement.y();
-                            furniture.setRotation(0, 90, 0);
-                            break;
-                        case "RIGHT":
-                            x = placement.x() - displacement;
-                            z = placement.y();
-                            furniture.setRotation(0, -90, 0);
-                            break;
-                        case "BELOW":
-                            x = placement.x();
-                            z = placement.y() + displacement;
-                            furniture.setRotation(0, 0, 0);
-                            break;
-                        default:
-                            break;
+                if (placeInCentre) {
+                    x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
+                    z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
+                }
+                if (placeOnEdge) {
+                    Edge freeEdge = room.findFreeEdge();
+                    if (freeEdge != null) {
+                        Point placement = freeEdge.getMidPoint();
+                        String edgePlacement = room.getEdgePlacing(freeEdge);
+                        System.out.println(edgePlacement);
+                        if (edgePlacement != null) switch (edgePlacement) {
+                            case "TOP":
+                                x = placement.x();
+                                z = placement.y() - displacement;
+                                furniture.setRotation(0, 180, 0);
+                                break;
+                            case "LEFT":
+                                x = placement.x() + displacement;
+                                z = placement.y();
+                                furniture.setRotation(0, 90, 0);
+                                break;
+                            case "RIGHT":
+                                x = placement.x() - displacement;
+                                z = placement.y();
+                                furniture.setRotation(0, -90, 0);
+                                break;
+                            case "BELOW":
+                                x = placement.x();
+                                z = placement.y() + displacement;
+                                furniture.setRotation(0, 0, 0);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else {
+                        furniture = null; // Remove furniture: No free edge
                     }
                 }
-                else {
-                    furniture = null; // Remove furniture: No free edge
-                }
-            }
-           
 
-            if (furniture != null) {
-                furniture.setLocation(x, 0, z);
-                room.getFurniture().add(furniture);                 
+
+                if (furniture != null) {
+                    furniture.setLocation(x, 0, z);
+                    room.getFurniture().add(furniture);                 
+                }              
             }
+
         }
         
         
@@ -613,7 +626,7 @@ public class FloorPlanner {
         // Generate 3D position data for our building (in device coords)
         this.building.Generate3DPositions(); 
     }
-
+         
         
 }
 
