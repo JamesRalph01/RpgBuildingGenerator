@@ -32,6 +32,7 @@ import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
 import building.furniture.ExternalDoor;
 import building.furniture.Fire;
+import building.furniture.Fridge;
 import building.furniture.KitchenSinkAndOven;
 import building.furniture.KitchenTable;
 import building.furniture.MetalDoor;
@@ -313,10 +314,10 @@ public class FloorPlanner {
                             if (partial.sharesEdge(edgeToCheck,6)) {
                                 edge.connectedEdges().add(edgeToCheck);
                                 edge.isInternal(true);
+                                // Add roomConnections is valid
                                 if (mapModel.checkRoomConnection(room.getRoomType(), roomToCheck.getRoomType())) {
                                     if (edge.getAlignment() == edgeToCheck.getAlignment()) {
                                         room.addRoomConnection(roomToCheck,edge);
-                                        //System.out.println("Adding " + roomToCheck.getRoomType() + " TO " + room.getRoomType());
                                     }
                                 }
                             }                          
@@ -339,11 +340,13 @@ public class FloorPlanner {
 
                         Point p = (i == 0 ? edge.point1() : edge.point2());
 
+                        // Check Point is external
                         if (p.scope == Point.Scope.EXTERNAL) {
                             Edge closestOutsideEdge;
                             Vector2d intersection = new Vector2d();
                             closestOutsideEdge = polygonHelper.closestEdge(edge, p);
                             if (closestOutsideEdge != null) {
+                                // Check if edge intersects with the external edge
                                 if (Intersectiond.intersectLineLine(edge.point1().x, edge.point1().y, 
                                                                     edge.point2().x, edge.point2().y,
                                                                     closestOutsideEdge.point1().x, closestOutsideEdge.point1().y,
@@ -351,6 +354,7 @@ public class FloorPlanner {
                                                                     intersection)) {
 
                                     if (listPointAdjustments.containsKey(p) == false) {
+                                        // Add new and old points to the hashmap of points that need adjusting
                                         listPointAdjustments.put(new Point(p), new Point(intersection.x, intersection.y));
                                     }
 
@@ -498,69 +502,111 @@ public class FloorPlanner {
             //   FURNITURE   //
             //               //
             
-            BuildingItem furniture = null;
-            boolean placeInCentre = false;
-            boolean placeOnEdge = false;
-            float displacement = 0;
+            ArrayList<BuildingItem> furniture= new ArrayList<>();
+            BuildingItem temp = null;
             
             switch (room.getRoomType()) {
                 case LivingRoom:
-//                    furniture = new OldSofa();
-//                    placeOnEdge = true;
-//                    displacement = 10;
+                    temp = new OldSofa();
+                    temp.placeOnEdge = true;
+                    temp.displacement = 10;
+                    furniture.add(temp);
                     if (buildingTheme != BuildingTheme.MEDIEVAL)
                     {
-                        furniture = new TV(buildingTheme);
-                        placeOnEdge = true;
-                        displacement = 10;
+                        temp = new TV(buildingTheme);
+                        temp.placeInCentre = true;
+                        temp.displacement = 10;
+                        furniture.add(temp);
+                    }
+                    else {
+                        temp = new Fire(buildingTheme,wealthIndicator);
+                        if (this.wealthIndicator > 50) {
+                            temp.placeOnEdge = true;
+                            temp.displacement = 10;
+                        }
+                        else {
+                            temp.placeInCentre = true;
+                        }
+                        furniture.add(temp);
                     }
                     break;
                 case DiningRoom:
-                    furniture = new DiningTable(buildingTheme);
-                    placeInCentre = true;
+                    temp = new DiningTable(buildingTheme);
+                    temp.placeInCentre = true;
+                    furniture.add(temp);
                     break;
                 case Kitchen:
-                    //furniture = new KitchenTable(buildingTheme);
-                    //placeInCentre = true;     
-                    furniture = new KitchenSinkAndOven();
-                    placeOnEdge = true;
-                    displacement = 10;
+                    temp = new KitchenTable(buildingTheme);
+                    temp.placeInCentre = true; 
+                    furniture.add(temp);
+                    if (buildingTheme != BuildingTheme.MEDIEVAL)
+                    {
+                        temp = new KitchenSinkAndOven();
+                        temp.placeOnEdge = true;
+                        temp.displacement = 10;
+                        furniture.add(temp);
+                    }
                     break;
                 case Utility:
-                    //furniture = new Stool();
-                    //placeInCentre = true;
+                    if (buildingTheme != BuildingTheme.MEDIEVAL)
+                    {
+                        temp = new Fridge(this.buildingTheme);
+                        temp.placeOnEdge = true;
+                        temp.displacement = 10;
+                    }
+                    else {
+                        if (this.wealthIndicator > 50) {
+                            temp = new Barrels();
+                        }
+                        else {
+                            temp = new Barrel();
+                        }
+                        temp.placeOnEdge = true;
+                        temp.displacement = 10;
+
+                    }
+                    furniture.add(temp);
                     break;
                 case MasterBedroom:
-                    furniture = new DoubleBed(buildingTheme);
-                    placeOnEdge = true;
-                    displacement = 15;
+                    temp = new DoubleBed(buildingTheme);
+                    temp.placeOnEdge = true;
+                    temp.displacement = 15;
+                    furniture.add(temp);
                     break;
                 case SpareRoom:
-                    furniture = new SingleBed(buildingTheme);
-                    placeOnEdge = true;
+                    temp = new SingleBed(buildingTheme);
+                    temp.placeOnEdge = true;
+                    furniture.add(temp);
                     break;
                 case Toilet:
-                    furniture = new ModernToilet();
-                    placeInCentre = true;
+                    temp = new ModernToilet();
+                    temp.placeInCentre = true;
+                    furniture.add(temp);
                     break;
                 case Bathroom:
-                    
+                    temp = new ModernToilet();
+                    temp.placeOnEdge = true;
+                    furniture.add(temp);
                     //furniture = new Bath(buildingTheme); <<< CRASHES
                     //placeInCentre = true;                 
                     break;
                 case TavernFloor:
-                    //furniture = new Bar();
-                    //placeOnEdge = true;
-                    //furniture = new BarTable();
-                    //placeInCentre = true;
-                    //furniture = new Barrels();
-                    //placeInCentre = true;
-                    furniture = new Fire(this.buildingTheme, this.wealthIndicator);
-                    placeInCentre = true;                    
+                    temp = new Bar();
+                    temp.placeOnEdge = true;
+                    furniture.add(temp);
+                    
+                    temp = new BarTable();
+                    temp.placeInCentre = true;
+                    furniture.add(temp);
+                    
+                    temp = new Fire(this.buildingTheme, this.wealthIndicator);
+                    temp.placeOnEdge = true;
+                    furniture.add(temp);                    
                     break;
                 case StoreRoom:
-                    furniture = new Barrel();
-                    placeOnEdge = true;
+                    temp = new Barrels();
+                    temp.placeOnEdge = true;
+                    furniture.add(temp);
                     break;
                 case ChurchFloor:
                     break;
@@ -568,59 +614,61 @@ public class FloorPlanner {
                     break;            
             }
             
-            if (furniture != null) {
-                
-                float x = 0, z = 0;
-            
-                if (placeInCentre) {
-                    x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
-                    z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
-                }
-                if (placeOnEdge) {
-                    Edge freeEdge = room.findFreeEdge();
-                    if (freeEdge != null) {
-                        Point placement = freeEdge.getMidPoint();
-                        String edgePlacement = room.getEdgePlacing(freeEdge);
-                        System.out.println(edgePlacement);
-                        if (edgePlacement != null) switch (edgePlacement) {
-                            case "TOP":
-                                x = placement.x();
-                                z = placement.y() - displacement;
-                                furniture.setRotation(0, 180, 0);
-                                break;
-                            case "LEFT":
-                                x = placement.x() + displacement;
-                                z = placement.y();
-                                furniture.setRotation(0, 90, 0);
-                                break;
-                            case "RIGHT":
-                                x = placement.x() - displacement;
-                                z = placement.y();
-                                furniture.setRotation(0, -90, 0);
-                                break;
-                            case "BELOW":
-                                x = placement.x();
-                                z = placement.y() + displacement;
-                                furniture.setRotation(0, 0, 0);
-                                break;
-                            default:
-                                break;
+            for (BuildingItem item: furniture) {
+                if (furniture != null) {
+
+                    float x = 0, z = 0;
+
+                    if (item.placeInCentre) {
+                        x = (float) room.bounds().minX + ((float) (room.bounds().maxX-room.bounds().minX)/ 2.0f);
+                        z = (float) room.bounds().minY + ((float) (room.bounds().maxY-room.bounds().minY)/ 2.0f);
+                    }
+                    if (item.placeOnEdge) {
+                        Edge freeEdge = room.findFreeEdge();
+                        if (freeEdge != null) {
+                            Point placement = freeEdge.getMidPoint();
+                            String edgePlacement = room.getEdgePlacing(freeEdge);
+                            System.out.println(edgePlacement);
+                            if (edgePlacement != null) switch (edgePlacement) {
+                                case "TOP":
+                                    x = placement.x();
+                                    z = placement.y() - item.displacement;
+                                    item.setRotation(0, 180, 0);
+                                    break;
+                                case "LEFT":
+                                    x = placement.x() + item.displacement;
+                                    z = placement.y();
+                                    item.setRotation(0, 90, 0);
+                                    break;
+                                case "RIGHT":
+                                    x = placement.x() - item.displacement;
+                                    z = placement.y();
+                                    item.setRotation(0, -90, 0);
+                                    break;
+                                case "BELOW":
+                                    x = placement.x();
+                                    z = placement.y() + item.displacement;
+                                    item.setRotation(0, 0, 0);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else {
+                            item = null; // Remove furniture: No free edge
                         }
                     }
-                    else {
-                        furniture = null; // Remove furniture: No free edge
-                    }
+
+                    
+                    if (item != null) {
+                        item.setLocation(x, 0, z);
+                        room.getFurniture().add(item);                 
+                    }              
                 }
 
-
-                if (furniture != null) {
-                    furniture.setLocation(x, 0, z);
-                    room.getFurniture().add(furniture);                 
-                }              
             }
-
-        }
         
+        }
         
         
         // Generate 3D position data for our building (in device coords)

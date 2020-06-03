@@ -22,6 +22,11 @@ public class BuildingItem {
     public String[] textures;
     public String objFilename; // Obj filename only - assumed stored in rootPath folder
     public float scaleFactor;
+    
+    public float additionalRotation = 0;
+    public float displacement = 0;
+    public boolean placeInCentre = false;
+    public boolean placeOnEdge = false;
 
     
     public BuildingItem() {
