@@ -386,27 +386,7 @@ public class FloorPlanner {
     }
     
     private void generate2DFloorplan() {
-
-        HashMap<String, Point> labels = new HashMap<>();
-        
-        // Add external walls
-        for (Edge edge : polygonHelper.edges()) {
-            floorplan.addEdge(edge);
-        }
-        
-        // Add internal walls
-        for (Room room : rooms) {
-            labels.put(room.RoomTypeText[room.getRoomType().ordinal()], room.centreOf());
-            for (Edge edge : room.edges()) {
-                if (edge.isInternal()) {
-                    floorplan.addEdge(edge);
-                }        
-            }
-        }
-        
-        floorplan.setLabels(labels);
         floorplan.setBuilding(this.building);
-        
     } 
     
     private void generate3DBuilding() {
