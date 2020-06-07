@@ -22,12 +22,14 @@ public class Edge {
     private Point[] points;
     private boolean isInternal = false;
     private ArrayList<Edge> connectedEdges;
+    private EdgeAlignment originalAlignment;
     
     public Edge(Edge edgeToCopy) {
         points = new Point[2];
         points[0] = new Point(edgeToCopy.point1());
         points[1] = new Point(edgeToCopy.point2());
         this.isInternal = edgeToCopy.isInternal();
+        this.originalAlignment = this.getAlignment();
     }
     
     public Edge(Point point1, Point point2) {
@@ -36,6 +38,8 @@ public class Edge {
         
         points[0] = new Point(point1);
         points[1] = new Point(point2);
+        
+        this.originalAlignment = this.getAlignment();
     }
     
     public Edge(Point point1, Point point2, Rect bounds) {
@@ -48,6 +52,10 @@ public class Edge {
        this.isInternal = isInternal;
     }
   
+    public EdgeAlignment getOriginalAlignment() {
+        return this.originalAlignment;
+    }
+    
     public void calcExternalPoints(Rect bounds) {
         // check if edge lies on bounding rectangle
 

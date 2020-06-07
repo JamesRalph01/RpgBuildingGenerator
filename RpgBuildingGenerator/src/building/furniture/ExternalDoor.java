@@ -28,7 +28,12 @@ public class ExternalDoor extends BuildingItem
 //                }
 //                break;
             case MEDIEVAL:
-                throw new UnsupportedOperationException("Not supported yet.");
+                    this.setBounds(0, 0, 5, 20, 20, 5);
+                    this.rootPath = "furniture/Door/Modern External Door2/";
+                    this.objFilename = "door.obj";
+                    this.scaleFactor = 0.0008f;   
+                    break;
+                //throw new UnsupportedOperationException("Not supported yet.");
             case FUTURISTIC:
                 throw new UnsupportedOperationException("Not supported yet.");
         }

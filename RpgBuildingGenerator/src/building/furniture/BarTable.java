@@ -13,7 +13,7 @@ public class BarTable extends BuildingItem {
     public BarTable() {
         super();
         this.setBounds(0, 0, 5, 20, 20, 5);
-        this.rootPath = "furniture/Bar Table/";
+        this.rootPath = "furniture/Table/Bar Table/";
         this.objFilename = "bar table.obj";
         this.scaleFactor = 0.0020f;
     }  
