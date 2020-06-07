@@ -48,6 +48,10 @@ public class Wall extends BuildingItem {
         this.height = 50;
     }
 
+    public Edge getEdge() {
+        return this.edge;
+    }
+    
     public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType) {
         calcWall2DPoints();
         generatePositions();

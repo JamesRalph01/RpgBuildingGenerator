@@ -5,7 +5,15 @@
  */
 package building;
 
+import building.Room.RoomType;
 import java.util.ArrayList;
+import org.joml.Intersectiond;
+import org.joml.Rectangled;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
+import util.Edge;
+import util.Edge.EdgeAlignment;
+import util.Point;
 
 
 public class Building extends BuildingItem {
@@ -15,6 +23,14 @@ public class Building extends BuildingItem {
     private int wealthIndicator;
     private floorplanner.FloorPlanner.BuildingTheme buildingTheme;
     private Floor floor;
+    
+    //remove
+    public Point midInternalDoorEdge;
+    public Rectangled extRoom;
+    public Edge externalDoorEdge;
+    public Edge internalDoorEdge;
+    public Edge externalDoorCalcEdge;
+    
     
     public Building() {
         super();
@@ -59,6 +75,113 @@ public class Building extends BuildingItem {
     public Floor getFloor() {
         return floor;
     }
+    
+    public Point getFrontDoorPosition() {
+        Room livingRoom = null;
+        Edge externalRoomEdge = null;
+        Point mid;
+        
+        // Locate Living Room
+        for (Room room: this.rooms) {
+            if (room.getRoomType() == RoomType.LivingRoom || 
+                room.getRoomType() == RoomType.TavernFloor) {
+                livingRoom = room;
+                break;
+            }
+        }
+        
+        // Living room should have one external wall
+        for (Edge edge: livingRoom.edges()) {
+            if (edge.isInternal() == false) {
+                externalRoomEdge = edge;
+                break;
+            }
+        }
+        
+        //Remove
+        internalDoorEdge = externalRoomEdge;
+        
+        // Get mid point of external living room edge
+        mid = externalRoomEdge.getMidPoint();
+        midInternalDoorEdge = mid;
+        
+        // Find closest external wall
+        Double closestEdge = Double.MAX_VALUE;
+        Wall closestExternalWall = null;
+        for (Wall wall: this.externalWalls) {
+            Double distance;
+            distance = Math.abs(Intersectiond.distancePointLine(mid.x, mid.y, 
+                                            wall.getEdge().x1(), wall.getEdge().y1(), 
+                                            wall.getEdge().x2(), wall.getEdge().y2()));
+            if (distance < closestEdge) {
+                closestEdge = distance;
+                closestExternalWall = wall;
+            }
+        }
+        
+        this.externalDoorEdge = closestExternalWall.getEdge();
+        
+        // Find points of external wall that intersect with living room
+        Point p1start, p1end, p2start, p2end;
+        Rectangled roomExtendedRect;
+        if (externalRoomEdge.getOriginalAlignment() == EdgeAlignment.HORIZONTAL) {
+            p1start = new Point(externalRoomEdge.x1(), 0);
+            p1end = new Point(externalRoomEdge.x1(), Integer.MAX_VALUE);
+            p2start = new Point(externalRoomEdge.x2(), 0);
+            p2end = new Point(externalRoomEdge.x2(), Integer.MAX_VALUE);
+            
+            roomExtendedRect = new Rectangled(Math.min(externalRoomEdge.x1(), externalRoomEdge.x2()),
+                                              0,
+                                              Math.max(externalRoomEdge.x1(), externalRoomEdge.x2()),
+                                              Integer.MAX_VALUE);
+            
+        } else {
+            p1start = new Point(0, externalRoomEdge.y1());
+            p1end = new Point(Integer.MAX_VALUE, externalRoomEdge.y1());
+            p2start = new Point(0, externalRoomEdge.y2());
+            p2end = new Point(Integer.MAX_VALUE, externalRoomEdge.y2());  
+            
+            roomExtendedRect = new Rectangled(0,
+                                              Math.min(externalRoomEdge.y1(), externalRoomEdge.y2()),
+                                              Integer.MAX_VALUE,
+                                              Math.max(externalRoomEdge.y1(), externalRoomEdge.y2()));
+        }
+        
+        //Remove
+        this.extRoom = roomExtendedRect;
+        
+        Vector2d p1intersect = new Vector2d();
+        Vector2d p2intersect = new Vector2d();
+        boolean p1intersects = false;
+        boolean p2intersects = false;
+        if (Intersectiond.intersectLineLine(p1start.x, p1start.y, p1end.x, p1end.y, 
+                                        closestExternalWall.getEdge().x1(), closestExternalWall.getEdge().y1(), 
+                                        closestExternalWall.getEdge().x2(), closestExternalWall.getEdge().y2(), p1intersect)) {
+            p1intersects = true;
+        }
+        if (Intersectiond.intersectLineLine(p2start.x, p2start.y, p2end.x, p2end.y, 
+                                        closestExternalWall.getEdge().x1(), closestExternalWall.getEdge().y1(), 
+                                        closestExternalWall.getEdge().x2(), closestExternalWall.getEdge().y2(), p2intersect)) {
+            p2intersects = true;
+        }
+        
+        Vector3d p1 = new Vector3d();
+        Vector3d p2 = new Vector3d();
+        Intersectiond.findClosestPointOnLineSegment(
+                            (double) closestExternalWall.getEdge().x1(), (double) closestExternalWall.getEdge().y1(), 0,
+                            (double) closestExternalWall.getEdge().x2(), (double) closestExternalWall.getEdge().y2(), 0,
+                            p1intersect.x, p1intersect.y, 0, p1);
+        Intersectiond.findClosestPointOnLineSegment(
+                            (double) closestExternalWall.getEdge().x1(), (double) closestExternalWall.getEdge().y1(), 0,
+                            (double) closestExternalWall.getEdge().x2(), (double) closestExternalWall.getEdge().y2(), 0,
+                            p2intersect.x, p2intersect.y, 0, p2);
+          // Front door midpoint placement is middle of our calculated edge
+        Edge frontDoorEdge = new Edge(new Point(p1.x,p1.y), new Point(p2.x, p2.y));
+        Point doorPosition = frontDoorEdge.getMidPoint();
+        externalDoorCalcEdge = frontDoorEdge;
+        return doorPosition;  
+       
+    } 
     
     public void Generate3DPositions() {
     

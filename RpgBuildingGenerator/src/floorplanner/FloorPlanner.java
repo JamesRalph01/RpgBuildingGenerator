@@ -27,24 +27,16 @@ import building.furniture.Bar;
 import building.furniture.BarTable;
 import building.furniture.Barrel;
 import building.furniture.Barrels;
-import building.furniture.Bath;
 import building.furniture.DiningTable;
 import building.furniture.DoubleBed;
-import building.furniture.ExternalDoor;
 import building.furniture.Fire;
 import building.furniture.Fridge;
 import building.furniture.KitchenSinkAndOven;
 import building.furniture.KitchenTable;
-import building.furniture.MetalDoor;
 import building.furniture.ModernToilet;
 import building.furniture.OldSofa;
-import building.furniture.SciFiBox;
-import building.furniture.SciFiDoor;
-import building.furniture.Shelf;
 import building.furniture.SingleBed;
-import building.furniture.Stool;
 import building.furniture.TV;
-import building.furniture.Table;
 import designer.FloorPlan;
 import java.util.Arrays;
 import java.util.Date;
@@ -169,8 +161,8 @@ public class FloorPlanner {
         }
                 
         generateRooms(bounds);
-        generate2DFloorplan(); // for display in designer view
         generate3DBuilding(); // for 3D rendering view
+        generate2DFloorplan(); // for display in designer view
         
         floorPlanAvailable = true;
         timestamp = new Timestamp(new Date().getTime());
@@ -376,6 +368,7 @@ public class FloorPlanner {
         }
         printAllPoints(false);
 
+        
     }
         
     private void printAllPoints(boolean includeadj) {
@@ -412,6 +405,7 @@ public class FloorPlanner {
         }
         
         floorplan.setLabels(labels);
+        floorplan.setBuilding(this.building);
         
     } 
     
@@ -449,16 +443,24 @@ public class FloorPlanner {
             //   DOORS   //
             //           //
             
+            // Add external Door if it's the living room or tavern hall
+            if (room.getRoomType() == RoomType.LivingRoom || 
+                room.getRoomType() == RoomType.TavernFloor) { 
+                BuildingItem door;
+                Point doorLocation = this.building.getFrontDoorPosition();
+                door = new Door(this.buildingTheme, wealthIndicator);
+                door.setLocation(doorLocation.x(), 0, doorLocation.y());
+                room.getFurniture().add(door); 
+            }
+            
             // Add Door Connections
             ArrayList<Room> roomConnections = room.getRoomConnections();
-            
             if (roomConnections.size() >= 1) { // Has Room Connections
                 ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
                 BuildingItem door;
                 Point doorLocation;
                 for (int i=0; i<roomConnections.size(); i++) {
-                    door = new Door(this.buildingTheme, wealthIndicator);
-                    //door = new ExternalDoor(this.buildingTheme, wealthIndicator);
+                    door = new Door(this.buildingTheme, wealthIndicator);                    
                     Edge sharedEdge = room.getDoorLocation(connectionEdges.get(i),roomConnections.get(i));
                     int edgeLength;
                     if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
