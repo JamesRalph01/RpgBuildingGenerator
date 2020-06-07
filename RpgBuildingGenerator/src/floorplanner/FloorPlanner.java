@@ -586,8 +586,9 @@ public class FloorPlanner {
                     temp = new ModernToilet();
                     temp.placeOnEdge = true;
                     furniture.add(temp);
-                    //furniture = new Bath(buildingTheme); <<< CRASHES
-                    //placeInCentre = true;                 
+                    //temp = new Bath(buildingTheme); 
+                    //temp.placeInCentre = true;  
+                    //furniture.add(temp);
                     break;
                 case TavernFloor:
                     temp = new Bar();
