@@ -8,10 +8,6 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
 public class SingleBed extends BuildingItem{
     
     public SingleBed(FloorPlanner.BuildingTheme theme) {

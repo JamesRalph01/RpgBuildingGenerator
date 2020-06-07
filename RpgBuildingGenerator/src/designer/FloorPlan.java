@@ -15,10 +15,6 @@ import java.util.Set;
 import util.Edge;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
 public class FloorPlan implements IDesignerComponent {
 
     private boolean enabled = true;

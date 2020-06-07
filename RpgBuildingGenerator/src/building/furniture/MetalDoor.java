@@ -7,10 +7,7 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class MetalDoor extends BuildingItem {
     
     public MetalDoor() {

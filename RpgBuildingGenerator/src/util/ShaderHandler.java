@@ -7,10 +7,6 @@ package util;
 
 import com.jogamp.opengl.GL4;
 
-/**
- *
- * @author James
- */
 
 public class ShaderHandler {
     

@@ -8,10 +8,7 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Bath extends BuildingItem {
     
     public Bath (FloorPlanner.BuildingTheme theme) {
@@ -19,7 +16,7 @@ public class Bath extends BuildingItem {
         super();        
         switch (theme) {
         case MODERN:
-            // This bath crashes OpenGL!
+            // crashes OpenGL
             this.setBounds(0, 0, 5, 20, 20, 5);
             this.rootPath = "furniture/Bath/Modern Bath/";
             this.objFilename = "Modern Bath.obj";

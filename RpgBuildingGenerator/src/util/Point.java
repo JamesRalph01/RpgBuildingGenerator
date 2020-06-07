@@ -8,10 +8,7 @@ package util;
 import java.awt.Color;
 import org.joml.Vector2i;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Point extends Vector2i implements Comparable<Point> {
 
     @Override

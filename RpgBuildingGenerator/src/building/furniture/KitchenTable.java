@@ -8,10 +8,7 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
+
 public class KitchenTable extends BuildingItem {
 
     public KitchenTable(FloorPlanner.BuildingTheme theme) {

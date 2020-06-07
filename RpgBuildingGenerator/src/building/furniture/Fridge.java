@@ -8,10 +8,6 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
 public class Fridge extends BuildingItem {
     
     public Fridge (FloorPlanner.BuildingTheme theme) {

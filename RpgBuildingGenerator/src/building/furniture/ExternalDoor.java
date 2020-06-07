@@ -8,10 +8,6 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
 public class ExternalDoor extends BuildingItem 
 {
     public ExternalDoor(FloorPlanner.BuildingTheme theme, int wealthIndicator) {

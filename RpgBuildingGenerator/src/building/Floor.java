@@ -13,10 +13,7 @@ import org.joml.Vector3f;
 import util.Point;
 import util.Triangulate;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Floor extends BuildingItem {
     
     public float[] positions;
@@ -50,7 +47,6 @@ public class Floor extends BuildingItem {
     }
         
     private void calcLocation(Vector3f screenOrigin) {
-        // This looks wrong - should be negative
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     

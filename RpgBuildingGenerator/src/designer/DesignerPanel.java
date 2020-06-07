@@ -19,10 +19,7 @@ import javax.swing.JPanel;
 import main.Controller;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class DesignerPanel extends JPanel implements MouseListener, MouseMotionListener {
 
     private HashMap<String, IDesignerComponent> designComponents;

@@ -6,10 +6,7 @@
 package building.furniture;
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class OldSofa extends BuildingItem {
 
     public OldSofa() {

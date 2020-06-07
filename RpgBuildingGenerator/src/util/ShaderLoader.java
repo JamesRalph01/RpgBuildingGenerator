@@ -8,10 +8,6 @@ package util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-/**
- *
- * @author James
- */
 public class ShaderLoader {
     
     public static String loadShaderFile(String filename)

@@ -8,10 +8,7 @@ package main;
 import designer.BuildingOutline;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Controller {
        
     private final BuildingOutline buildingOutline = new BuildingOutline();

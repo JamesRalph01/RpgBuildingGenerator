@@ -7,10 +7,7 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Stool extends BuildingItem{
     public Stool() {
         throw new UnsupportedOperationException("Not supported yet.");        

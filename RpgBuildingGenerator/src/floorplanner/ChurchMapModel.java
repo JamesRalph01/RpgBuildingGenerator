@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author chrisralph
- */
+
 public class ChurchMapModel implements MapModel {
     
     

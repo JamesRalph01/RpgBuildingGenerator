@@ -8,10 +8,7 @@ package building.furniture;
 import building.BuildingItem;
 import floorplanner.FloorPlanner;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Fire extends BuildingItem {
 
     public Fire(FloorPlanner.BuildingTheme theme, int wealthIndicator) {

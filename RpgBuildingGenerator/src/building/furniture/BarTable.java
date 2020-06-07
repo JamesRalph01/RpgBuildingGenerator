@@ -7,10 +7,7 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class BarTable extends BuildingItem {
 
     public BarTable() {

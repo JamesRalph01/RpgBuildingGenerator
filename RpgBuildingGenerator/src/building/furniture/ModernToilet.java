@@ -7,10 +7,7 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class ModernToilet extends BuildingItem {
 
     public ModernToilet() {

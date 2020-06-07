@@ -12,10 +12,7 @@ import org.joml.Intersectiond;
 import org.joml.Rectangled;
 import org.joml.Vector2d;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Edge {
 
     public enum EdgeAlignment {

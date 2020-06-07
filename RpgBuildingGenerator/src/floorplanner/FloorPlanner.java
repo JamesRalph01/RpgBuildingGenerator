@@ -53,10 +53,7 @@ import util.Edge;
 import util.Edge.EdgeAlignment;
 import util.PolygonHelper;
 import util.Point;
-/**
- *
- * @author chrisralph
- */
+
 
 
 public class FloorPlanner {

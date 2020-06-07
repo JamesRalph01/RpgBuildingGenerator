@@ -7,10 +7,7 @@ package building;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Building extends BuildingItem {
 
     private ArrayList<Wall> externalWalls;

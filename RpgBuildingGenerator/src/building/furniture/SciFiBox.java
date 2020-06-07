@@ -7,10 +7,7 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
+
 public class SciFiBox extends BuildingItem {
     
     public SciFiBox() {

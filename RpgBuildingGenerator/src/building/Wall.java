@@ -11,10 +11,6 @@ import org.joml.Vector3f;
 import util.Edge;
 import java.util.ArrayList;
 
-/**
- *
- * @author chrisralph
- */
 public class Wall extends BuildingItem {
 
     public float[] positions;
@@ -69,7 +65,6 @@ public class Wall extends BuildingItem {
     }
     
     private void calcLocation(Vector3f screenOrigin) {
-        // This looks wrong - should be negative
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     

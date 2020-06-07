@@ -15,10 +15,7 @@ import designer.BuildingOutline;
 import building.Room;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class FloorPlannerTest {
     
     public Room room;

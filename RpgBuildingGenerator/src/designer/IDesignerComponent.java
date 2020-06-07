@@ -7,10 +7,7 @@ package designer;
 
 import java.awt.Graphics;
 
-/**
- *
- * @author chrisralph
- */
+
 public interface IDesignerComponent {
 
     public boolean getEnabled();

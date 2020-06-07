@@ -7,10 +7,7 @@ package building;
 
 import org.joml.Vector3f;
 
-/**
- *
- * @author chrisralph
- */
+
 public class BuildingItem {
     
     private final Vector3f minBounds;

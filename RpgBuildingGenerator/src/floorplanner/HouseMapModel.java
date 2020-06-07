@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author chrisralph
- */
+
 public class HouseMapModel implements MapModel {
 
     private MapItem[] privateRooms;

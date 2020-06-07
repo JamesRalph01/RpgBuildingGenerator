@@ -16,10 +16,7 @@ import util.Point;
 import util.Edge.EdgeAlignment;
 import util.Edge;
 import util.PolygonHelper;
-/**
- *
- * @author chrisralph
- */
+
 public class Room extends BuildingItem {
 
     public enum RoomType {

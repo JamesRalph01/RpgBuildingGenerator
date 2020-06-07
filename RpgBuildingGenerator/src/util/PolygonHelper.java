@@ -13,10 +13,7 @@ import org.joml.Rectangled;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
-/**
- *
- * @author chrisralph
- */
+
 public class PolygonHelper {
 
     private PolygonsIntersection ppi;

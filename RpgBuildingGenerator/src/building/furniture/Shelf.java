@@ -7,10 +7,6 @@ package building.furniture;
 
 import building.BuildingItem;
 
-/**
- *
- * @author chrisralph
- */
 public class Shelf extends BuildingItem {
  
     public Shelf() {

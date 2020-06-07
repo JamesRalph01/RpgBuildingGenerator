@@ -28,10 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joml.Vector4f;
 
-/**
- *
- * @author chrisralph
- */
 public class FurnitureLoader {
     
     public FurnitureLoader() {

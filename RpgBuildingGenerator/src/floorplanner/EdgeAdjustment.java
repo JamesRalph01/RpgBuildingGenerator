@@ -10,10 +10,7 @@ import building.Room;
 import util.Edge;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class EdgeAdjustment {
     
     public Room room;

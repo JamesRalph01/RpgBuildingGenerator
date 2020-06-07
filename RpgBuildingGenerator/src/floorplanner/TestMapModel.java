@@ -8,10 +8,7 @@ package floorplanner;
 import building.Room;
 import java.util.stream.IntStream;
 
-/**
- *
- * @author chrisralph
- */
+
 public class TestMapModel implements MapModel {
 
     private MapItem[] items;

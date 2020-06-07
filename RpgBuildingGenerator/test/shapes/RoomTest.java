@@ -17,10 +17,7 @@ import static org.junit.Assert.*;
 import util.Edge;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class RoomTest {
     
     private Room room;

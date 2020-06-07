@@ -10,10 +10,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class EditCursorLine implements IDesignerComponent {
 
     private Point fromPoint, toPoint;

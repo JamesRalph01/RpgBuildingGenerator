@@ -13,10 +13,7 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import util.Point;
 
-/**
- *
- * @author chrisralph
- */
+
 public class Grid implements IDesignerComponent {
     
     static int GRID_SPACING = 20;  
