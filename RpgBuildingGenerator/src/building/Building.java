@@ -196,7 +196,7 @@ public class Building extends BuildingItem {
         
         // Rooms
         this.rooms.forEach((room) -> {
-            room.Generate3DPositions(this.getLocation(), this.wealthIndicator);
+            room.Generate3DPositions(this.getLocation(), this.wealthIndicator, this.buildingTheme);
         });
     }
     

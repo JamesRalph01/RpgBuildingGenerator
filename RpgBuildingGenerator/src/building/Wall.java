@@ -5,6 +5,7 @@
  */
 package building;
 
+import floorplanner.FloorPlanner;
 import org.joml.GeometryUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -48,6 +49,8 @@ public class Wall extends BuildingItem {
         this.height = 50;
     }
 
+
+    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType, FloorPlanner.BuildingTheme theme) {
     public Edge getEdge() {
         return this.edge;
     }
@@ -56,7 +59,7 @@ public class Wall extends BuildingItem {
         calcWall2DPoints();
         generatePositions();
         calcLocation(screenOrigin);
-        chooseRoomWallTexture(wealthInd, roomType);
+        chooseRoomWallTexture(wealthInd, roomType, theme);
     }
     
      public void Generate3DPositionsExternal(Vector3f screenOrigin, String externalWallTexture) {
@@ -215,35 +218,49 @@ public class Wall extends BuildingItem {
     }
     
     
-    private void chooseRoomWallTexture(int wealthInd, Room.RoomType roomType) {
+    private void chooseRoomWallTexture(int wealthInd, Room.RoomType roomType, FloorPlanner.BuildingTheme theme) {
         
-        switch (roomType) {
-            case MasterBedroom:
-                this.textures[0] = "pattern.png"; 
+        switch(theme) {
+            case MODERN:
+                switch (roomType) {
+                    case MasterBedroom:
+                        this.textures[0] = "pattern.png"; 
+                        break;
+                    case LivingRoom:
+                        this.textures[0] = "Red_stone_wall.png"; 
+                        break;
+                    case Kitchen:
+                        this.textures[0] = "Marble_tiles.png"; 
+                        break;
+                    case Bathroom:
+                        this.textures[0] = "blue_tiles.png"; 
+                        break;
+                    case SpareRoom:
+                        this.textures[0] = "pattern.png"; 
+                        break;
+                    case Toilet:
+                        this.textures[0] = "blue_tiles.png"; 
+                        break;
+                    case Utility:
+                        this.textures[0] = "Bronze.png"; 
+                        break;
+                    case DiningRoom:
+                        this.textures[0] = "Red_stone_wall.png"; 
+                        break;
+                    case StoreRoom:
+                        this.textures[0] = "Bricks.jpg"; 
+                        break;
+                    case TavernFloor:
+                        this.textures[0] = "Tavern_wall.jpg"; 
+                        break;
+                    default:
+                        this.textures[0] = "Grunge_wall.png";
+                        break;
+                }
+            case MEDIEVAL:
+                this.textures[0] = "Wood_planks.jpg";
                 break;
-            case LivingRoom:
-                this.textures[0] = "Red_stone_wall.png"; 
-                break;
-            case Kitchen:
-                this.textures[0] = "Marble_tiles.png"; 
-                break;
-            case Bathroom:
-                this.textures[0] = "blue_tiles.png"; 
-                break;
-            case SpareRoom:
-                this.textures[0] = "pattern.png"; 
-                break;
-            case Toilet:
-                this.textures[0] = "blue_tiles.png"; 
-                break;
-            case Utility:
-                this.textures[0] = "Bronze.png"; 
-                break;
-            case DiningRoom:
-                this.textures[0] = "Red_stone_wall.png"; 
-                break;
-            default:
-                this.textures[0] = "Grunge_wall.png";
+            case FUTURISTIC:
                 break;
         }
     }

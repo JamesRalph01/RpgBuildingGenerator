@@ -579,7 +579,7 @@ public class FloorPlanner {
                     break;
                 case Toilet:
                     temp = new ModernToilet();
-                    temp.placeInCentre = true;
+                    temp.placeOnEdge = true;
                     furniture.add(temp);
                     break;
                 case Bathroom:
