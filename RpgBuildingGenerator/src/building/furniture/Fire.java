@@ -15,7 +15,10 @@ public class Fire extends BuildingItem {
         super();
         switch (theme) {
             case MODERN:
-                throw new UnsupportedOperationException("Not supported yet.");
+                this.setBounds(0, 0, 5, 20, 20, 5);
+                this.rootPath = "furniture/Fire/Medieval fireplace/";
+                this.objFilename = "fireplace.obj";
+                this.scaleFactor = 0.001f;
             case MEDIEVAL:
                 if (wealthIndicator > 50) {
                     this.setBounds(0, 0, 5, 20, 20, 5);

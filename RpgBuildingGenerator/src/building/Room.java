@@ -5,6 +5,7 @@
  */
 package building;
 
+import floorplanner.FloorPlanner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -213,21 +214,21 @@ public class Room extends BuildingItem {
         }
     }
     
-    public void Generate3DPositions(Vector3f screenOrigin, int wealthInd) {
+    public void Generate3DPositions(Vector3f screenOrigin, int wealthInd, FloorPlanner.BuildingTheme theme) {
         calcLocation(screenOrigin);
-        calcInternalWalls(screenOrigin, wealthInd);
+        calcInternalWalls(screenOrigin, wealthInd, theme);
     }
    
     private void calcLocation(Vector3f screenOrigin) {
         this.setLocation(-screenOrigin.x, -screenOrigin.y, screenOrigin.z);        
     }
     
-    private void calcInternalWalls(Vector3f screenOrigin, int wealthInd) {
+    private void calcInternalWalls(Vector3f screenOrigin, int wealthInd, FloorPlanner.BuildingTheme theme) {
         internalWalls.clear();
         for (Edge edge : this.edges) {
             if (edge.isInternal()) {
                 Wall wall = new Wall(edge);
-                wall.Generate3DPositionsInternal(screenOrigin, wealthInd, this.roomType);
+                wall.Generate3DPositionsInternal(screenOrigin, wealthInd, this.roomType, theme);
                 this.internalWalls.add(wall);
             }
         }
