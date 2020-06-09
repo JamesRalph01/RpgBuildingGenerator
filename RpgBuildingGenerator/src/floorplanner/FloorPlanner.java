@@ -455,6 +455,8 @@ public class FloorPlanner {
             
             // Add Door Connections
             ArrayList<Room> roomConnections = room.getRoomConnections();
+            Point barPlacement = new Point(0,0);
+            String barOrientation = null;
             if (roomConnections.size() >= 1) { // Has Room Connections
                 ArrayList<Edge> connectionEdges = room.getRoomConnectionEdges();
                 BuildingItem door;
@@ -472,22 +474,31 @@ public class FloorPlanner {
                     
                     if (edgeLength > 20) {
                         doorLocation = new Point((sharedEdge.x1()+sharedEdge.x2())/2,(sharedEdge.y1()+sharedEdge.y2())/2);
+                        String orientation = null;
                         if (connectionEdges.get(i).getAlignment() == EdgeAlignment.HORIZONTAL) {
                             door.setRotation(0, 0, 0);
                             if (room.isRoomAbove(connectionEdges.get(i),roomConnections.get(i))) {
                                 doorLocation.y -= 5; 
+                                orientation = "TOP";
                             }
                             else {
                                 doorLocation.y += 5;
+                                orientation = "BOTTOM";
                             } 
                         } else { // VERTICAL
                             door.setRotation(0, -90, 0); 
                             if (room.isRoomLeft(connectionEdges.get(i),roomConnections.get(i))) {
                                 doorLocation.x += 5;
+                                orientation = "LEFT";
                             }
                             else {
                                 doorLocation.x -= 5;
+                                orientation = "RIGHT";
                             }   
+                        }
+                        if (buildingType == BuildingType.TAVERN && room.getRoomType() == RoomType.TavernFloor && roomConnections.get(i).getRoomType() == RoomType.Kitchen) {
+                            barPlacement = new Point(doorLocation.x(),doorLocation.y());
+                            barOrientation = orientation;
                         }
                         door.setLocation(doorLocation.x(), 0, doorLocation.y());
                         room.getFurniture().add(door); 
@@ -508,7 +519,7 @@ public class FloorPlanner {
                 case LivingRoom:
                     temp = new OldSofa();
                     temp.placeOnEdge = true;
-                    temp.displacement = 10;
+                    temp.displacement = 14;
                     furniture.add(temp);
                     if (buildingTheme != BuildingTheme.MEDIEVAL)
                     {
@@ -535,9 +546,20 @@ public class FloorPlanner {
                     furniture.add(temp);
                     break;
                 case Kitchen:
-                    temp = new KitchenTable(buildingTheme);
-                    temp.placeInCentre = true; 
-                    furniture.add(temp);
+                    if (buildingType == BuildingType.HOUSE) 
+                    {
+                        temp = new KitchenTable(buildingTheme);
+                        temp.placeInCentre = true; 
+                        furniture.add(temp);
+                    }
+                    if (buildingType == BuildingType.TAVERN && buildingTheme == BuildingTheme.MEDIEVAL)
+                    {
+                        temp = new Barrels();
+                        temp.placeOnEdge = true;
+                        temp.displacement += 10;
+                        furniture.add(temp);
+                        break;
+                    }
                     if (buildingTheme != BuildingTheme.MEDIEVAL)
                     {
                         temp = new KitchenSinkAndOven();
@@ -569,43 +591,47 @@ public class FloorPlanner {
                 case MasterBedroom:
                     temp = new DoubleBed(buildingTheme);
                     temp.placeOnEdge = true;
-                    temp.displacement = 15;
+                    temp.displacement = 25;
                     furniture.add(temp);
                     break;
                 case SpareRoom:
                     temp = new SingleBed(buildingTheme);
                     temp.placeOnEdge = true;
+                    temp.displacement = 23;
                     furniture.add(temp);
                     break;
                 case Toilet:
                     temp = new ModernToilet();
                     temp.placeOnEdge = true;
+                    temp.additionalRotation -= 90;
+                    temp.displacement = 8;
                     furniture.add(temp);
                     break;
                 case Bathroom:
                     temp = new ModernToilet();
                     temp.placeOnEdge = true;
+                    temp.additionalRotation -= 90;
+                    temp.displacement = 8;
                     furniture.add(temp);
-                    //temp = new Bath(buildingTheme); 
-                    //temp.placeInCentre = true;  
-                    //furniture.add(temp);
                     break;
                 case TavernFloor:
                     temp = new Bar();
-                    temp.placeOnEdge = true;
+                    temp.tavernBarPlacement = true;
+                    temp.displacement = 25;
                     furniture.add(temp);
                     
                     temp = new BarTable();
                     temp.placeInCentre = true;
                     furniture.add(temp);
                     
-                    temp = new Fire(this.buildingTheme, this.wealthIndicator);
-                    temp.placeOnEdge = true;
-                    furniture.add(temp);                    
+                    //temp = new Fire(this.buildingTheme, this.wealthIndicator);
+                    //temp.placeOnEdge = true;
+                    //furniture.add(temp);                    
                     break;
                 case StoreRoom:
                     temp = new Barrels();
                     temp.placeOnEdge = true;
+                    temp.displacement += 10;
                     furniture.add(temp);
                     break;
                 case ChurchFloor:
@@ -633,22 +659,22 @@ public class FloorPlanner {
                                 case "TOP":
                                     x = placement.x();
                                     z = placement.y() - item.displacement;
-                                    item.setRotation(0, 180, 0);
+                                    item.setRotation(0, 180+item.additionalRotation, 0);
                                     break;
                                 case "LEFT":
                                     x = placement.x() + item.displacement;
                                     z = placement.y();
-                                    item.setRotation(0, 90, 0);
+                                    item.setRotation(0, 90+item.additionalRotation, 0);
                                     break;
                                 case "RIGHT":
                                     x = placement.x() - item.displacement;
                                     z = placement.y();
-                                    item.setRotation(0, -90, 0);
+                                    item.setRotation(0, -90+item.additionalRotation, 0);
                                     break;
                                 case "BELOW":
                                     x = placement.x();
                                     z = placement.y() + item.displacement;
-                                    item.setRotation(0, 0, 0);
+                                    item.setRotation(0, 0+item.additionalRotation, 0);
                                     break;
                                 default:
                                     break;
@@ -658,8 +684,35 @@ public class FloorPlanner {
                             item = null; // Remove furniture: No free edge
                         }
                     }
+                    if (item.tavernBarPlacement) {
+                        if (barOrientation != null) {
+                            switch (barOrientation) {
+                                case "TOP":
+                                    x = barPlacement.x() + 10;
+                                    z = barPlacement.y() - item.displacement;
+                                    item.setRotation(0, 180+item.additionalRotation, 0);
+                                    break;
+                                case "LEFT":
+                                    x = barPlacement.x() + item.displacement;
+                                    z = barPlacement.y() + 10;
+                                    item.setRotation(0, 90+item.additionalRotation, 0);
+                                    break;
+                                case "RIGHT":
+                                    x = barPlacement.x() - item.displacement;
+                                    z = barPlacement.y() - 10;
+                                    item.setRotation(0, -90+item.additionalRotation, 0);
+                                    break;
+                                case "BOTTOM":
+                                    x = barPlacement.x() - 10;
+                                    z = barPlacement.y() + item.displacement;
+                                    item.setRotation(0, 0+item.additionalRotation, 0);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
 
-                    
                     if (item != null) {
                         item.setLocation(x, 0, z);
                         room.getFurniture().add(item);                 

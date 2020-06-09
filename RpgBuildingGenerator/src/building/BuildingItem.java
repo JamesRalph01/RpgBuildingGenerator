@@ -24,6 +24,7 @@ public class BuildingItem {
     public float displacement = 0;
     public boolean placeInCentre = false;
     public boolean placeOnEdge = false;
+    public boolean tavernBarPlacement = false;
 
     
     public BuildingItem() {

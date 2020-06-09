@@ -39,10 +39,10 @@ public class TavernMapModel implements MapModel {
     private int numPrivateRooms;
     
     private Map<RoomType, RoomType[]> roomConnections = new HashMap<RoomType, RoomType[]>() {{
-        put(RoomType.TavernFloor, new RoomType[]{RoomType.Kitchen,RoomType.Toilet,RoomType.StoreRoom});
+        put(RoomType.TavernFloor, new RoomType[]{RoomType.Kitchen,RoomType.Toilet});
         put(RoomType.Kitchen,     new RoomType[]{RoomType.TavernFloor,RoomType.StoreRoom});
         put(RoomType.Toilet,      new RoomType[]{RoomType.TavernFloor});
-        put(RoomType.StoreRoom,   new RoomType[]{RoomType.TavernFloor,RoomType.Kitchen});
+        put(RoomType.StoreRoom,   new RoomType[]{RoomType.Kitchen});
     }};
 
     public TavernMapModel(double width, double height) {
