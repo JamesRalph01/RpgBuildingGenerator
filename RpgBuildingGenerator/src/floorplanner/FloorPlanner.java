@@ -154,7 +154,6 @@ public class FloorPlanner {
             }
         }
         
-        System.out.println("Hi");
         for (Mappable room: roomList) {
             System.out.println(room.getAreaType() + " : " + room.getRoomType() + " : " 
                     + room.getBounds());
@@ -282,6 +281,7 @@ public class FloorPlanner {
                 edge.point2().setColour(c);
             }
             rooms.add(room);
+            room.roomBounds = item.getBounds();
             
         }
         printAllPoints(false);
@@ -446,11 +446,21 @@ public class FloorPlanner {
             // Add external Door if it's the living room or tavern hall
             if (room.getRoomType() == RoomType.LivingRoom || 
                 room.getRoomType() == RoomType.TavernFloor) { 
-                BuildingItem door;
                 Point doorLocation = this.building.getFrontDoorPosition();
-                door = new Door(this.buildingTheme, wealthIndicator);
-                door.setLocation(doorLocation.x(), 0, doorLocation.y());
+                BuildingItem door = new Door(this.buildingTheme, wealthIndicator);
+                BuildingItem doorInterior = new Door(this.buildingTheme, wealthIndicator);
+                float dx = this.building.externalDoorEdge.x2() - this.building.externalDoorEdge.x1();
+                float dy = this.building.externalDoorEdge.y2() - this.building.externalDoorEdge.y1();
+                double theta = Math.atan2(dy, dx);
+                theta *= 180 / Math.PI;
+                System.out.println("DOOR ANGLE " + theta);
+                door.setLocation(doorLocation.x()-3, 0, doorLocation.y()-3);
+                door.setRotation(0, (float)Math.abs(theta), 0);
                 room.getFurniture().add(door); 
+                
+                doorInterior.setLocation(doorLocation.x()+3, 0, doorLocation.y()+3);
+                doorInterior.setRotation(0, (float)Math.abs(theta), 0);
+                room.getFurniture().add(doorInterior); 
             }
             
             // Add Door Connections
@@ -514,7 +524,7 @@ public class FloorPlanner {
             
             ArrayList<BuildingItem> furniture= new ArrayList<>();
             BuildingItem temp = null;
-            
+            System.out.println(room.getRoomType() + " ROOMBOUNDS " + room.roomBounds);
             switch (room.getRoomType()) {
                 case LivingRoom:
                     temp = new OldSofa();
@@ -620,13 +630,48 @@ public class FloorPlanner {
                     temp.displacement = 25;
                     furniture.add(temp);
                     
-                    temp = new BarTable();
-                    temp.placeInCentre = true;
-                    furniture.add(temp);
+                    // POPULATE BAR FLOOR
+                    algorithm = new TreemapLayout();
+                    int tableCount = (int)(room.roomBounds.w*room.roomBounds.h)/15000;
+                    MapItem[] model = new MapItem[tableCount];
+                    for (int i=0; i<tableCount; i++) {
+                        model[i] = new MapItem(15000, 0, Room.RoomType.Empty, Room.AreaType.SOCIAL);
+                    }
                     
-                    //temp = new Fire(this.buildingTheme, this.wealthIndicator);
-                    //temp.placeOnEdge = true;
-                    //furniture.add(temp);                    
+                    System.out.println("BAR ORIENTATION "+ barOrientation);
+                    System.out.println("ROOMBOUNDS BEFORE " + room.roomBounds);
+                    if (barOrientation != null) {
+                        switch (barOrientation) {
+                            case "TOP":
+                                room.roomBounds.h -= 70;
+                                break;
+                            case "LEFT":
+                                room.roomBounds.x += 70;
+                                break;
+                            case "RIGHT":
+                                room.roomBounds.w -= 70;
+                                break;
+                            case "BOTTOM":
+                                room.roomBounds.y += 70;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    System.out.println("ROOMBOUNDS " + room.roomBounds);
+                    
+                    algorithm.layout(model, room.roomBounds);
+                   
+                    for (int i=0; i<tableCount; i++) {
+                        System.out.println("Table " + i + ": " + model[i].getBounds());
+                        if (Math.abs(model[i].getBounds().h) > 50 && Math.abs(model[i].getBounds().w) > 50)
+                        {
+                            temp = new BarTable();
+                            temp.tavernTablePlacement = new Point(model[i].getBounds().x+(model[i].getBounds().w/2),model[i].getBounds().y+(model[i].getBounds().h/2));
+                            temp.populateTavernFloor = true;
+                            furniture.add(temp);
+                        }
+                    }                
                     break;
                 case StoreRoom:
                     temp = new Barrels();
@@ -642,7 +687,6 @@ public class FloorPlanner {
             
             for (BuildingItem item: furniture) {
                 if (furniture != null) {
-
                     float x = 0, z = 0;
 
                     if (item.placeInCentre) {
@@ -711,6 +755,10 @@ public class FloorPlanner {
                                     break;
                             }
                         }
+                    }
+                    if (item.populateTavernFloor) {
+                        x = item.tavernTablePlacement.x();
+                        z = item.tavernTablePlacement.y();
                     }
 
                     if (item != null) {

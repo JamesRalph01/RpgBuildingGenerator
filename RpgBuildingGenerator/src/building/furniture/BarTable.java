@@ -6,6 +6,7 @@
 package building.furniture;
 
 import building.BuildingItem;
+import util.Rect;
 
 
 public class BarTable extends BuildingItem {
@@ -17,5 +18,5 @@ public class BarTable extends BuildingItem {
         this.objFilename = "bar table.obj";
         this.scaleFactor = 0.0020f;
     }  
-    
+
 }

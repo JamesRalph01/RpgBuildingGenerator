@@ -17,6 +17,7 @@ import util.Point;
 import util.Edge.EdgeAlignment;
 import util.Edge;
 import util.PolygonHelper;
+import util.Rect;
 
 public class Room extends BuildingItem {
 
@@ -67,6 +68,8 @@ public class Room extends BuildingItem {
     
     private ArrayList<Room> roomConnections = new ArrayList<>();
     private ArrayList<Edge> roomConnectionEdges = new ArrayList<>();
+    
+    public Rect roomBounds;
     
     
     public Room(ArrayList<Edge> edges) {
@@ -206,6 +209,7 @@ public class Room extends BuildingItem {
     public void setRoomType(RoomType type) {
         this.roomType = type;
     }
+    
     
     public void printRoomConnections() {
         System.out.println(this.roomType + " Room connections:");

@@ -6,6 +6,7 @@
 package building;
 
 import org.joml.Vector3f;
+import util.Point;
 
 
 public class BuildingItem {
@@ -25,6 +26,8 @@ public class BuildingItem {
     public boolean placeInCentre = false;
     public boolean placeOnEdge = false;
     public boolean tavernBarPlacement = false;
+    public boolean populateTavernFloor = false;
+    public Point tavernTablePlacement; 
 
     
     public BuildingItem() {
