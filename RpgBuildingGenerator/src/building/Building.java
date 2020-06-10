@@ -31,6 +31,8 @@ public class Building extends BuildingItem {
     public Edge internalDoorEdge;
     public Edge externalDoorCalcEdge;
     
+    public Edge frontDoorEdge;
+    
     
     public Building() {
         super();
@@ -176,7 +178,7 @@ public class Building extends BuildingItem {
                             (double) closestExternalWall.getEdge().x2(), (double) closestExternalWall.getEdge().y2(), 0,
                             p2intersect.x, p2intersect.y, 0, p2);
           // Front door midpoint placement is middle of our calculated edge
-        Edge frontDoorEdge = new Edge(new Point(p1.x,p1.y), new Point(p2.x, p2.y));
+        frontDoorEdge = new Edge(new Point(p1.x,p1.y), new Point(p2.x, p2.y));
         Point doorPosition = frontDoorEdge.getMidPoint();
         externalDoorCalcEdge = frontDoorEdge;
         return doorPosition;  

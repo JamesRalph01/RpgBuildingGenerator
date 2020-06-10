@@ -49,13 +49,11 @@ public class Wall extends BuildingItem {
         this.height = 50;
     }
 
-
-    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType, FloorPlanner.BuildingTheme theme) {
     public Edge getEdge() {
         return this.edge;
     }
     
-    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType) {
+    public void Generate3DPositionsInternal(Vector3f screenOrigin, int wealthInd, Room.RoomType roomType, FloorPlanner.BuildingTheme theme) {
         calcWall2DPoints();
         generatePositions();
         calcLocation(screenOrigin);
@@ -257,6 +255,7 @@ public class Wall extends BuildingItem {
                         this.textures[0] = "Grunge_wall.png";
                         break;
                 }
+                break;
             case MEDIEVAL:
                 this.textures[0] = "Wood_planks.jpg";
                 break;

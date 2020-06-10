@@ -15,7 +15,7 @@ public class Barrels extends BuildingItem {
         this.setBounds(0, 0, 5, 20, 20, 5);
         this.rootPath = "furniture/Store room barrels/";
         this.objFilename = "Store room barrels.obj";
-        this.scaleFactor = 0.0025f;
+        this.scaleFactor = 0.0020f;
     }
     
 }

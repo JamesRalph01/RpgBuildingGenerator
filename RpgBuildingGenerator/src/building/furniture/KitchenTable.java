@@ -24,7 +24,7 @@ public class KitchenTable extends BuildingItem {
                 this.setBounds(0, 0, 5, 20, 20, 5);
                 this.rootPath = "furniture/table/Medieval Table/";
                 this.objFilename = "Medieval table.obj";
-                this.scaleFactor = 0.009f;            
+                this.scaleFactor = 0.007f;            
                 break;
             case FUTURISTIC:
                 throw new UnsupportedOperationException("Not supported yet.");
